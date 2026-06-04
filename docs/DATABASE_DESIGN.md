@@ -148,3 +148,41 @@ event_type        ENUM('login_success','login_failure','logout') NOT NULL
 created_at        DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP
 
 FK: user_id → users(id)  -- nullable: failed attempts may not resolve to a user
+
+## Schema decisions
+
+### JSON columns (ingredients, steps)
+Stored as JSON in recipes table instead of separate tables.
+Rationale: MVP scope. A dedicated ingredients table would enable
+cross-recipe ingredient search, but this is not required by any MVP user story.
+Migration path exists if needed post-MVP.
+
+### Denormalized average_rating
+average_rating and rating_count are stored directly on recipes.
+Rationale: avoids AVG() aggregate join on every recipe list request.
+Updated atomically each time a rating is inserted or modified.
+
+### Soft delete
+All user-facing tables include deleted_at DATETIME NULL.
+Active records: deleted_at IS NULL.
+Deleted records: deleted_at IS NOT NULL (timestamp of deletion).
+Hard delete is never used in application logic.
+
+### ON DELETE RESTRICT vs SET NULL
+- recipes → users: RESTRICT. A user with recipes cannot be deleted.
+  Admin must handle recipes first. Prevents silent data loss.
+- comments → users: SET NULL. Comments survive user deletion,
+  displayed as anonymous or with guest_name fallback.
+
+## Planned – not implemented in MVP
+
+### Badges and gamification tables
+Tables `badges` and `user_badges` are intentionally excluded from the MVP.
+The `points` column in `users` is retained to avoid a future migration.
+
+Planned structure (for reference only):
+
+badges (id, name, slug, description, required_points, created_at)
+user_badges (id, user_id, badge_id, awarded_at)
+
+These tables will be created in a post-MVP migration script.
