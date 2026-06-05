@@ -1,4 +1,4 @@
--- 04_seed_data.sql
+-- 04_seed_data.sql (uniquement pour du test en local à NE JAMAIS EXECUTER EN PROD !!!!!!!)
 -- Test dataset for recettes_humaines database.
 -- Run as dev_admin after 01, 02, 03 scripts.
 -- Covers all filter test cases: prep_time, cost_per_portion, status variants.
