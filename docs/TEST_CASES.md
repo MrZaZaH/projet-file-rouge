@@ -115,3 +115,91 @@ WHERE prep_time <= 15
 Expected: ids 1 (2min, 0.80€), 2 (5min, 1.50€)Not expected: id 3 (5min but 5.50€), id 4 (5min but 4.20€)
 
 ---
+# TEST_Category, User, Recipe
+
+## TC-11 — Category model: create()
+**Method:** `Category.create()`  
+**Input:** `{ name: 'Test Category <timestamp>' }`  
+**Expected:** Returns object with `id`, `name`, `slug` generated from name  
+**Result:** ✅ Passed  
+
+## TC-12 — Category model: findAll()
+**Method:** `Category.findAll()`  
+**Expected:** Returns array, does not include soft-deleted rows  
+**Result:** ✅ Passed  
+
+## TC-13 — Category model: update()
+**Method:** `Category.update(id, { name: 'Updated <timestamp>' })`  
+**Expected:** Returns updated object with new slug  
+**Result:** ✅ Passed  
+
+## TC-14 — Category model: delete() (soft)
+**Method:** `Category.delete(id)`  
+**Expected:** Sets `deleted_at`, row no longer appears in `findAll()`  
+**Result:** ✅ Passed  
+
+## TC-15 — User model: create()
+**Method:** `User.create()`  
+**Input:** `{ username, email, password_hash }`  
+**Expected:** Returns user object, password never exposed  
+**Result:** ✅ Passed  
+
+## TC-16 — User model: findByEmail()
+**Method:** `User.findByEmail(email)`  
+**Expected:** Returns correct user or `null` if not found  
+**Result:** ✅ Passed  
+
+## TC-17 — Recipe model: create()
+**Method:** `Recipe.create(data)`  
+**Expected:** Returns object with `id`, `status = pending`, ingredients/steps as arrays  
+**Result:** ✅ Passed  
+
+## TC-18 — Recipe model: findAllWithFilters() — no filters
+**Method:** `Recipe.findAllWithFilters({})`  
+**Expected:** Returns all non-deleted recipes  
+**Result:** ✅ Passed  
+
+## TC-19 — Recipe model: findAllWithFilters({ max_prep_time })
+**Method:** `Recipe.findAllWithFilters({ max_prep_time: 10 })`  
+**Expected:** Only returns recipes with prep_time ≤ 10  
+**Result:** ✅ Passed  
+
+## TC-20 — Recipe model: findAllWithFilters({ max_cost })
+**Method:** `Recipe.findAllWithFilters({ max_cost: 1 })`  
+**Expected:** Only returns recipes with cost_per_serving ≤ 1.00  
+**Result:** ✅ Passed  
+
+## TC-21 — Recipe model: findAllWithFilters({ search })
+**Method:** `Recipe.findAllWithFilters({ search: 'Test Recipe' })`  
+**Expected:** Returns recipes matching title or description  
+**Result:** ✅ Passed  
+
+## TC-22 — Recipe model: findAllWithFilters({ status })
+**Method:** `Recipe.findAllWithFilters({ status: 'pending' })`  
+**Expected:** Returns only pending recipes  
+**Result:** ✅ Passed  
+
+## TC-23 — Recipe model: update()
+**Method:** `Recipe.update(id, { title: 'Updated <timestamp>' })`  
+**Expected:** Returns updated recipe with new title  
+**Result:** ✅ Passed  
+
+## TC-24 — Recipe model: updateStatus()
+**Method:** `Recipe.updateStatus(id, 'published')`  
+**Expected:** Returns `true`, status changes in DB  
+**Result:** ✅ Passed  
+
+## TC-25 — Recipe model: updateRating()
+**Method:** `Recipe.updateRating(id, 4)`  
+**Expected:** `average_rating = 4.00`, `rating_count = 1`  
+**Result:** ✅ Passed  
+
+## TC-26 — Recipe model: findRandom()
+**Method:** `Recipe.findRandom()`  
+**Expected:** Returns one published recipe object  
+**Result:** ✅ Passed  
+
+## TC-27 — Recipe model: delete() (soft)
+**Method:** `Recipe.delete(id)`  
+**Expected:** Returns `true`, `findById()` returns `null` after deletion  
+**Result:** ✅ Passed  
