@@ -66,19 +66,33 @@ Health check available at http://localhost:3000/health
 ## Project Structure
 ```text
 projet-file-rouge/
-├── src/
-│   ├── config/         # Environment and app configuration
-│   ├── controllers/    # Route handlers
-│   ├── database/       # DB connection pool
-│   ├── middlewares/    # Auth, validation, error handling
-│   ├── models/         # Data access layer
-│   └── routes/         # Express routers
 ├── database/
 │   └── scripts/        # SQL scripts (schema, seed data)
 ├── docs/               # Technical documentation
+│   ├── README.md
+│   ├── BONNES_PRATIQUES.md
+│   ├── DATABASE_DESIGN.md
+│   ├── TEST_CASES.md
+├── logs/
+│   └── .gitkeep
+├── src/
+│   ├── config/         # Environment and app configuration
+│   │   └── database.js
+│   ├── controllers/    # Route handlers
+│   ├── database/       # DB connection pool
+│   │   └── connection.js
+│   ├── middlewares/    # Auth, validation, error handling
+│   │   ├── errorHandler.js
+│   │   ├── logger.js
+│   │   └── security.js
+│   ├── utils/        (vide pour l'instant)
+│   ├── models/         # Data access layer
+│   └── routes/         # Express routers
+├── app.js
+├── server.js
 ├── tests/              # Jest test suites
 ├── .env.example        # Environment variables template
-└── README.md
+
 ```
 ## Author
 

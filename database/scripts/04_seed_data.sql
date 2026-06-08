@@ -15,11 +15,6 @@ INSERT INTO categories (id, name, slug) VALUES
 (3, 'Accident heureux','accident-heureux');
 
 -- ============================================================
--- USERS (5)
--- Passwords:
---   mickael_b, sofia_r, jerome_k, anonyme_test → Password123!
---   admin_ovni                                  → Admin789!
--- ============================================================
 INSERT INTO users (id, username, email, password_hash, role) VALUES
 (1, 'mickael_b',    'mickael@example.com', '$2b$12$uEpXtbdLiWAkt6GHAci6DeJUW.vW/LBa/cefjuxcWRYDqBLab3ViK', 'user'),
 (2, 'sofia_r',      'sofia@example.com',   '$2b$12$uEpXtbdLiWAkt6GHAci6DeJUW.vW/LBa/cefjuxcWRYDqBLab3ViK', 'user'),
