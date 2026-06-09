@@ -57,9 +57,11 @@ app.get('/health', async (req, res, next) => {
     }
 });
 
+const authRoutes = require('./src/routes/authRoutes.js');
+
 // API routes will be mounted here (added in future steps)
 // app.use('/api/v1/recipes', recipeRoutes);
-// app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/auth', authRoutes);
 
 // 404 handler – catches requests that matched no route
 app.use((req, res) => {

@@ -17,7 +17,7 @@ class User {
     // Never use this method to send data to the client
     static async findByEmailWithPassword(email) {
         const [rows] = await pool.execute(
-            `SELECT id, username, email, password_hash, role, points
+            `SELECT id, username, email, password_hash, role, points, created_at
              FROM users 
              WHERE email = ? AND deleted_at IS NULL`,
             [email]
