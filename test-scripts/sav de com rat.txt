@@ -1,0 +1,122 @@
+// test-comment-rating.js
+//
+// Manual integration tests for Comment.js and Rating.js.
+// Run: node test-scripts/test-day9.js
+// Requires: seeded database (04_seed_data.sql already run).
+// Expected state before run: ratings table has data from seed,
+// users.points are all 0 (seed does not set points).
+
+'use strict';
+
+require('dotenv').config();
+const Comment = require('../src/models/Comment');
+const Rating = require('../src/models/Rating');
+const User = require('../src/models/User');
+const { pool } = require('../src/database/connection');
+
+// Simple test runner — no jest here, just console output.
+let passed = 0;
+let failed = 0;
+
+function assert(condition, label) {
+    if (condition) {
+        console.log(`  ✅ ${label}`);
+        passed++;
+    } else {
+        console.error(`  ❌ ${label}`);
+        failed++;
+    }
+}
+
+async function run() {
+    console.log('\n=== Day 9 — Comment & Rating model tests ===\n');
+
+    // ── COMMENT TESTS ────────────────────────────────────────────────────────
+
+    console.log('── Comment.findByRecipeId ──');
+    const comments = await Comment.findByRecipeId(1);
+    assert(Array.isArray(comments), 'returns an array');
+    assert(comments.length >= 1, 'recipe 1 has at least one comment');
+    assert('content' in comments[0], 'comment has content field');
+    assert('created_at' in comments[0], 'comment has created_at field');
+
+    console.log('\n── Comment.create (logged-in user) ──');
+    const newComment = await Comment.create({
+        recipe_id: 1,
+        user_id: 2,
+        content: 'Test comment from logged-in user — day 9 test run.'
+    });
+    assert(newComment !== null, 'returns created comment');
+    assert(newComment.user_id === 2, 'user_id is correct');
+    assert(newComment.guest_name === null, 'guest_name is null for logged-in user');
+    assert(newComment.author_username === 'sofia_r', 'username is joined correctly');
+
+    console.log('\n── Comment.create (guest) ──');
+    const guestComment = await Comment.create({
+        recipe_id: 1,
+        guest_name: 'TestGuest',
+        content: 'Test comment from guest — day 9 test run.'
+    });
+    assert(guestComment !== null, 'returns created guest comment');
+    assert(guestComment.user_id === null, 'user_id is null for guest');
+    assert(guestComment.guest_name === 'TestGuest', 'guest_name is set');
+
+    console.log('\n── Comment.delete ──');
+    const deleted = await Comment.delete(newComment.id);
+    assert(deleted === true, 'soft delete returns true');
+    const deletedAgain = await Comment.delete(newComment.id);
+    assert(deletedAgain === false, 'deleting already-deleted returns false');
+
+    // ── RATING TESTS ─────────────────────────────────────────────────────────
+
+    console.log('\n── Rating.findByUserAndRecipe ──');
+    // From seed: user 1 rated recipe 1 with score 5
+    const existingRating = await Rating.findByUserAndRecipe(1, 1);
+    assert(existingRating !== null, 'finds existing rating from seed');
+    assert(existingRating.score === 5, 'seed score is correct (5)');
+
+    const noRating = await Rating.findByUserAndRecipe(1, 99);
+    assert(noRating === null, 'returns null for non-existent rating');
+
+    console.log('\n── Rating.rate (new rating — user 1 rates recipe 7) ──');
+    // Recipe 7 (pending) — user 1 has not rated it in seed... wait, they have.
+    // Seed has (7, 1, 5). So we need a combo not in seed.
+    // User 2 has NOT rated recipe 7 in seed data.
+    const userBefore = await User.findById(2);
+    const result = await Rating.rate({ userId: 2, recipeId: 7, score: 4 });
+    assert(result.isNew === true, 'first rating is marked as new');
+    assert(result.pointsAwarded === true, 'points awarded for score >= 4');
+    const userAfter = await User.findById(2);
+    assert(
+        userAfter.points === userBefore.points + 5,
+        `author points increased by 5 (was ${userBefore.points}, now ${userAfter.points})`
+    );
+
+    console.log('\n── Rating.rate (update — user 1 re-rates recipe 1) ──');
+    const updateResult = await Rating.rate({ userId: 1, recipeId: 1, score: 3 });
+    assert(updateResult.isNew === false, 'update is not marked as new');
+    assert(updateResult.pointsAwarded === false, 'no points awarded on update');
+
+    console.log('\n── Rating.rate (new rating, score < 4 — no points) ──');
+    // User 1 has not rated recipe 2? Check seed: (2, 1, 4) → they have.
+    // User 3 has not rated recipe 7 in seed. Let's use that.
+    const authorBefore = await User.findById(1); // recipe 7 author is user 4
+    const r4Before = await User.findById(4);
+    const lowScore = await Rating.rate({ userId: 3, recipeId: 7, score: 2 });
+    const r4After = await User.findById(4);
+    assert(lowScore.isNew === true, 'new rating with low score');
+    assert(lowScore.pointsAwarded === false, 'no points for score < 4');
+    assert(r4After.points === r4Before.points, 'author points unchanged for score < 4');
+
+    // ── SUMMARY ──────────────────────────────────────────────────────────────
+    console.log(`\n=== Results: ${passed} passed, ${failed} failed ===\n`);
+
+    await pool.end();
+    process.exit(failed > 0 ? 1 : 0);
+}
+
+run().catch(err => {
+    console.error('Unexpected error:', err);
+    pool.end();
+    process.exit(1);
+});

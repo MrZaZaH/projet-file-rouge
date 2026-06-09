@@ -203,3 +203,60 @@ Expected: ids 1 (2min, 0.80€), 2 (5min, 1.50€)Not expected: id 3 (5min but 5
 **Method:** `Recipe.delete(id)`  
 **Expected:** Returns `true`, `findById()` returns `null` after deletion  
 **Result:** ✅ Passed  
+---
+# TC — Comment & Rating models (Day 9)
+
+## TC-28 — Comment.findByRecipeId()
+**Method:** `Comment.findByRecipeId(recipeId)`  
+**Expected:** Returns array with `content` and `created_at` fields  
+**Result:** ✅ Passed
+
+## TC-29 — Comment.create() — logged-in user
+**Method:** `Comment.create({ recipe_id, user_id, content })`  
+**Expected:** Returns created comment, `user_id` correct, `guest_name` null, `username` joined  
+**Result:** ✅ Passed
+
+## TC-30 — Comment.create() — guest
+**Method:** `Comment.create({ recipe_id, author_pseudo, content })`  
+**Expected:** `user_id` is null, `author_pseudo` present  
+**Result:** ✅ Passed
+
+## TC-31 — Comment.delete() soft delete
+**Method:** `Comment.delete(id)`  
+**Expected:** `deleted_at` set, comment no longer appears in `findByRecipeId()`  
+**Result:** ✅ Passed
+
+## TC-32 — Rating.rate() — new rating
+**Method:** `Rating.rate({ user_id, recipe_id, score: 5 })`  
+**Expected:** `isNew: true`, points awarded to author  
+**Result:** ✅ Passed
+
+## TC-33 — Rating.rate() — update existing rating
+**Method:** `Rating.rate()` called twice on same user+recipe  
+**Expected:** `isNew: false`, no duplicate points awarded  
+**Result:** ✅ Passed
+
+## TC-34 — Rating.rate() — score < 4 gives no points
+**Method:** `Rating.rate({ score: 3 })`  
+**Expected:** `pointsAwarded: 0`  
+**Result:** ✅ Passed
+
+## TC-35 — Rating.getByUserAndRecipe()
+**Method:** `Rating.getByUserAndRecipe(userId, recipeId)`  
+**Expected:** Returns existing rating or `null`  
+**Result:** ✅ Passed
+
+---
+# TC — Full chain integration (Day 9)
+
+## TC-36 — Full chain: recipe → comment → rating → points
+**Script:** `test-scripts/test-full-chain.js`  
+**Steps:**
+1. `Recipe.create()` → status `pending`
+2. `Recipe.updateStatus()` → `published`
+3. `Comment.create()` → linked to recipe + user
+4. `Rating.rate()` score 5 → `isNew: true`, author +5 points
+5. `Recipe.findById()` → `average_rating = 5.00`, `rating_count = 1`
+
+**Expected:** 12/12 passed, teardown restores seed state  
+**Result:** ✅ Passed — idempotent (tested multiple runs)
