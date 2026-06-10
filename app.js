@@ -58,10 +58,16 @@ app.get('/health', async (req, res, next) => {
 });
 
 const authRoutes = require('./src/routes/authRoutes.js');
+const recipeRoutes = require('./src/routes/recipeRoutes.js');
+const commentRoutes = require('./src/routes/commentRoutes.js');
+const ratingRoutes = require('./src/routes/ratingRoutes.js');
 
-// API routes will be mounted here (added in future steps)
-// app.use('/api/v1/recipes', recipeRoutes);
+// API routes here
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/recipes', recipeRoutes);
+app.use('/api/v1/recipes/:recipeId/comments', commentRoutes);
+app.use('/api/v1/recipes/:recipeId/ratings', ratingRoutes);
+
 
 // 404 handler – catches requests that matched no route
 app.use((req, res) => {
