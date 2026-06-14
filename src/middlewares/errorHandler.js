@@ -1,45 +1,52 @@
 // src/middlewares/errorHandler.js
+//
 // Centralized error handler – catches all errors passed via next(error).
 //
-// Express identifies error-handling middleware by its 4-parameter signature.
-// DO NOT remove the 'next' parameter even if unused – Express needs it.
+// Responsibilities:
+//   - Log errors internally (with stack)
+//   - Never expose sensitive data to client
+//   - Return standardized API response format
 //
-// Security: never expose stack traces or internal details to clients.
-// Log everything internally, return only what the user needs to know.
+// Notes:
+//   - Uses sendError() helper for consistency
+//   - Stack trace only included in development
 
 'use strict';
 
-const { logger } = require('./logger');
+const { logger } = require('./logger'); // Custom logger for internal error tracking
+const { sendError } = require('../utils/apiResponse'); // Standard API error response helper
 
+// Express recognizes this as an error middleware because it has 4 parameters
+// DO NOT remove 'next' even if unused
 // eslint-disable-next-line no-unused-vars
 function errorHandler(err, req, res, next) {
-    // Default to 500 if no status was set on the error
+
+    // Determine HTTP status code (fallback to 500 if not provided)
     const statusCode = err.statusCode || err.status || 500;
 
-    // Log the full error internally (with stack trace)
+    // Log full error details internally (including stack trace)
     logger.error(`${req.method} ${req.originalUrl} – ${err.message}`, {
         statusCode,
         stack: err.stack,
-        body: req.body, // Careful: don't log passwords. Sanitize in production.
+        body: req.body, // WARNING: sanitize sensitive data in production (passwords, tokens)
     });
 
-    // What the client gets: minimal, never the stack trace
-    const response = {
-        success: false,
-        error: {
-            message: statusCode === 500
-                ? 'An internal server error occurred'  // Never leak 500 details
-                : err.message,
-            code: err.code || 'INTERNAL_ERROR',
-        },
-    };
+    // Decide what message to expose to the client
+    // Never leak internal details for 500 errors
+    const message =
+        statusCode === 500
+            ? 'An internal server error occurred'
+            : err.message;
 
-    // In development, add the stack trace to the response for debugging
+    // Use standardized response format
+    const response = sendError(res, message, statusCode);
+
+    // In development mode, attach stack trace for debugging
     if (process.env.NODE_ENV === 'development' && err.stack) {
-        response.error.stack = err.stack;
+        response.stack = err.stack; // This won't override response body, just adds info
     }
 
-    res.status(statusCode).json(response);
+    return response; // Ensure response is returned to stop execution
 }
 
 module.exports = { errorHandler };

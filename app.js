@@ -1,47 +1,48 @@
 // app.js
 // Express application setup.
-// Middlewares are applied in order – order matters.
-// 
-// Chain:
-//   Security headers → CORS → Request logging → Body parsing → Routes → Error handling
 //
-// The error handler MUST be last. Always.
+// Middleware chain (order is mandatory):
+//   Security headers → CORS → Rate limiting → Request logging → Body parsing → Routes → Error handling
 
 'use strict';
 
 require('dotenv').config();
 
 const express = require('express');
-const { helmetMiddleware, corsMiddleware } = require('./src/middlewares/security');
+
+// Single import — one path, one source of truth
+const {
+    helmetMiddleware,
+    corsMiddleware,
+    globalLimiter,
+    authLimiter
+} = require('./src/middlewares/security');
+
 const { httpLogger } = require('./src/middlewares/logger');
 const { errorHandler } = require('./src/middlewares/errorHandler');
 
 const app = express();
 
-// ─── Security ────────────────────────────────────────────────────────────────
+// ─── Security headers ────────────────────────────────────────────────────────
 app.use(helmetMiddleware);
 app.use(corsMiddleware);
+
+// ─── Rate limiting ───────────────────────────────────────────────────────────
+// globalLimiter applies to every route — baseline protection against floods
+app.use(globalLimiter);
 
 // ─── Request logging ─────────────────────────────────────────────────────────
 app.use(httpLogger);
 
 // ─── Body parsing ────────────────────────────────────────────────────────────
-// Parse JSON request bodies – required for POST/PUT endpoints
-// limit: '10kb' prevents payload-based DoS attacks (someone sending 100MB of JSON)
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: false, limit: '10kb' }));
 
 // ─── Routes ──────────────────────────────────────────────────────────────────
-
-// Health check – verifies the server AND the database are alive
-// Used by monitoring tools, deployment pipelines, and your own sanity
 app.get('/health', async (req, res, next) => {
     try {
         const { pool } = require('./src/database/connection');
-
-        // Test DB with a minimal query
         await pool.query('SELECT 1');
-
         res.status(200).json({
             success: true,
             status: 'ok',
@@ -50,26 +51,24 @@ app.get('/health', async (req, res, next) => {
             environment: process.env.NODE_ENV || 'development',
         });
     } catch (error) {
-        // Pass to error handler – don't expose raw DB error to client
         error.statusCode = 503;
         error.message = 'Database unavailable';
         next(error);
     }
 });
 
-const authRoutes = require('./src/routes/authRoutes.js');
-const recipeRoutes = require('./src/routes/recipeRoutes.js');
-const commentRoutes = require('./src/routes/commentRoutes.js');
-const ratingRoutes = require('./src/routes/ratingRoutes.js');
+const authRoutes = require('./src/routes/authRoutes');
+const recipeRoutes = require('./src/routes/recipeRoutes');
+const commentRoutes = require('./src/routes/commentRoutes');
+const ratingRoutes = require('./src/routes/ratingRoutes');
 
-// API routes here
-app.use('/api/v1/auth', authRoutes);
+// authLimiter is stricter than globalLimiter — brute force protection on login/register
+app.use('/api/v1/auth', authLimiter, authRoutes);
 app.use('/api/v1/recipes', recipeRoutes);
 app.use('/api/v1/recipes/:recipeId/comments', commentRoutes);
 app.use('/api/v1/recipes/:recipeId/ratings', ratingRoutes);
 
-
-// 404 handler – catches requests that matched no route
+// ─── 404 ─────────────────────────────────────────────────────────────────────
 app.use((req, res) => {
     res.status(404).json({
         success: false,
@@ -81,7 +80,8 @@ app.use((req, res) => {
 });
 
 // ─── Error handling ──────────────────────────────────────────────────────────
-// Must be AFTER all routes. Express knows it's an error handler because of the 4 params.
+// Must be last. The 4-parameter signature is how Express identifies error handlers.
 app.use(errorHandler);
 
 module.exports = app;
+// Nothing after this line. module.exports terminates the effective file.

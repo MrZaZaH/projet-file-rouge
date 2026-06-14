@@ -7,91 +7,96 @@
 //   - Admin routes see all statuses.
 // The model layer handles SQL — this layer handles HTTP + authorization.
 
+
+
 'use strict';
 
-const Recipe = require('../models/Recipe');
+const Recipe = require('../models/Recipe'); // Model handling DB logic
+const { sendSuccess, sendError } = require('../utils/apiResponse'); // Standard API responses
 
-// ─── GET /api/v1/recipes ──────────────────────────────────────────────────────
-// Public. Accepts query params: status, category_id, max_prep_time, max_cost, search.
-// Forces status = 'published' for non-admins.
+// GET all recipes with filters
 async function getAllRecipes(req, res, next) {
     try {
-        const isAdmin = req.user?.role === 'admin';
+        const isAdmin = req.user?.role === 'admin'; // Check if user is admin
 
+        // Build filters object
         const filters = {
-            // Non-admins can only see published recipes, period.
-            // An admin can pass ?status=pending to review the queue.
-            status: isAdmin ? req.query.status : 'published',
-
+            status: isAdmin ? req.query.status : 'published', // Non-admins only see published
             category_id: req.query.category_id || null,
             max_prep_time: req.query.max_prep_time ? Number(req.query.max_prep_time) : null,
             max_cost: req.query.max_cost ? Number(req.query.max_cost) : null,
             search: req.query.search || null,
         };
 
-        // Strip null values so the model doesn't apply empty filters.
-        // Object.entries + filter + Object.fromEntries = clean object without nulls.
+        // Remove null values from filters
         const cleanFilters = Object.fromEntries(
             Object.entries(filters).filter(([, v]) => v !== null)
         );
 
-        const recipes = await Recipe.findAllWithFilters(cleanFilters);
-        res.json({ data: recipes });
+        const recipes = await Recipe.findAllWithFilters(cleanFilters); // Fetch recipes
+
+        return sendSuccess(res, recipes); // Return standardized response
+
     } catch (err) {
-        next(err);
-        // Always pass errors to next() — the errorHandler middleware formats the response.
-        // Never catch and respond manually, or error logs break.
+        next(err); // Pass error to global handler
     }
 }
 
-// ─── GET /api/v1/recipes/random ───────────────────────────────────────────────
-// Public. Returns one random published recipe (US-01 "Surprends-moi").
+// GET random recipe
 async function getRandomRecipe(req, res, next) {
     try {
-        const recipe = await Recipe.findRandom();
+        const recipe = await Recipe.findRandom(); // Fetch random recipe
+
         if (!recipe) {
-            return res.status(404).json({ message: 'No published recipe found.' });
+            return sendError(res, 'No published recipe found.', 404);
         }
-        res.json({ data: recipe });
+
+        return sendSuccess(res, recipe);
+
     } catch (err) {
         next(err);
     }
 }
 
-// ─── GET /api/v1/recipes/:id ──────────────────────────────────────────────────
-// Public. Returns full recipe detail (ingredients, steps, author, category).
-// Soft-deleted recipes return 404.
+// GET recipe by ID
 async function getRecipeById(req, res, next) {
     try {
-        const recipe = await Recipe.findById(req.params.id);
+        const recipe = await Recipe.findById(req.params.id); // Fetch recipe
+
         if (!recipe) {
-            return res.status(404).json({ message: 'Recipe not found.' });
+            return sendError(res, 'Recipe not found.', 404);
         }
 
-        // Non-admins cannot access non-published recipes by direct ID either.
         const isAdmin = req.user?.role === 'admin';
+
+        // Prevent access to unpublished recipes for non-admins
         if (!isAdmin && recipe.status !== 'published') {
-            return res.status(404).json({ message: 'Recipe not found.' });
-            // Deliberately 404, not 403 — don't leak that the recipe exists.
+            return sendError(res, 'Recipe not found.', 404);
         }
 
-        res.json({ data: recipe });
+        return sendSuccess(res, recipe);
+
     } catch (err) {
         next(err);
     }
 }
 
-// ─── POST /api/v1/recipes ─────────────────────────────────────────────────────
-// Protected (any authenticated user).
-// Validation is handled by express-validator in the route file.
+// CREATE recipe
 async function createRecipe(req, res, next) {
     try {
-        const { category_id, title, anecdote, ingredients, steps, prep_time, cost_per_portion } = req.body;
+        const {
+            category_id,
+            title,
+            anecdote,
+            ingredients,
+            steps,
+            prep_time,
+            cost_per_portion
+        } = req.body;
 
+        // Create recipe linked to authenticated user
         const recipe = await Recipe.create({
             user_id: req.user.id,
-            // req.user is set by the authenticate middleware (jwtAuth.js).
-            // If we're here, the token is valid — req.user.id is trustworthy.
             category_id,
             title,
             anecdote,
@@ -101,33 +106,39 @@ async function createRecipe(req, res, next) {
             cost_per_portion,
         });
 
-        res.status(201).json({ data: recipe });
+        return sendSuccess(res, recipe, 'Recipe submitted for review.', 201);
+
     } catch (err) {
         next(err);
     }
 }
 
-// ─── PUT /api/v1/recipes/:id ──────────────────────────────────────────────────
-// Protected. Author or admin only.
-// An admin can edit any recipe. A user can only edit their own.
+// UPDATE recipe
 async function updateRecipe(req, res, next) {
     try {
         const recipe = await Recipe.findById(req.params.id);
 
         if (!recipe) {
-            return res.status(404).json({ message: 'Recipe not found.' });
+            return sendError(res, 'Recipe not found.', 404);
         }
 
-        // Authorization check: is the requester the author OR an admin?
         const isAdmin = req.user.role === 'admin';
         const isAuthor = recipe.user_id === req.user.id;
 
+        // Only admin or author can update
         if (!isAdmin && !isAuthor) {
-            return res.status(403).json({ message: 'Forbidden.' });
-            // 403 here (not 404) because the user knows the recipe exists — they got here legitimately.
+            return sendError(res, 'Forbidden.', 403);
         }
 
-        const { category_id, title, anecdote, ingredients, steps, prep_time, cost_per_portion } = req.body;
+        const {
+            category_id,
+            title,
+            anecdote,
+            ingredients,
+            steps,
+            prep_time,
+            cost_per_portion
+        } = req.body;
 
         const updated = await Recipe.update(req.params.id, {
             category_id,
@@ -139,35 +150,44 @@ async function updateRecipe(req, res, next) {
             cost_per_portion,
         });
 
-        res.json({ data: updated });
+        return sendSuccess(res, updated);
+
     } catch (err) {
         next(err);
     }
 }
 
-// ─── DELETE /api/v1/recipes/:id ───────────────────────────────────────────────
-// Protected. Author or admin only. Soft delete.
+// DELETE recipe
 async function deleteRecipe(req, res, next) {
     try {
         const recipe = await Recipe.findById(req.params.id);
 
         if (!recipe) {
-            return res.status(404).json({ message: 'Recipe not found.' });
+            return sendError(res, 'Recipe not found.', 404);
         }
 
         const isAdmin = req.user.role === 'admin';
         const isAuthor = recipe.user_id === req.user.id;
 
+        // Only admin or author can delete
         if (!isAdmin && !isAuthor) {
-            return res.status(403).json({ message: 'Forbidden.' });
+            return sendError(res, 'Forbidden.', 403);
         }
 
-        await Recipe.delete(req.params.id);
-        res.status(204).send();
-        // 204 No Content = success, nothing to return.
+        await Recipe.delete(req.params.id); // Soft delete
+
+        return sendSuccess(res, null, 'Recipe deleted.', 200);
+
     } catch (err) {
         next(err);
     }
 }
 
-module.exports = { getAllRecipes, getRandomRecipe, getRecipeById, createRecipe, updateRecipe, deleteRecipe };
+module.exports = {
+    getAllRecipes,
+    getRandomRecipe,
+    getRecipeById,
+    createRecipe,
+    updateRecipe,
+    deleteRecipe
+};

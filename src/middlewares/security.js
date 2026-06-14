@@ -1,37 +1,42 @@
 // src/middlewares/security.js
-// Security middlewares applied globally to all routes.(URL)
 //
-// Helmet: sets HTTP security headers automatically.
-// CORS: controls which origins can call our API.
-// 
-// Security principle applied: deny by default, whitelist explicitly.
+// Global security middlewares.
+//
+// Applied in app.js in this order:
+//   1. helmetMiddleware  — HTTP security headers
+//   2. corsMiddleware    — Cross-origin request control
+//   3. globalLimiter     — Rate limiting for all routes
+//   4. authLimiter       — Stricter rate limiting for auth routes only
 
 'use strict';
 
 const helmet = require('helmet');
 const cors = require('cors');
+const rateLimit = require('express-rate-limit');
 
-// Helmet configures ~15 HTTP headers that protect against common attacks:
-// - X-Frame-Options: prevents clickjacking
-// - X-Content-Type-Options: prevents MIME sniffing
-// - Strict-Transport-Security: forces HTTPS (production)
-// - Content-Security-Policy: restricts resource origins
-// Using defaults is fine for an API. Customize only if you have specific needs.
+// ─── Helmet ───────────────────────────────────────────────────────────────────
+// Sets ~15 HTTP headers automatically.
+// Key protections:
+//   X-Frame-Options        → prevents clickjacking
+//   X-Content-Type-Options → prevents MIME sniffing
+//   Strict-Transport-Security → forces HTTPS in production
+//   Content-Security-Policy   → restricts resource origins
 const helmetMiddleware = helmet();
 
-// CORS – Cross-Origin Resource Sharing
-// Without this, browsers block requests from your frontend to your API
-// if they run on different origins (different port = different origin).
+// ─── CORS ────────────────────────────────────────────────────────────────────
+// Controls which origins the browser allows to call this API.
+// Without this, any cross-origin fetch from a browser is blocked.
 //
-// WARNING: cors({ origin: '*' }) allows ANY site to call your API.
-// Never do that for an authenticated API.
+// Rule: deny by default, whitelist explicitly.
+// Never use origin: '*' on an authenticated API — it allows any site to
+// make credentialed requests on behalf of your users.
 const allowedOrigins = process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(',')
     : ['http://localhost:3000', 'http://localhost:5500'];
 
 const corsOptions = {
     origin: (origin, callback) => {
-        // Allow requests with no origin (curl, Postman, server-to-server)
+        // No origin = curl, Postman, server-to-server — allow.
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
@@ -40,9 +45,50 @@ const corsOptions = {
     },
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    // exposedHeaders: credentials in cookies would need credentials: true
 };
 
 const corsMiddleware = cors(corsOptions);
 
-module.exports = { helmetMiddleware, corsMiddleware };
+// ─── Rate limiting ────────────────────────────────────────────────────────────
+// express-rate-limit tracks requests per IP address.
+// When the limit is reached, it returns 429 Too Many Requests automatically.
+// standardHeaders: true  → sends RateLimit-* headers so clients know their quota
+// legacyHeaders: false   → disables the older X-RateLimit-* headers (redundant)
+
+// Global: 100 requests per 15 minutes.
+// Protects all routes against scraping and basic flood attacks.
+const globalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: {
+        success: false,
+        error: {
+            message: 'Too many requests, please try again later.',
+            code: 'RATE_LIMIT_EXCEEDED',
+        },
+    },
+});
+
+// Auth: 10 requests per 15 minutes.
+// Applied only to /api/v1/auth — limits brute force on login and register.
+// 10 is already generous for legitimate use: a human doesn't need to attempt
+// login more than 10 times in 15 minutes.
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: {
+        success: false,
+        error: {
+            message: 'Too many authentication attempts, please try again later.',
+            code: 'AUTH_RATE_LIMIT_EXCEEDED',
+        },
+    },
+});
+
+// ─── Single export ────────────────────────────────────────────────────────────
+// One module.exports, at the end of the file, always.
+module.exports = { helmetMiddleware, corsMiddleware, globalLimiter, authLimiter };

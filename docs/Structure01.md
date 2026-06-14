@@ -1,0 +1,60 @@
+PROJET-FILE-ROUGE/
+├── database/scripts/
+│   ├── 01_create_database.sql      ✅
+│   ├── 02_create_users.sql         ✅
+│   ├── 03_create_tables.sql        ✅
+│   ├── 04_seed_data.sql            ✅
+│   └── 05_add_image_url.sql        ✅
+├── docs/
+│   ├── Api.md                      ✅
+│   ├── BONNES_PRATIQUES.md         ✅
+│   ├── DATABASE_DESIGN.md          ✅
+│   ├── Readme.md                   ✅
+│   ├── Structure01.md              ✅
+│   └── TEST_CASES.md               ✅
+
+├── logs/
+│   ├── .gitkeep                    ✅
+│   ├── combined.log                ✅
+│   ├── error.log                   ✅
+├── node_modules
+├── src/
+│   ├── config/                     ✅
+│   │   ├── database.js             ✅
+│   ├── controllers/
+│   │   ├── AuthController.js       ✅
+│   │   ├── CommentController.js    ✅
+│   │   ├── RatingController.js     ✅
+│   │   └── RecipeController.js     ✅
+│   ├── database/             
+│   │   └── connection.js           ✅
+│   ├── middlewares/
+│   │   ├── errorHandler.js         ✅
+│   │   ├── jwtAuth.js              ✅
+│   │   ├── logger.js               ✅
+│   │   └── security.js             ✅ ← point important
+│   ├── models/
+│   │   ├── Category.js             ✅
+│   │   ├── comment.js              ✅
+│   │   ├── Rating.js               ✅
+│   │   ├── Recipe.js               ✅
+│   │   └── User.js                 ✅
+│   └── routes/
+│       ├── authRoutes.js           ✅
+│       ├── commentRoutes.js        ✅
+│       ├── ratingRoutes.js         ✅
+│       └── recipeRoutes.js         ✅
+├── utils/                         
+│   ├── apiResponse.js              ✅
+├── test-scripts/                    (scripts manuels)
+│   ├── test-comment-rating.js      ✅
+│   ├── test-full-chain.js          ✅
+│   ├── test-models.js              ✅
+│   └── test-recipe-model.js        ✅
+└── .env                            ✅
+└── .env.example                    ✅
+└── .gitignore                      ✅
+├── app.js                          ✅
+├── package-lock.json               ✅
+├── package.json                    ✅
+└── server.js                       ✅
