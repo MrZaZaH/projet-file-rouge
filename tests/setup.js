@@ -8,4 +8,5 @@
 
 // Load .env.test before anything else
 // This must happen before any module that reads process.env
-require('dotenv').config({ path: '.env.test' });
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env.test') });

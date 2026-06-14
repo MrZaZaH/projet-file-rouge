@@ -19,7 +19,7 @@ class AuthController {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
                 // Return all validation errors at once
-                return sendError(res, 'Validation failed', 400);
+                return sendError(res, 'Validation failed', 422);
             }
 
             const { username, email, password } = req.body; // Extract user input
@@ -61,7 +61,7 @@ class AuthController {
             // Validate request
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return sendError(res, 'Validation failed', 400);
+                return sendError(res, 'Validation failed', 422);
             }
 
             const { email, password } = req.body;

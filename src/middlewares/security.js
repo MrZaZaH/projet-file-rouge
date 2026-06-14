@@ -57,37 +57,43 @@ const corsMiddleware = cors(corsOptions);
 
 // Global: 100 requests per 15 minutes.
 // Protects all routes against scraping and basic flood attacks.
-const globalLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 100,
-    standardHeaders: true,
-    legacyHeaders: false,
-    message: {
-        success: false,
-        error: {
-            message: 'Too many requests, please try again later.',
-            code: 'RATE_LIMIT_EXCEEDED',
+const noopMiddleware = (_req, _res, next) => next();
+
+const globalLimiter = process.env.NODE_ENV === 'test'
+    ? noopMiddleware
+    : rateLimit({
+        windowMs: 15 * 60 * 1000,
+        max: 100,
+        standardHeaders: true,
+        legacyHeaders: false,
+        message: {
+            success: false,
+            error: {
+                message: 'Too many requests, please try again later.',
+                code: 'RATE_LIMIT_EXCEEDED',
+            },
         },
-    },
-});
+    });
 
 // Auth: 10 requests per 15 minutes.
 // Applied only to /api/v1/auth — limits brute force on login and register.
 // 10 is already generous for legitimate use: a human doesn't need to attempt
 // login more than 10 times in 15 minutes.
-const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 10,
-    standardHeaders: true,
-    legacyHeaders: false,
-    message: {
-        success: false,
-        error: {
-            message: 'Too many authentication attempts, please try again later.',
-            code: 'AUTH_RATE_LIMIT_EXCEEDED',
+const authLimiter = process.env.NODE_ENV === 'test'
+    ? noopMiddleware
+    : rateLimit({
+        windowMs: 15 * 60 * 1000,
+        max: 10,
+        standardHeaders: true,
+        legacyHeaders: false,
+        message: {
+            success: false,
+            error: {
+                message: 'Too many authentication attempts, please try again later.',
+                code: 'AUTH_RATE_LIMIT_EXCEEDED',
+            },
         },
-    },
-});
+    });
 
 // ─── Single export ────────────────────────────────────────────────────────────
 // One module.exports, at the end of the file, always.

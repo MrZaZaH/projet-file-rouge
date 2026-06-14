@@ -1,4 +1,4 @@
-// src/controllers/RatingController.js
+express// src/controllers/RatingController.js
 //
 // HTTP logic for ratings.
 // Only logged-in users can rate (we need a stable identity for the unique constraint).

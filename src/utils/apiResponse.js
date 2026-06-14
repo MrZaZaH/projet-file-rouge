@@ -9,10 +9,6 @@
 
 /**
  * Send a success response.
- * @param {object} res - Express response object
- * @param {any} data - Data payload
- * @param {string|null} message - Optional message
- * @param {number} statusCode - Default 200
  */
 const sendSuccess = (res, data, message = null, statusCode = 200) => {
     return res.status(statusCode).json({
@@ -23,19 +19,38 @@ const sendSuccess = (res, data, message = null, statusCode = 200) => {
 };
 
 /**
- * Send an error response.
- * @param {object} res - Express response object
- * @param {string} message - Error description
- * @param {number} statusCode - Default 400
- * @param {array|null} errors - Validation errors array if any
+ * Convert HTTP status code to readable error code
  */
-const sendError = (res, message, statusCode = 400, errors = null) => {
-    return res.status(statusCode).json({
+const statusCodeToCode = (status) => {
+    const codes = {
+        400: 'BAD_REQUEST',
+        401: 'UNAUTHORIZED',
+        403: 'FORBIDDEN',
+        404: 'NOT_FOUND',
+        409: 'CONFLICT',
+        422: 'VALIDATION_ERROR',
+        500: 'INTERNAL_ERROR'
+    };
+    return codes[status] || 'ERROR';
+};
+
+/**
+ * Send an error response.
+ */
+const sendError = (res, message, statusCode = 500, details = null) => {
+    const response = {
         success: false,
-        data: null,
-        message,
-        errors,
-    });
+        error: {
+            message,
+            code: statusCodeToCode(statusCode)
+        }
+    };
+
+    if (details) {
+        response.error.details = details;
+    }
+
+    return res.status(statusCode).json(response);
 };
 
 module.exports = { sendSuccess, sendError };

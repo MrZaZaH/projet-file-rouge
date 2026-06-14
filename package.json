@@ -13,15 +13,6 @@
     "test": "jest --runInBand",
     "test:watch": "jest --watch"
   },
-  "jest": {
-    "testEnvironment": "node",
-    "testMatch": [
-      "**/tests/**/*.test.js"
-    ],
-    "testTimeout": 10000,
-    "verbose": true,
-    "globalSetup": "./tests/setup.js"
-  },
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
