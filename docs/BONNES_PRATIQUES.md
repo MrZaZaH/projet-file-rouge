@@ -162,3 +162,32 @@ Exemple :
 `feat: add Rating model with points attribution`  
 
 Pourquoi : historique lisible, facilite les revues de code et les changelogs.
+## Performance – MariaDB Indexes (Jour 14)
+
+### Pourquoi indexer
+
+Sans index, MariaDB fait un full table scan : il lit chaque ligne pour trouver
+les correspondances. Sur 10 000 recettes, une requête `WHERE status = 'published'`
+lit 10 000 lignes. Avec un index sur `status`, il lit uniquement les lignes
+correspondantes via une structure B-tree.
+
+### Index composite vs index simple
+
+`CREATE INDEX ON recipes (status, deleted_at)` couvre `WHERE status = ? AND deleted_at IS NULL`
+en un seul accès. Deux index séparés obligent l'optimiseur à fusionner des résultats
+en mémoire (index merge) — moins efficace.
+
+L'ordre des colonnes dans un index composite suit la règle du "leftmost prefix" :
+l'index `(A, B)` est utilisé pour `WHERE A = ?`, `WHERE A = ? AND B = ?`,
+mais PAS pour `WHERE B = ?` seul.
+
+### Colonnes non indexées délibérément
+
+- `ingredients`, `steps` : stockées en JSON, pas filtrées directement
+- `anecdote` : texte long, pas filtré
+- `password_hash` : jamais dans un WHERE
+
+### Commande de vérification
+
+```sql
+EXPLAIN SELECT * FROM recipes WHERE status = 'published' AND deleted_at IS NULL;

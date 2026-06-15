@@ -49,7 +49,7 @@ router.get(
             .withMessage('Invalid status. Must be pending, published, or rejected'),
         query('sort_by')
             .optional()
-            .isIn(['created_at', 'average_rating', 'visit_count'])
+            .isIn(['created_at', 'average_rating', 'rating_count'])
             .withMessage('Invalid sort field'),
         query('limit')
             .optional()
@@ -132,5 +132,41 @@ router.get(
     handleValidationErrors,
     AdminController.getLogs
 );
+
+// ============================================
+// GET /admin/stats
+// Global platform statistics
+// ============================================
+router.get(
+    '/stats',
+    AdminController.getStats
+);
+
+// ============================================
+// GET /admin/recipes/top
+// Top recipes by rating
+// ============================================
+router.get(
+    '/recipes/top',
+    [
+        query('limit')
+            .optional()
+            .isInt({ min: 1, max: 50 })
+            .withMessage('Limit must be between 1 and 50')
+    ],
+    handleValidationErrors,
+    AdminController.getTopRecipes
+);
+
+// ============================================
+// GET /admin/export/recipes
+// Export published recipes as CSV
+// ============================================
+router.get(
+    '/export/recipes',
+    AdminController.exportCSV
+);
+
+
 
 module.exports = router;

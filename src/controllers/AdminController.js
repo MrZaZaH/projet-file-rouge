@@ -57,7 +57,7 @@ class AdminController {
             }
 
             // Sort options
-            const allowedSort = ['created_at', 'average_rating', 'visit_count'];
+            const allowedSort = ['created_at', 'average_rating', 'rating_count'];
             const sortBy = allowedSort.includes(sort_by) ? sort_by : 'created_at';
             query += ` ORDER BY r.${sortBy} DESC`;
 
