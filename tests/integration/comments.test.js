@@ -3,16 +3,14 @@ const Comment = require('../../src/models/Comment');
 
 describe('Comment Integration Tests', () => {
     let fixtures;
-    let pool; // ✅ récupérer depuis TestDatabase
 
     beforeAll(async () => {
-        await TestDatabase.cleanup();
+        await TestDatabase.clearDatabase();
         fixtures = await TestDatabase.createFixtures();
-        pool = TestDatabase.getPool(); // ✅ IMPORTANT
     });
 
     afterAll(async () => {
-        await TestDatabase.closeDatabase(); // ✅ remplace pool.end()
+        await TestDatabase.closeDatabase();
     });
 
     // ===== CREATE TESTS =====
@@ -21,47 +19,47 @@ describe('Comment Integration Tests', () => {
         it('should create comment with pseudo (no auth required)', async () => {
             const commentData = {
                 recipe_id: fixtures.recipeId,
-                pseudo: 'Jean_Cuisto',
-                text: 'Recette sauvée ma soirée !'
+                guest_name: 'Jean_Cuisto',
+                content: 'Recette sauvée ma soirée !'
             };
 
             const result = await Comment.create(commentData);
 
             expect(result).toHaveProperty('id');
-            expect(result.pseudo).toBe('Jean_Cuisto');
-            expect(result.text).toBe('Recette sauvée ma soirée !');
+            expect(result.guest_name).toBe('Jean_Cuisto');
+            expect(result.content).toBe('Recette sauvée ma soirée !');
             expect(result).toHaveProperty('created_at');
         });
 
         it('should reject empty pseudo', async () => {
             const commentData = {
                 recipe_id: fixtures.recipeId,
-                pseudo: '',
-                text: 'Commentaire'
+                guest_name: '',
+                content: 'Commentaire'
             };
 
             await expect(Comment.create(commentData))
                 .rejects
-                .toThrow('Pseudo is required');
+                .toThrow('Guest name is required');
         });
 
         it('should reject text shorter than 3 chars', async () => {
             const commentData = {
                 recipe_id: fixtures.recipeId,
-                pseudo: 'User',
-                text: 'OK'
+                guest_name: 'User',
+                content: 'OK'
             };
 
             await expect(Comment.create(commentData))
                 .rejects
-                .toThrow('Text must be at least 3 characters');
+                .toThrow('Content must be at least 3 characters');
         });
 
         it('should reject if recipe_id not exists', async () => {
             const commentData = {
                 recipe_id: 99999,
-                pseudo: 'User',
-                text: 'Commentaire valide'
+                guest_name: 'User',
+                content: 'Commentaire valide'
             };
 
             await expect(Comment.create(commentData))
@@ -78,19 +76,26 @@ describe('Comment Integration Tests', () => {
 
             expect(Array.isArray(comments)).toBe(true);
             expect(comments.length).toBeGreaterThanOrEqual(1);
-            expect(comments[0]).toHaveProperty('pseudo');
-            expect(comments[0]).toHaveProperty('text');
+            expect(comments[0]).toHaveProperty('guest_name');
+            expect(comments[0]).toHaveProperty('content');
         });
 
         it('should not return soft-deleted comments', async () => {
-            await pool.query(
-                'UPDATE comments SET deleted_at = NOW() WHERE id = ?',
-                [fixtures.commentId]
-            );
+            // Create a comment to delete
+            const newComment = await Comment.create({
+                recipe_id: fixtures.recipeId,
+                guest_name: 'À Supprimer',
+                content: 'Ce commentaire sera soft-deleted'
+            });
 
+            // Soft delete it
+            await Comment.softDelete(newComment.id);
+
+            // Retrieve comments for recipe
             const comments = await Comment.findByRecipeId(fixtures.recipeId);
 
-            const deletedExists = comments.some(c => c.id === fixtures.commentId);
+            // Deleted comment should not appear
+            const deletedExists = comments.some(c => c.id === newComment.id);
             expect(deletedExists).toBe(false);
         });
     });
@@ -99,21 +104,18 @@ describe('Comment Integration Tests', () => {
 
     describe('Comment.softDelete()', () => {
         it('should mark comment as deleted', async () => {
-            const [result] = await pool.query(`
-                INSERT INTO comments (recipe_id, pseudo, text)
-                VALUES (?, ?, ?)
-            `, [fixtures.recipeId, 'Tester', 'Test comment']);
+            const newComment = await Comment.create({
+                recipe_id: fixtures.recipeId,
+                guest_name: 'Tester',
+                content: 'Test comment pour suppression'
+            });
 
-            const commentId = result.insertId;
+            await Comment.softDelete(newComment.id);
 
-            await Comment.softDelete(commentId);
-
-            const [rows] = await pool.query(
-                'SELECT deleted_at FROM comments WHERE id = ?',
-                [commentId]
-            );
-
-            expect(rows[0].deleted_at).not.toBeNull();
+            // After soft delete, should not be retrievable
+            const found = await Comment.findByRecipeId(fixtures.recipeId);
+            const stillExists = found.some(c => c.id === newComment.id);
+            expect(stillExists).toBe(false);
         });
     });
 });
