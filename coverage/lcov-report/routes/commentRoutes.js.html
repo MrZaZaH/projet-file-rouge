@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">47.82% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/23</span>
+                <span class='fraction'>11/23</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">47.82% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/23</span>
+                <span class='fraction'>11/23</span>
             </div>
         
             
@@ -139,35 +139,28 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -177,6 +170,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -194,11 +194,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// src/routes/commentRoutes.js
 //
 // Mounted at /api/v1/recipes/:recipeId/comments (mergeParams: true).
@@ -207,18 +207,18 @@
 &nbsp;
 'use strict';
 &nbsp;
-const express = <span class="cstat-no" title="statement not covered" >require('express');</span>
-const { body, validationResult } = <span class="cstat-no" title="statement not covered" >require('express-validator');</span>
-const router = <span class="cstat-no" title="statement not covered" >express.Router({ mergeParams: true });</span>
+const express = require('express');
+const { body, validationResult } = require('express-validator');
+const router = express.Router({ mergeParams: true });
 &nbsp;
-const CommentController = <span class="cstat-no" title="statement not covered" >require('../controllers/CommentController');</span>
-const { authenticate } = <span class="cstat-no" title="statement not covered" >require('../middlewares/jwtAuth');</span>
+const CommentController = require('../controllers/CommentController');
+const { authenticate } = require('../middlewares/jwtAuth');
 &nbsp;
 // ─── attachUser ───────────────────────────────────────────────────────────────
 // Soft version of authenticate: sets req.user if token is valid, but does NOT
 // block the request if there is no token.
 // Used on POST /comments so guests can comment without a token.
-const jwt = <span class="cstat-no" title="statement not covered" >require('jsonwebtoken');</span>
+const jwt = require('jsonwebtoken');
 &nbsp;
 function <span class="fstat-no" title="function not covered" >attachUser(</span>req, _res, next) {
     const header = <span class="cstat-no" title="statement not covered" >req.headers.authorization;</span>
@@ -238,7 +238,7 @@ function <span class="fstat-no" title="function not covered" >attachUser(</span>
 }
 &nbsp;
 // ─── Validation ───────────────────────────────────────────────────────────────
-const commentRules = <span class="cstat-no" title="statement not covered" >[</span>
+const commentRules = [
     body('content')
         .trim()
         .notEmpty().withMessage('Content is required.')
@@ -262,11 +262,11 @@ function <span class="fstat-no" title="function not covered" >validate(</span>re
 }
 &nbsp;
 // ─── Routes ───────────────────────────────────────────────────────────────────
-<span class="cstat-no" title="statement not covered" >router.get('/', CommentController.getCommentsByRecipe);</span>
-<span class="cstat-no" title="statement not covered" >router.post('/', attachUser, commentRules, validate, CommentController.createComment);</span>
-<span class="cstat-no" title="statement not covered" >router.delete('/:id', authenticate, CommentController.deleteComment);</span>
+router.get('/', CommentController.getCommentsByRecipe);
+router.post('/', attachUser, commentRules, validate, CommentController.createComment);
+router.delete('/:id', authenticate, CommentController.deleteComment);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >module.exports = router;</span>
+module.exports = router;
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -274,7 +274,7 @@ function <span class="fstat-no" title="function not covered" >validate(</span>re
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-06-15T03:36:05.920Z
+                at 2026-06-15T03:56:27.176Z
             </div>
         <script src="../prettify.js"></script>
         <script>

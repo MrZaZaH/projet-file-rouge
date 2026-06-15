@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">66.66% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/12</span>
+                <span class='fraction'>8/12</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">66.66% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/12</span>
+                <span class='fraction'>8/12</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line medium'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -99,44 +99,44 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// src/routes/ratingRoutes.js
 //
 // Mounted at /api/v1/recipes/:recipeId/ratings (mergeParams: true).
 &nbsp;
 'use strict';
 &nbsp;
-const express = <span class="cstat-no" title="statement not covered" >require('express');</span>
-const { body, validationResult } = <span class="cstat-no" title="statement not covered" >require('express-validator');</span>
-const router = <span class="cstat-no" title="statement not covered" >express.Router({ mergeParams: true });</span>
+const express = require('express');
+const { body, validationResult } = require('express-validator');
+const router = express.Router({ mergeParams: true });
 &nbsp;
-const RatingController = <span class="cstat-no" title="statement not covered" >require('../controllers/RatingController');</span>
-const { authenticate } = <span class="cstat-no" title="statement not covered" >require('../middlewares/jwtAuth');</span>
+const RatingController = require('../controllers/RatingController');
+const { authenticate } = require('../middlewares/jwtAuth');
 &nbsp;
-const ratingRules = <span class="cstat-no" title="statement not covered" >[</span>
+const ratingRules = [
     body('score')
         .notEmpty().withMessage('Score is required.')
         .isInt({ min: 1, max: 5 }).withMessage('Score must be an integer between 1 and 5.'),
@@ -150,9 +150,9 @@ function <span class="fstat-no" title="function not covered" >validate(</span>re
 <span class="cstat-no" title="statement not covered" >    next();</span>
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >router.post('/', authenticate, ratingRules, validate, RatingController.rateRecipe);</span>
+router.post('/', authenticate, ratingRules, validate, RatingController.rateRecipe);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >module.exports = router;</span>
+module.exports = router;
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -160,7 +160,7 @@ function <span class="fstat-no" title="function not covered" >validate(</span>re
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-06-15T03:36:05.920Z
+                at 2026-06-15T03:56:27.176Z
             </div>
         <script src="../prettify.js"></script>
         <script>

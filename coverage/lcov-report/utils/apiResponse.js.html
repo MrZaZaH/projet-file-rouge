@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">90.9% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/11</span>
+                <span class='fraction'>10/11</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/8</span>
+                <span class='fraction'>4/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/3</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">90.9% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/11</span>
+                <span class='fraction'>10/11</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -131,8 +131,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -142,8 +142,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -152,14 +152,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -167,14 +167,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * @file apiResponse.js
  * @description Standardized HTTP response helpers.
@@ -187,8 +187,8 @@
 /**
  * Send a success response.
  */
-const sendSuccess = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(r</span>es, data, message = <span class="branch-0 cbranch-no" title="branch not covered" >null,</span> statusCode = <span class="branch-0 cbranch-no" title="branch not covered" >200)</span> =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    return res.status(statusCode).json({</span>
+const sendSuccess = (res, data, message = <span class="branch-0 cbranch-no" title="branch not covered" >null,</span> statusCode = 200) =&gt; {
+    return res.status(statusCode).json({
         success: true,
         data,
         message,
@@ -198,8 +198,8 @@ const sendSuccess = <span class="cstat-no" title="statement not covered" ><span 
 /**
  * Convert HTTP status code to readable error code
  */
-const statusCodeToCode = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tatus) =&gt; {</span>
-    const codes = <span class="cstat-no" title="statement not covered" >{</span>
+const statusCodeToCode = (status) =&gt; {
+    const codes = {
         400: 'BAD_REQUEST',
         401: 'UNAUTHORIZED',
         403: 'FORBIDDEN',
@@ -208,14 +208,14 @@ const statusCodeToCode = <span class="cstat-no" title="statement not covered" ><
         422: 'VALIDATION_ERROR',
         500: 'INTERNAL_ERROR'
     };
-<span class="cstat-no" title="statement not covered" >    return codes[status] || 'ERROR';</span>
+    return codes[status] || <span class="branch-1 cbranch-no" title="branch not covered" >'ERROR';</span>
 };
 &nbsp;
 /**
  * Send an error response.
  */
-const sendError = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(r</span>es, message, statusCode = <span class="branch-0 cbranch-no" title="branch not covered" >500,</span> details = <span class="branch-0 cbranch-no" title="branch not covered" >null)</span> =&gt; {</span>
-    const response = <span class="cstat-no" title="statement not covered" >{</span>
+const sendError = (res, message, statusCode = <span class="branch-0 cbranch-no" title="branch not covered" >500,</span> details = null) =&gt; {
+    const response = {
         success: false,
         error: {
             message,
@@ -223,14 +223,14 @@ const sendError = <span class="cstat-no" title="statement not covered" ><span cl
         }
     };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    if (details) {</span>
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (details) {
 <span class="cstat-no" title="statement not covered" >        response.error.details = details;</span>
     }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return res.status(statusCode).json(response);</span>
+    return res.status(statusCode).json(response);
 };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >module.exports = { sendSuccess, sendError };</span>
+module.exports = { sendSuccess, sendError };
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -238,7 +238,7 @@ const sendError = <span class="cstat-no" title="statement not covered" ><span cl
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-06-15T03:36:05.920Z
+                at 2026-06-15T03:56:27.176Z
             </div>
         <script src="../prettify.js"></script>
         <script>

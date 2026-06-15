@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/11</span>
+                <span class='fraction'>11/11</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/11</span>
+                <span class='fraction'>11/11</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -116,18 +116,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -144,17 +142,19 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// src/routes/authRoutes.js
 //
 // Authentication routes.
@@ -162,16 +162,16 @@
 &nbsp;
 'use strict';
 &nbsp;
-const { Router } = <span class="cstat-no" title="statement not covered" >require('express');</span>
-const { body } = <span class="cstat-no" title="statement not covered" >require('express-validator');</span>
-const AuthController = <span class="cstat-no" title="statement not covered" >require('../controllers/AuthController');</span>
-const { authenticate } = <span class="cstat-no" title="statement not covered" >require('../middlewares/jwtAuth.js');</span>
+const { Router } = require('express');
+const { body } = require('express-validator');
+const AuthController = require('../controllers/AuthController');
+const { authenticate } = require('../middlewares/jwtAuth.js');
 &nbsp;
-const router = <span class="cstat-no" title="statement not covered" >Router();</span>
+const router = Router();
 &nbsp;
 // Validation rules for registration
 // These run BEFORE the controller — if they fail, validationResult() catches them
-const registerValidation = <span class="cstat-no" title="statement not covered" >[</span>
+const registerValidation = [
     body('username')
         .trim()
         .isLength({ min: 2, max: 50 })
@@ -190,17 +190,17 @@ const registerValidation = <span class="cstat-no" title="statement not covered" 
         .withMessage('Password must contain at least one number')
 ];
 &nbsp;
-const loginValidation = <span class="cstat-no" title="statement not covered" >[</span>
+const loginValidation = [
     body('email').trim().isEmail().normalizeEmail().withMessage('Valid email required'),
     body('password').notEmpty().withMessage('Password is required')
 ];
 &nbsp;
 // Routes
-<span class="cstat-no" title="statement not covered" >router.post('/register', registerValidation, AuthController.register);</span>
-<span class="cstat-no" title="statement not covered" >router.post('/login', loginValidation, AuthController.login);</span>
-<span class="cstat-no" title="statement not covered" >router.get('/me', authenticate, AuthController.getMe);</span>
+router.post('/register', registerValidation, AuthController.register);
+router.post('/login', loginValidation, AuthController.login);
+router.get('/me', authenticate, AuthController.getMe);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >module.exports = router;</span>
+module.exports = router;
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -208,7 +208,7 @@ const loginValidation = <span class="cstat-no" title="statement not covered" >[<
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-06-15T03:36:05.920Z
+                at 2026-06-15T03:56:27.176Z
             </div>
         <script src="../prettify.js"></script>
         <script>
