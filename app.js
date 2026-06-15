@@ -56,6 +56,15 @@ app.get('/health', async (req, res, next) => {
         next(error);
     }
 });
+// ============================================
+// ADMIN ROUTES (protected)
+// ============================================
+const adminRoutes = require('./src/routes/adminRoutes');
+app.use('/api/admin', adminRoutes);
+
+// ============================================
+// PUBLIC ROUTES
+// ============================================
 
 const authRoutes = require('./src/routes/authRoutes');
 const recipeRoutes = require('./src/routes/recipeRoutes');
