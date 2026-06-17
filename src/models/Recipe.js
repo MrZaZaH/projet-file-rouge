@@ -52,6 +52,10 @@ const { pool } = require('../database/connection');
 // logger: winston instance — logs errors and warnings without crashing the app
 const { logger } = require('../middlewares/logger');
 
+// Filter constants — centralized magic numbers and sort strategies
+const { FILTERS, SORT } = require('../constants/filters');
+
+
 class Recipe {
 
     // ============================================================
@@ -504,18 +508,53 @@ class Recipe {
 
             // ====================================================
             // ORDER & PAGINATION
+            // // ====================================================
+            // CONDITIONAL ORDER BY
             // ====================================================
+            // Sort strategy depends on which filter is active.
+            // Goal: surface the most relevant results first for each persona.
+            //
+            // Priority order (first match wins):
+            // 1. max_prep_time active → fastest recipes first (persona: salarié crevé)
+            // 2. max_cost active      → cheapest recipes first (persona: étudiant fauché)
+            // 3. min_rating active    → best rated first (persona: parent épuisé)
+            // 4. default              → newest first (homepage, no filter)
+            //
+            // Why first-match-wins?
+            // A user filtering by prep time cares about speed above all else.
+            // Mixing sort criteria would require a weighted ranking — out of scope for MVP.
 
-            // Newest first — matches homepage "Top recettes du mois" expectation
-            query += ' ORDER BY r.created_at DESC';
+            let sortClause;
 
-            // LIMIT caps the number of rows returned (prevents huge payloads)
-            // OFFSET skips the first N rows (for pagination)
-            // Both passed as ? parameters — never interpolated into the string
-            const limit = parseInt(filters.limit, 10) || 50;  // default page size
-            const offset = parseInt(filters.offset, 10) || 0;   // default start at 0
+            if (filters.max_prep_time) {
+                sortClause = SORT.BY_TIME;      // prep_time ASC — fastest first
+            } else if (maxCost !== undefined) {
+                sortClause = SORT.BY_COST;      // cost_per_portion ASC — cheapest first
+            } else if (filters.min_rating) {
+                sortClause = SORT.BY_RATING;    // average_rating DESC — best rated first
+            } else {
+                sortClause = SORT.BY_DATE;      // created_at DESC — newest first (default)
+            }
+
+            query += ` ORDER BY r.${sortClause}`;
+
+            // ====================================================
+            // PAGINATION
+            // ====================================================
+            // limit: number of rows per page — capped at MAX_LIMIT to prevent abuse
+            // offset: number of rows to skip — for page navigation
+            // Both are injected as parameters (never interpolated) — SQL injection safe
+
+            const rawLimit = parseInt(filters.limit, 10);
+            const limit = (!isNaN(rawLimit) && rawLimit > 0)
+                ? Math.min(rawLimit, FILTERS.MAX_LIMIT)   // cap at 100
+                : FILTERS.DEFAULT_LIMIT;                  // default 50
+
+            const offset = parseInt(filters.offset, 10) || 0;
+
             query += ' LIMIT ? OFFSET ?';
             params.push(limit, offset);
+
 
             // ====================================================
             // EXECUTE

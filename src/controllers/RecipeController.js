@@ -24,13 +24,18 @@ async function getAllRecipes(req, res, next) {
         const isAdmin = req.user?.role === 'admin'; // Check if user is admin
 
         // Build filters object
+        // Only include keys that findAllWithFilters() explicitly supports.
+        // search is excluded — text search is not part of the MVP (filter-based navigation only).
         const filters = {
-            status: isAdmin ? req.query.status : 'published', // Non-admins only see published
-            category_id: req.query.category_id || null,
+            status: isAdmin ? req.query.status : 'published',
+            category_id: req.query.category_id ? Number(req.query.category_id) : null,
             max_prep_time: req.query.max_prep_time ? Number(req.query.max_prep_time) : null,
             max_cost: req.query.max_cost ? Number(req.query.max_cost) : null,
-            search: req.query.search || null,
+            min_rating: req.query.min_rating ? Number(req.query.min_rating) : null,
+            limit: req.query.limit ? Number(req.query.limit) : null,
+            offset: req.query.offset ? Number(req.query.offset) : null,
         };
+
 
         // Remove null values from filters
         const cleanFilters = Object.fromEntries(

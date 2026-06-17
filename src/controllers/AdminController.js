@@ -10,7 +10,7 @@
  */
 
 const { logger } = require('../middlewares/logger');
-const { pool } = require('../database/connection'); // ✅ seul import utile (suppression du doublon db)
+const { pool } = require('../database/connection'); // 
 
 class AdminController {
 
