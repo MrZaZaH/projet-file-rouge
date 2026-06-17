@@ -40,6 +40,7 @@ router.use(requireAdmin);
 // GET /admin/recipes
 // Retrieve all recipes with status filtering
 // ============================================
+console.log('getAllRecipes:', typeof AdminController.getAllRecipes)
 router.get(
     '/recipes',
     [
@@ -68,6 +69,7 @@ router.get(
 // PATCH /admin/recipes/:id/status
 // Update recipe status (approve/reject)
 // ============================================
+console.log('updateRecipeStatus:', typeof AdminController.updateRecipeStatus)
 router.patch(
     '/recipes/:id/status',
     [
@@ -92,6 +94,7 @@ router.patch(
 // DELETE /admin/recipes/:id
 // Soft delete a recipe
 // ============================================
+console.log('deleteRecipe:', typeof AdminController.deleteRecipe)
 router.delete(
     '/recipes/:id',
     [
@@ -113,6 +116,7 @@ router.delete(
 // GET /admin/logs
 // Retrieve admin action logs
 // ============================================
+console.log('getLogs:', typeof AdminController.getLogs)
 router.get(
     '/logs',
     [
@@ -137,6 +141,7 @@ router.get(
 // GET /admin/stats
 // Global platform statistics
 // ============================================
+console.log('getStats:', typeof AdminController.getStats)
 router.get(
     '/stats',
     AdminController.getStats
@@ -146,6 +151,7 @@ router.get(
 // GET /admin/recipes/top
 // Top recipes by rating
 // ============================================
+console.log('getTopRecipes:', typeof AdminController.getTopRecipes)
 router.get(
     '/recipes/top',
     [
@@ -162,10 +168,15 @@ router.get(
 // GET /admin/export/recipes
 // Export published recipes as CSV
 // ============================================
+console.log('exportCSV:', typeof AdminController.exportCSV)
 router.get(
     '/export/recipes',
     AdminController.exportCSV
 );
+// ============================================
+// GET /admin/dashboard
+// ============================================
+router.get('/dashboard', AdminController.getDashboard);
 
 
 

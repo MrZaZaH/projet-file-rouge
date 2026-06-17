@@ -1,4 +1,4 @@
--- 05_indexes.sql
+-- 06_indexes.sql
 -- Performance indexes for Ovni Culinaire
 -- 
 -- Purpose:
@@ -16,6 +16,13 @@ USE recettes_humaines;
 -- -------------------------------------------------------------
 -- TABLE: recipes
 -- -------------------------------------------------------------
+
+-- Add views counter to recipes table
+ALTER TABLE recipes ADD COLUMN views INT UNSIGNED DEFAULT 0;
+
+-- Index on views for admin dashboard sorting
+CREATE INDEX idx_recipes_views ON recipes (views);
+
 
 -- Filter by status (admin moderation list, findAllWithFilters)
 -- Query: WHERE status = 'published' AND deleted_at IS NULL

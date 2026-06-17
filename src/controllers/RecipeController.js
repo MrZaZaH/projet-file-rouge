@@ -13,6 +13,10 @@
 
 const Recipe = require('../models/Recipe'); // Model handling DB logic
 const { sendSuccess, sendError } = require('../utils/apiResponse'); // Standard API responses
+//add after connection's bug in day 14 
+const { pool } = require('../database/connection');
+const { logger } = require('../middlewares/logger');
+
 
 // GET all recipes with filters
 async function getAllRecipes(req, res, next) {
@@ -73,6 +77,14 @@ async function getRecipeById(req, res, next) {
         if (!isAdmin && recipe.status !== 'published') {
             return sendError(res, 'Recipe not found.', 404);
         }
+        // Increment view counter — fire and forget, don't block the response
+        const id = req.params.id;
+        pool.query(
+            'UPDATE recipes SET views = views + 1 WHERE id = ?',
+            [id]
+        ).catch(err =>
+            logger.warn(`Failed to increment views for recipe ${id}: ${err.message}`)
+        );
 
         return sendSuccess(res, recipe);
 

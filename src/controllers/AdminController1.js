@@ -9,139 +9,59 @@
  * - User notifications created for recipe status changes
  */
 
+const db = require('../database/connection');
 const { logger } = require('../middlewares/logger');
-const { pool } = require('../database/connection'); // ✅ seul import utile (suppression du doublon db)
+
+const { pool } = require('../database/connection');
+
 
 class AdminController {
-
-    /**
-     * GET /admin/dashboard
-     * Single endpoint returning all dashboard metrics
-     * Aggregates stats, top recipes, most active categories
-     */
-    static async getDashboard(req, res) {
-        try {
-            // Total recipes by status
-            const [recipeStats] = await pool.query(`
-                SELECT 
-                    COUNT(*) as total,
-                    SUM(CASE WHEN status = 'published' THEN 1 ELSE 0 END) as published,
-                    SUM(CASE WHEN status = 'pending'   THEN 1 ELSE 0 END) as pending,
-                    SUM(CASE WHEN status = 'rejected'  THEN 1 ELSE 0 END) as rejected
-                FROM recipes
-                WHERE deleted_at IS NULL
-            `);
-
-            // Top 5 most viewed recipes
-            const [topViewed] = await pool.query(`
-                SELECT r.id, r.title, r.views, r.average_rating, u.username as author
-                FROM recipes r
-                LEFT JOIN users u ON r.user_id = u.id
-                WHERE r.deleted_at IS NULL AND r.status = 'published'
-                ORDER BY r.views DESC
-                LIMIT 5
-            `);
-
-            // Top 5 best rated (minimum 3 ratings)
-            const [topRated] = await pool.query(`
-                SELECT r.id, r.title, r.average_rating, r.rating_count, u.username as author
-                FROM recipes r
-                LEFT JOIN users u ON r.user_id = u.id
-                WHERE r.deleted_at IS NULL 
-                  AND r.status = 'published'
-                  AND r.rating_count >= 3
-                ORDER BY r.average_rating DESC
-                LIMIT 5
-            `);
-
-            // Most active categories
-            const [topCategories] = await pool.query(`
-                SELECT c.id, c.name, COUNT(r.id) as recipe_count
-                FROM categories c
-                LEFT JOIN recipes r ON c.id = r.category_id
-                    AND r.deleted_at IS NULL
-                    AND r.status = 'published'
-                WHERE c.deleted_at IS NULL
-                GROUP BY c.id, c.name
-                ORDER BY recipe_count DESC
-                LIMIT 5
-            `);
-
-            // Total users
-            const [[userStats]] = await pool.query(`
-                SELECT COUNT(*) as total FROM users WHERE deleted_at IS NULL
-            `);
-
-            logger.info('Admin accessed dashboard', { admin_id: req.user.id });
-
-            res.json({
-                success: true,
-                data: {
-                    recipes: {
-                        total: recipeStats[0].total,
-                        by_status: {
-                            published: recipeStats[0].published,
-                            pending: recipeStats[0].pending,
-                            rejected: recipeStats[0].rejected
-                        }
-                    },
-                    top_viewed: topViewed,
-                    top_rated: topRated,
-                    top_categories: topCategories,
-                    users: {
-                        total: userStats.total
-                    }
-                }
-            });
-
-        } catch (error) {
-            logger.error('Failed to load admin dashboard', {
-                admin_id: req.user?.id,
-                error: error.message
-            });
-
-            res.status(500).json({
-                success: false,
-                message: 'Failed to load dashboard'
-            });
-        }
-    }
-
     /**
      * GET /admin/recipes
+     * Retrieve all recipes (including pending ones)
+     * For admin dashboard moderation
+     * 
+     * Query params:
+     * - status: 'pending' | 'published' | 'rejected'
+     * - sort_by: 'created_at' | 'rating_average' | 'visit_count'
+     * - limit: 1-100 (default 20)
+     * - offset: >= 0 (default 0)
      */
     static async getAllRecipes(req, res) {
         try {
             const { status, sort_by, limit = 20, offset = 0 } = req.query;
 
             let query = `
-                SELECT 
-                    r.id, 
-                    r.title, 
-                    r.status, 
-                    r.cost_per_portion,
-                    r.prep_time,
-                    r.average_rating,
-                    r.rating_count,
-                    u.username as author,
-                    r.created_at,
-                    r.updated_at
-                FROM recipes r
-                LEFT JOIN users u ON r.user_id = u.id
-                WHERE r.deleted_at IS NULL
-            `;
+        SELECT 
+          r.id, 
+          r.title, 
+          r.status, 
+          r.cost_per_portion,
+          r.prep_time,
+          r.average_rating,
+          r.rating_count,
+          u.username as author,
+          r.created_at,
+          r.updated_at
+        FROM recipes r
+        LEFT JOIN users u ON r.user_id = u.id
+        WHERE r.deleted_at IS NULL
+      `;
 
             const params = [];
 
+            // Filter by status if provided
             if (status && ['pending', 'published', 'rejected'].includes(status)) {
                 query += ` AND r.status = ?`;
                 params.push(status);
             }
 
+            // Sort options
             const allowedSort = ['created_at', 'average_rating', 'rating_count'];
             const sortBy = allowedSort.includes(sort_by) ? sort_by : 'created_at';
             query += ` ORDER BY r.${sortBy} DESC`;
 
+            // Pagination
             query += ` LIMIT ? OFFSET ?`;
             params.push(parseInt(limit), parseInt(offset));
 
@@ -158,13 +78,12 @@ class AdminController {
                 count: recipes.length,
                 data: recipes
             });
-
         } catch (error) {
+            console.error('🔥 ERREUR BACKEND:', error);
             logger.error('Failed to retrieve recipes for admin', {
                 admin_id: req.user.id,
                 error: error.message
             });
-
             res.status(500).json({
                 success: false,
                 message: 'Failed to retrieve recipes',
@@ -175,25 +94,38 @@ class AdminController {
 
     /**
      * PATCH /admin/recipes/:id/status
+     * Update recipe status (pending → published or rejected)
+     * 
+     * Body:
+     * - status: 'published' | 'rejected' (required)
+     * - rejection_reason: string (optional, max 255 chars)
+     * 
+     * Workflow:
+     * 1. Validate recipe exists and is not deleted
+     * 2. Update status
+     * 3. Create user notification
+     * 4. Log action in admin_logs
      */
     static async updateRecipeStatus(req, res) {
         try {
             const { id } = req.params;
             const { status, rejection_reason } = req.body;
 
+            // Validate status
             if (!['published', 'rejected'].includes(status)) {
                 return res.status(400).json({
                     success: false,
-                    message: 'Invalid status'
+                    message: 'Invalid status. Must be "published" or "rejected"'
                 });
             }
 
+            // Get recipe
             const [recipe] = await pool.query(
                 'SELECT id, user_id, title, status FROM recipes WHERE id = ? AND deleted_at IS NULL',
                 [id]
             );
 
-            if (!recipe.length) {
+            if (!recipe || recipe.length === 0) {
                 return res.status(404).json({
                     success: false,
                     message: 'Recipe not found'
@@ -202,129 +134,183 @@ class AdminController {
 
             const previousStatus = recipe[0].status;
 
+            // Update recipe status
             await pool.query(
                 'UPDATE recipes SET status = ?, updated_at = NOW() WHERE id = ?',
                 [status, id]
             );
 
+            // Create notification for user
             const notificationType = status === 'published'
                 ? 'recipe_approved'
                 : 'recipe_rejected';
 
             const message = status === 'published'
                 ? `Votre recette "${recipe[0].title}" a été publiée ! 🎉`
-                : `Votre recette "${recipe[0].title}" n'a pas été retenue.${rejection_reason ? ' Raison : ' + rejection_reason : ''}`;
+                : `Votre recette "${recipe[0].title}" n'a pas pu être retenue.${rejection_reason ? ' Raison : ' + rejection_reason : ''}`;
 
             await pool.query(
-                `INSERT INTO user_notifications (user_id, type, message, recipe_id, created_at)
-                 VALUES (?, ?, ?, ?, NOW())`,
+                `INSERT INTO user_notifications 
+         (user_id, type, message, recipe_id, created_at)
+         VALUES (?, ?, ?, ?, NOW())`,
                 [recipe[0].user_id, notificationType, message, id]
             );
 
+            // Log admin action
             await pool.query(
-                `INSERT INTO admin_logs (admin_id, action, recipe_id, target_type, target_id, created_at)
-                 VALUES (?, ?, ?, ?, ?, NOW())`,
-                [req.user.id, `recipe_${status}`, id, 'recipe', id]
+                `INSERT INTO admin_logs 
+     (admin_id, action, recipe_id, target_type, target_id, created_at)
+     VALUES (?, ?, ?, ?, ?, NOW())`,
+                [
+                    req.user.id,
+                    `recipe_${status}`,
+                    id,
+                    'recipe',
+                    id
+                ]
             );
+
+
+            logger.info(`Admin updated recipe status`, {
+                admin_id: req.user.id,
+                recipe_id: id,
+                previous_status: previousStatus,
+                new_status: status
+            });
 
             res.json({
                 success: true,
-                message: `Recipe ${status}`,
-                data: { recipe_id: id }
+                message: `Recipe ${status} successfully`,
+                data: {
+                    recipe_id: id,
+                    previous_status: previousStatus,
+                    new_status: status
+                }
             });
-
         } catch (error) {
             logger.error('Failed to update recipe status', {
+                admin_id: req.user.id,
+                recipe_id: req.params.id,
                 error: error.message
             });
-
             res.status(500).json({
                 success: false,
-                message: error.message
+                message: 'Failed to update recipe status',
+                error: error.message
             });
         }
     }
 
     /**
      * DELETE /admin/recipes/:id
+     * Soft delete a recipe (set deleted_at)
+     * 
+     * Body:
+     * - reason: string (optional, max 255 chars)
+     * 
+     * Workflow:
+     * 1. Verify recipe exists
+     * 2. Soft delete (set deleted_at)
+     * 3. Notify user
+     * 4. Log action
      */
     static async deleteRecipe(req, res) {
         try {
             const { id } = req.params;
             const { reason } = req.body;
 
+            // Get recipe
             const [recipe] = await pool.query(
                 'SELECT id, user_id, title FROM recipes WHERE id = ? AND deleted_at IS NULL',
                 [id]
             );
 
-            if (!recipe.length) {
+            if (!recipe || recipe.length === 0) {
                 return res.status(404).json({
                     success: false,
                     message: 'Recipe not found'
                 });
             }
 
+            // Soft delete
             await pool.query(
                 'UPDATE recipes SET deleted_at = NOW(), updated_at = NOW() WHERE id = ?',
                 [id]
             );
 
+            // Notify user
             const message = `Votre recette "${recipe[0].title}" a été supprimée.${reason ? ' Raison : ' + reason : ''}`;
 
             await pool.query(
-                `INSERT INTO user_notifications (user_id, type, message, recipe_id, created_at)
-                 VALUES (?, ?, ?, ?, NOW())`,
+                `INSERT INTO user_notifications 
+         (user_id, type, message, recipe_id, created_at)
+     VALUES (?, ?, ?, ?, NOW())`,
                 [recipe[0].user_id, 'recipe_deleted', message, id]
             );
 
+            // Log action
             await pool.query(
-                `INSERT INTO admin_logs (admin_id, action, recipe_id, target_type, target_id, created_at)
-                 VALUES (?, ?, ?, ?, ?, NOW())`,
+                `INSERT INTO admin_logs 
+         (admin_id, action, recipe_id, target_type, target_id, created_at)
+         VALUES (?, ?, ?, ?, ?, NOW())`,
                 [req.user.id, 'recipe_deleted', id, 'recipe', id]
             );
 
+            logger.info(`Admin deleted recipe`, {
+                admin_id: req.user.id,
+                recipe_id: id,
+                reason: reason || 'not specified'
+            });
+
             res.json({
                 success: true,
-                message: 'Recipe deleted'
+                message: 'Recipe deleted successfully'
             });
-
         } catch (error) {
             logger.error('Failed to delete recipe', {
+                admin_id: req.user.id,
+                recipe_id: req.params.id,
                 error: error.message
             });
-
             res.status(500).json({
                 success: false,
-                message: error.message
+                message: 'Failed to delete recipe',
+                error: error.message
             });
         }
     }
 
     /**
      * GET /admin/logs
+     * Retrieve admin action logs
+     * 
+     * Query params:
+     * - limit: 1-100 (default 50)
+     * - offset: >= 0 (default 0)
+     * - action: filter by action type (optional)
      */
     static async getLogs(req, res) {
         try {
             const { limit = 50, offset = 0, action } = req.query;
 
             let query = `
-                SELECT 
-                    al.id,
-                    al.admin_id,
-                    u.username as admin_name,
-                    al.action,
-                    al.recipe_id,
-                    al.target_type,
-                    al.target_id,
-                    al.created_at
-                FROM admin_logs al
-                LEFT JOIN users u ON al.admin_id = u.id
-                WHERE 1=1
-            `;
+        SELECT 
+          al.id,
+          al.admin_id,
+          u.username as admin_name,
+          al.action,
+          al.recipe_id,
+          al.target_type,
+          al.target_id,
+          al.created_at
+        FROM admin_logs al
+        LEFT JOIN users u ON al.admin_id = u.id
+        WHERE 1=1
+      `;
 
             const params = [];
 
+            // Filter by action if provided
             if (action) {
                 query += ` AND al.action = ?`;
                 params.push(action);
@@ -335,28 +321,36 @@ class AdminController {
 
             const [logs] = await pool.query(query, params);
 
+            logger.info(`Admin retrieved logs`, {
+                admin_id: req.user.id,
+                count: logs.length
+            });
+
             res.json({
                 success: true,
                 count: logs.length,
                 data: logs
             });
-
         } catch (error) {
             logger.error('Failed to retrieve admin logs', {
+                admin_id: req.user.id,
                 error: error.message
             });
-
             res.status(500).json({
                 success: false,
-                message: error.message
+                message: 'Failed to retrieve logs',
+                error: error.message
             });
         }
     }
-
-    // ✅ Tes ajouts existants conservés
-
+    //  AJOUT 1 : GET STATS
+    /**
+    * GET /admin/stats
+    * Basic admin statistics
+    */
     static async getStats(req, res) {
         try {
+            // Exemple simple (tu pourras améliorer après)
             const [[recipesCount]] = await pool.query(
                 'SELECT COUNT(*) as total FROM recipes WHERE deleted_at IS NULL'
             );
@@ -380,16 +374,18 @@ class AdminController {
 
         } catch (error) {
             logger.error('Failed to retrieve stats', {
+                admin_id: req.user?.id,
                 error: error.message
             });
 
             res.status(500).json({
                 success: false,
-                message: error.message
+                message: 'Failed to retrieve stats',
+                error: error.message
             });
         }
     }
-
+    //  AJOUT 2 : GET TOP RECIPES
     static async getTopRecipes(req, res) {
         try {
             const { limit = 10 } = req.query;
@@ -408,12 +404,10 @@ class AdminController {
                 count: recipes.length,
                 data: recipes
             });
-
         } catch (error) {
             logger.error('Failed to get top recipes', {
                 error: error.message
             });
-
             res.status(500).json({
                 success: false,
                 message: error.message
@@ -421,6 +415,9 @@ class AdminController {
         }
     }
 
+    // ============================================
+    //  AJOUT 3 : EXPORT CSV
+    // ============================================
     static async exportCSV(req, res) {
         try {
             const [recipes] = await pool.query(
@@ -443,7 +440,6 @@ class AdminController {
             logger.error('Failed to export CSV', {
                 error: error.message
             });
-
             res.status(500).json({
                 success: false,
                 message: error.message
@@ -451,5 +447,7 @@ class AdminController {
         }
     }
 }
+
+
 
 module.exports = AdminController;
