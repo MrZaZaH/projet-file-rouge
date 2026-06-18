@@ -46,6 +46,8 @@ PROJET-FILE-ROUGE/
 ├── src/
 │   ├── config/
 │   │   └── database.js
+│   ├── constants/
+│   │   └── filters.js
 │   ├── controllers/
 │   │   ├── AdminController.js
 │   │   ├── AuthController.js
