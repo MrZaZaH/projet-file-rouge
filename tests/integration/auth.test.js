@@ -10,10 +10,6 @@ const request = require('supertest');
 const app = require('../../app');
 const { clearDatabase, closeDatabase } = require('../helpers/testDb');
 
-beforeEach(async () => {
-    await clearDatabase();
-});
-
 afterAll(async () => {
     await closeDatabase();
 });
@@ -24,13 +20,17 @@ afterAll(async () => {
 
 describe('POST /api/v1/auth/register', () => {
 
+    beforeEach(async () => {
+        await clearDatabase();
+    });
+
     const validUser = {
         username: 'testuser',
         email: 'test@example.com',
         password: 'ValidPass123!',
     };
 
-    test('should register a new user and return 201', async () => {
+    test('should register a new user, return 201, and provide a JWT token', async () => {
         const res = await request(app)
             .post('/api/v1/auth/register')
             .send(validUser);
@@ -41,16 +41,8 @@ describe('POST /api/v1/auth/register', () => {
         expect(res.body.data.user.username).toBe(validUser.username);
         // password_hash must never appear in the response
         expect(res.body.data.user.password_hash).toBeUndefined();
-    });
-
-    test('should return a JWT token on register', async () => {
-        const res = await request(app)
-            .post('/api/v1/auth/register')
-            .send(validUser);
-
-        expect(res.status).toBe(201);
+        // JWT token must be present and well-formed
         expect(res.body.data.token).toBeDefined();
-        // JWT format: three base64 segments separated by dots
         expect(res.body.data.token).toMatch(/^[\w-]+\.[\w-]+\.[\w-]+$/);
     });
 
@@ -103,8 +95,9 @@ describe('POST /api/v1/auth/register', () => {
 
 describe('POST /api/v1/auth/login', () => {
 
-    // Create a user before login tests
-    beforeEach(async () => {
+    // Create a user once before all login tests (login is read-only, no isolation needed)
+    beforeAll(async () => {
+        await clearDatabase();
         await request(app)
             .post('/api/v1/auth/register')
             .send({

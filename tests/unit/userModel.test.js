@@ -18,7 +18,7 @@
 'use strict';
 
 // Import testing utilities
-const { clearDatabase, seedUser, seedCategory, closeDatabase } = require('../helpers/testDb');
+const { clearDatabase, closeDatabase } = require('../helpers/testDb');
 
 // Import the User model to test
 const User = require('../../src/models/User');

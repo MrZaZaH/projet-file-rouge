@@ -191,7 +191,7 @@ async function deleteRecipe(req, res, next) {
             return sendError(res, 'Forbidden.', 403);
         }
 
-        await Recipe.delete(req.params.id); // Soft delete
+        await Recipe.softDelete(req.params.id); // Soft delete
 
         return sendSuccess(res, null, 'Recipe deleted.', 200);
 

@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">22.22% </span>
+                <span class="strong">83.33% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>4/18</span>
+                <span class='fraction'>15/18</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">83.33% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/12</span>
+                <span class='fraction'>10/12</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">22.22% </span>
+                <span class="strong">83.33% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>4/18</span>
+                <span class='fraction'>15/18</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -128,33 +128,33 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -174,7 +174,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// src/controllers/RatingController.js
 //
 // HTTP logic for ratings.
@@ -189,28 +189,28 @@ const Recipe = require('../models/Recipe'); // Recipe model
 const { sendSuccess, sendError } = require('../utils/apiResponse'); // Response helpers
 &nbsp;
 // POST rate a recipe
-async function <span class="fstat-no" title="function not covered" >rateRecipe(</span>req, res, next) {
-<span class="cstat-no" title="statement not covered" >    try {</span>
-        const recipeId = <span class="cstat-no" title="statement not covered" >Number(req.params.recipeId);</span> // Extract recipe ID
-        const userId = <span class="cstat-no" title="statement not covered" >req.user.id;</span> // Authenticated user ID
-        const score = <span class="cstat-no" title="statement not covered" >Number(req.body.score);</span> // Rating score
+async function rateRecipe(req, res, next) {
+    try {
+        const recipeId = Number(req.params.recipeId); // Extract recipe ID
+        const userId = req.user.id; // Authenticated user ID
+        const score = Number(req.body.score); // Rating score
 &nbsp;
-        const recipe = <span class="cstat-no" title="statement not covered" >await Recipe.findById(recipeId);</span>
+        const recipe = await Recipe.findById(recipeId);
 &nbsp;
         // Ensure recipe exists and is published
-<span class="cstat-no" title="statement not covered" >        if (!recipe || recipe.status !== 'published') {</span>
-<span class="cstat-no" title="statement not covered" >            return sendError(res, 'Recipe not found.', 404);</span>
+        if (!recipe || recipe.status !== 'published') {
+            return sendError(res, 'Recipe not found.', 404);
         }
 &nbsp;
         // Prevent users from rating their own recipes
-<span class="cstat-no" title="statement not covered" >        if (recipe.user_id === userId) {</span>
-<span class="cstat-no" title="statement not covered" >            return sendError(res, 'You cannot rate your own recipe.', 403);</span>
+        if (recipe.user_id === userId) {
+            return sendError(res, 'You cannot rate your own recipe.', 403);
         }
 &nbsp;
         // Create or update rating
-        const result = <span class="cstat-no" title="statement not covered" >await Rating.rate({ userId, recipeId, score });</span>
+        const result = await Rating.rate({ userId, recipeId, score });
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        return sendSuccess(</span>
+        return sendSuccess(
             res,
             {
                 rating: result.rating,
@@ -238,7 +238,7 @@ module.exports = { rateRecipe };
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-06-15T03:56:27.176Z
+                at 2026-06-22T14:45:21.613Z
             </div>
         <script src="../prettify.js"></script>
         <script>

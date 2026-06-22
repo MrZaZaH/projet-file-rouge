@@ -765,6 +765,115 @@ class Recipe {
     }
 
     // ============================================================
+    //  UPDATE RATING (denormalized average)
+    // ============================================================
+
+    /**
+     * updateRating(id, newScore)
+     *
+     * Purpose:
+     * --------
+     * Recalculates the denormalized average_rating and increments rating_count
+     * after a new rating is inserted. The calculation happens atomically in SQL
+     * to prevent race conditions between simultaneous ratings.
+     *
+     * Formula:
+     *   new_average = ROUND((old_average * old_count + newScore) / (old_count + 1), 2)
+     *
+     * Called by Rating.rate() after a successful INSERT.
+     * Only called on first rating (INSERT), not on update.
+     */
+    static async updateRating(id, newScore) {
+        const [result] = await pool.execute(
+            `UPDATE recipes
+             SET average_rating = ROUND(
+                     (average_rating * rating_count + ?) / (rating_count + 1),
+                 2),
+                 rating_count   = rating_count + 1
+             WHERE id = ?
+               AND deleted_at IS NULL`,
+            [newScore, id]
+        );
+        return result.affectedRows > 0;
+    }
+
+    // ============================================================
+    //  FIND RANDOM
+    // ============================================================
+
+    /**
+     * findRandom()
+     *
+     * Returns a single random published recipe (not soft-deleted).
+     * Uses RAND() ordering — MariaDB picks a random row.
+     * LIMIT 1 ensures we only get one.
+     */
+    static async findRandom() {
+        try {
+            const query = `
+                SELECT
+                    r.*,
+                    u.username  AS user_pseudo,
+                    u.email     AS user_email,
+                    c.name      AS category_name
+                FROM recipes r
+                LEFT JOIN users      u ON r.user_id      = u.id
+                LEFT JOIN categories c ON r.category_id  = c.id
+                WHERE r.status = 'published' AND r.deleted_at IS NULL
+                ORDER BY RAND()
+                LIMIT 1
+            `;
+
+            const [rows] = await pool.query(query);
+
+            if (rows.length === 0) {
+                return null;
+            }
+
+            const row = rows[0];
+
+            let ingredients = [];
+            let steps = [];
+            try {
+                ingredients = row.ingredients ? JSON.parse(row.ingredients) : [];
+                steps = row.steps ? JSON.parse(row.steps) : [];
+            } catch (parseError) {
+                logger.warn(`Failed to parse JSON fields for random recipe: ${parseError.message}`);
+            }
+
+            return {
+                id: row.id,
+                user_id: row.user_id,
+                category_id: row.category_id,
+                title: row.title,
+                anecdote: row.anecdote,
+                ingredients,
+                steps,
+                prep_time: row.prep_time,
+                cost_per_portion: parseFloat(row.cost_per_portion),
+                status: row.status,
+                average_rating: parseFloat(row.average_rating),
+                rating_count: row.rating_count,
+                image_url: row.image_url,
+                created_at: row.created_at,
+                updated_at: row.updated_at,
+                username: row.user_pseudo,
+                user: {
+                    username: row.user_pseudo,
+                    email: row.user_email,
+                },
+                category: {
+                    name: row.category_name,
+                },
+            };
+
+        } catch (error) {
+            logger.error(`Recipe.findRandom() failed: ${error.message}`);
+            throw error;
+        }
+    }
+
+    // ============================================================
     //  SOFT DELETE
     // ============================================================
 

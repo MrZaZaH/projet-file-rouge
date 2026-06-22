@@ -84,7 +84,7 @@ async function deleteComment(req, res, next) {
             return sendError(res, 'Forbidden.', 403);
         }
 
-        await Comment.delete(commentId); // Delete comment
+        await Comment.softDelete(commentId); // Delete comment
 
         return sendSuccess(res, null, 'Comment deleted');
 
