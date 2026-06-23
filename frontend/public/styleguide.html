@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Design System – Ovni Culinaire">
+    <title>Design System – Ovni Culinaire</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Skip link for keyboard navigation -->
+    <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
+    <!-- ========== HEADER ========== -->
+    <header class="site-header" role="banner">
+        <div class="container header-inner">
+            <a href="index.html" class="site-logo" aria-label="Ovni Culinaire – Accueil">
+                <span>Ovni</span> Culinaire
+            </a>
+
+            <nav class="header-nav" aria-label="Navigation principale">
+                <a href="submit.html" class="header-link">Poster une recette</a>
+                <button type="button" class="btn-cta" id="surprise-btn" aria-label="Surprends-moi avec une recette aléatoire">
+                    Surprends-moi
+                </button>
+                <button type="button" class="user-icon" id="user-btn" aria-label="Compte utilisateur">
+                    <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                    <span id="user-label">Se connecter</span>
+                </button>
+            </nav>
+
+            <button type="button" class="menu-toggle" id="menu-toggle" aria-controls="mobile-nav" aria-expanded="false" aria-label="Ouvrir le menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+
+        <nav class="mobile-nav" id="mobile-nav" aria-label="Navigation mobile">
+            <a href="index.html">Accueil</a>
+            <a href="submit.html">Poster une recette</a>
+            <button type="button" class="btn-secondary" style="width:100%;margin-top:8px;" id="mobile-user-btn">Se connecter</button>
+        </nav>
+    </header>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <main id="main-content">
+        <!-- Page Header -->
+        <header class="submit-header">
+            <div class="container">
+                <h1>Design System – Ovni Culinaire</h1>
+                <p class="text-muted">Guide de style et composants pour le projet</p>
+            </div>
+        </header>
+
+        <div class="container" style="padding:48px 16px;">
+            <!-- Colors Section -->
+            <section class="styleguide-section" aria-labelledby="colors-title">
+                <h2 id="colors-title">Couleurs</h2>
+                <p class="text-muted mb-4">Variables CSS utilisées dans le projet. Appliquer via var(--color-name).</p>
+                
+                <div class="color-grid">
+                    <div class="color-swatch" style="background:var(--color-primary);color:#fff;">
+                        Primary
+                        <code>--color-primary</code>
+                        <code>#1a1a2e</code>
+                    </div>
+                    <div class="color-swatch" style="background:var(--color-secondary);color:#fff;">
+                        Secondary
+                        <code>--color-secondary</code>
+                        <code>#16213e</code>
+                    </div>
+                    <div class="color-swatch" style="background:var(--color-accent);color:#fff;">
+                        Accent
+                        <code>--color-accent</code>
+                        <code>#e94560</code>
+                    </div>
+                    <div class="color-swatch" style="background:var(--color-accent-hover);color:#1a1a2e;">
+                        Accent Hover
+                        <code>--color-accent-hover</code>
+                        <code>#ff6b6b</code>
+                    </div>
+                    <div class="color-swatch" style="background:var(--color-background);color:#eaeaea;border:1px solid var(--color-border);">
+                        Background
+                        <code>--color-background</code>
+                        <code>#0f0f23</code>
+                    </div>
+                    <div class="color-swatch" style="background:var(--color-surface);color:#eaeaea;">
+                        Surface
+                        <code>--color-surface</code>
+                        <code>#1f1f3a</code>
+                    </div>
+                    <div class="color-swatch" style="background:var(--color-text);color:#0f0f23;">
+                        Text
+                        <code>--color-text</code>
+                        <code>#eaeaea</code>
+                    </div>
+                    <div class="color-swatch" style="background:var(--color-text-muted);color:#0f0f23;">
+                        Text Muted
+                        <code>--color-text-muted</code>
+                        <code>#a0a0b0</code>
+                    </div>
+                    <div class="color-swatch" style="background:var(--color-success);color:#0f0f23;">
+                        Success
+                        <code>--color-success</code>
+                        <code>#4ecdc4</code>
+                    </div>
+                    <div class="color-swatch" style="background:var(--color-warning);color:#0f0f23;">
+                        Warning
+                        <code>--color-warning</code>
+                        <code>#ffe66d</code>
+                    </div>
+                    <div class="color-swatch" style="background:var(--color-error);color:#fff;">
+                        Error
+                        <code>--color-error</code>
+                        <code>#ff6b6b</code>
+                    </div>
+                    <div class="color-swatch" style="background:var(--color-border);color:#eaeaea;">
+                        Border
+                        <code>--color-border</code>
+                        <code>#3a3a5c</code>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Typography Section -->
+            <section class="styleguide-section" aria-labelledby="typography-title">
+                <h2 id="typography-title">Typographie</h2>
+                <p class="text-muted mb-4">Fonts: Space Grotesk (headings), Inter (body)</p>
+                
+                <div class="typography-example" style="font-family:var(--font-heading);">
+                    <h1>Heading 1 – Space Grotesk</h1>
+                    <code>font-size: clamp(2rem, 5vw, 3.5rem)</code>
+                </div>
+                <div class="typography-example" style="font-family:var(--font-heading);">
+                    <h2>Heading 2 – Space Grotesk</h2>
+                    <code>font-size: clamp(1.5rem, 4vw, 2.5rem)</code>
+                </div>
+                <div class="typography-example" style="font-family:var(--font-heading);">
+                    <h3>Heading 3 – Space Grotesk</h3>
+                    <code>font-size: clamp(1.25rem, 3vw, 1.75rem)</code>
+                </div>
+                <div class="typography-example" style="font-family:var(--font-heading);">
+                    <h4>Heading 4 – Space Grotesk</h4>
+                    <code>font-size: clamp(1.1rem, 2.5vw, 1.25rem)</code>
+                </div>
+                <div class="typography-example">
+                    <p>Paragraphe par défaut – Inter Regular. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.</p>
+                    <code>font-size: 1rem, line-height: 1.6</code>
+                </div>
+                <div class="typography-example">
+                    <p class="text-muted">Texte atténué – Pour les informations secondaires.</p>
+                    <code>color: var(--color-text-muted), font-size: 0.875rem</code>
+                </div>
+            </section>
+
+            <!-- Buttons Section -->
+            <section class="styleguide-section" aria-labelledby="buttons-title">
+                <h2 id="buttons-title">Boutons</h2>
+                <p class="text-muted mb-4">Classes: .btn-cta (primary), .btn-secondary, .btn-action</p>
+                
+                <div class="button-group">
+                    <button type="button" class="btn-cta">Surprends-moi</button>
+                    <button type="button" class="btn-secondary">Secondary</button>
+                    <button type="button" class="btn-action btn-save">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+                        Sauvegarder
+                    </button>
+                    <button type="button" class="btn-action btn-comment">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="M21.99 4c-1.1 0-2 .9-2 2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18z"/></svg>
+                        Commenter
+                    </button>
+                    <button type="button" class="btn-action btn-share">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
+                        Partager
+                    </button>
+                </div>
+            </section>
+
+            <!-- Cards Section -->
+            <section class="styleguide-section" aria-labelledby="cards-title">
+                <h2 id="cards-title">Cartes</h2>
+                <p class="text-muted mb-4">Classes: .recipe-card, .persona-card</p>
+                
+                <h3>Carte Recette</h3>
+                <a href="#" class="recipe-card" style="max-width:350px;margin:16px 0;" aria-label="Pasta Carbonara – 20 min – 4,50 €">
+                    <div class="recipe-card-meta">
+                        <div class="recipe-time">
+                            <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                            <strong>20 min</strong>
+                        </div>
+                        <div class="recipe-cost">
+                            <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+                            <strong>4,50 €</strong>
+                        </div>
+                    </div>
+                    <h3>Pasta Carbonara</h3>
+                    <div class="recipe-card-rating">
+                        ★★★★☆
+                        <span>(12)</span>
+                    </div>
+                </a>
+
+                <h3>Carte Persona</h3>
+                <button type="button" class="persona-card" style="max-width:300px;margin:16px 0;">
+                    <div class="persona-card-image" role="img" aria-label="Icône Salarié Crevé"></div>
+                    <h3>Salarié Crevé</h3>
+                    <p>Recettes prêtes en 15 minutes chrono</p>
+                </button>
+            </section>
+
+            <!-- Form Elements Section -->
+            <section class="styleguide-section" aria-labelledby="forms-title">
+                <h2 id="forms-title">Éléments de formulaire</h2>
+                <p class="text-muted mb-4">Styles pour inputs, textarea, select</p>
+                
+                <div style="max-width:500px;">
+                    <div class="form-element-group">
+                        <label for="example-text">Input texte</label>
+                        <input type="text" id="example-text" placeholder="Placeholder texte">
+                    </div>
+                    <div class="form-element-group">
+                        <label for="example-email">Input email</label>
+                        <input type="email" id="example-email" placeholder="email@exemple.fr">
+                    </div>
+                    <div class="form-element-group">
+                        <label for="example-number">Input nombre</label>
+                        <input type="number" id="example-number" placeholder="0.00" min="0" step="0.01">
+                    </div>
+                    <div class="form-element-group">
+                        <label for="example-select">Select</label>
+                        <select id="example-select">
+                            <option value="">Sélectionnez une option</option>
+                            <option value="1">Option 1</option>
+                            <option value="2">Option 2</option>
+                            <option value="3">Option 3</option>
+                        </select>
+                    </div>
+                    <div class="form-element-group">
+                        <label for="example-textarea">Textarea</label>
+                        <textarea id="example-textarea" rows="4" placeholder="Votre texte ici..."></textarea>
+                        <p class="form-help">Texte d'aide en dessous du champ</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Modal Section -->
+            <section class="styleguide-section" aria-labelledby="modal-title">
+                <h2 id="modal-title">Modale</h2>
+                <p class="text-muted mb-4">Structure de la modale de connexion</p>
+                
+                <div style="background:var(--color-surface);border-radius:var(--radius-lg);padding:32px;max-width:450px;position:relative;border:2px solid var(--color-accent);">
+                    <button type="button" aria-label="Fermer la fenêtre" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--color-text-muted);font-size:1.5rem;cursor:pointer;">×</button>
+                    <h3>Connexion</h3>
+                    <form novalidate style="margin-top:16px;">
+                        <div class="form-group">
+                            <label for="modal-example-pseudo">Pseudo</label>
+                            <input type="text" id="modal-example-pseudo" style="width:100%;padding:12px;background:var(--color-background);border:2px solid var(--color-border);border-radius:var(--radius-md);color:var(--color-text);">
+                        </div>
+                        <div class="form-group">
+                            <label for="modal-example-email">Email</label>
+                            <input type="email" id="modal-example-email" style="width:100%;padding:12px;background:var(--color-background);border:2px solid var(--color-border);border-radius:var(--radius-md);color:var(--color-text);">
+                        </div>
+                        <div class="form-group">
+                            <label for="modal-example-password">Mot de passe</label>
+                            <input type="password" id="modal-example-password" style="width:100%;padding:12px;background:var(--color-background);border:2px solid var(--color-border);border-radius:var(--radius-md);color:var(--color-text);">
+                        </div>
+                        <button type="button" class="btn-cta" style="width:100%;">Se connecter / Créer un compte</button>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="site-footer" role="contentinfo">
+        <div class="container footer-inner">
+            <div class="footer-links">
+                <a href="styleguide.html">Design System</a>
+                <a href="submit.html">Poster une recette</a>
+            </div>
+            <p class="footer-copy">© 2025 Ovni Culinaire – Zine meets tech</p>
+        </div>
+    </footer>
+
+    <!-- ========== LOGIN MODAL ========== -->
+    <div class="modal-overlay" id="login-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1">
+        <div class="modal">
+            <button type="button" class="modal-close" aria-label="Fermer la fenêtre" id="modal-close">&times;</button>
+            <h2 id="modal-title">Connexion</h2>
+            <form id="login-form" novalidate>
+                <div class="form-group">
+                    <label for="login-pseudo">Pseudo</label>
+                    <input type="text" id="login-pseudo" name="pseudo" required autocomplete="username" aria-required="true">
+                </div>
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" name="email" required autocomplete="email" aria-required="true">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Mot de passe</label>
+                    <input type="password" id="login-password" name="password" required autocomplete="current-password" aria-required="true">
+                </div>
+                <button type="submit" class="btn-cta" style="width:100%;">Se connecter / Créer un compte</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========== JAVASCRIPT ========== -->
+    <script>
+        // ====== DOM ELEMENTS ======
+        const surpriseBtn = document.getElementById('surprise-btn');
+        const userBtn = document.getElementById('user-btn');
+        const mobileUserBtn = document.getElementById('mobile-user-btn');
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileNav = document.getElementById('mobile-nav');
+        const loginModal = document.getElementById('login-modal');
+        const modalClose = document.getElementById('modal-close');
+        const loginForm = document.getElementById('login-form');
+        const userLabel = document.getElementById('user-label');
+
+        // ====== STATE ======
+        let userPseudo = localStorage.getItem('ovni_pseudo') || null;
+
+        // ====== UTILITY FUNCTIONS ======
+        function updateUserUI() {
+            if (userPseudo) {
+                userLabel.textContent = userPseudo;
+                userBtn.setAttribute('aria-label', `Compte ${userPseudo}`);
+            }
+        }
+
+        function openLoginModal() {
+            loginModal.classList.add('is-open');
+            document.getElementById('login-pseudo').focus();
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLoginModal() {
+            loginModal.classList.remove('is-open');
+            document.body.style.overflow = '';
+        }
+
+        function toggleMobileMenu() {
+            const isOpen = mobileNav.classList.toggle('is-open');
+            menuToggle.setAttribute('aria-expanded', isOpen);
+        }
+
+        // ====== EVENT LISTENERS ======
+        surpriseBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/recipes/random');
+                if (response.ok) {
+                    const data = await response.json();
+                    window.location.href = `recipe.html?id=${data.id}`;
+                }
+            } catch (error) {
+                console.error('Surprise failed:', error);
+            }
+        });
+
+        userBtn.addEventListener('click', openLoginModal);
+        if (mobileUserBtn) mobileUserBtn.addEventListener('click', openLoginModal);
+
+        modalClose.addEventListener('click', closeLoginModal);
+        loginModal.addEventListener('click', (e) => {
+            if (e.target === loginModal) closeLoginModal();
+        });
+
+        menuToggle.addEventListener('click', toggleMobileMenu);
+        mobileNav.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileNav.classList.remove('is-open');
+                menuToggle.setAttribute('aria-expanded', 'false');
+            });
+        });
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(loginForm);
+            const data = Object.fromEntries(formData.entries());
+            
+            if (data.pseudo && data.email && data.password) {
+                localStorage.setItem('ovni_pseudo', data.pseudo);
+                localStorage.setItem('ovni_email', data.email);
+                userPseudo = data.pseudo;
+                updateUserUI();
+                closeLoginModal();
+                loginForm.reset();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && loginModal.classList.contains('is-open')) {
+                closeLoginModal();
+            }
+        });
+
+        // ====== INITIALIZATION ======
+        function init() {
+            updateUserUI();
+        }
+
+        init();
+    </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"8607d2a720d14b038279025b2b5a82e5","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>

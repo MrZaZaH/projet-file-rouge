@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Ovni Culinaire – Poster une nouvelle recette">
+    <title>Poster une recette – Ovni Culinaire</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Skip link for keyboard navigation -->
+    <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
+    <!-- ========== HEADER ========== -->
+    <header class="site-header" role="banner">
+        <div class="container header-inner">
+            <a href="index.html" class="site-logo" aria-label="Ovni Culinaire – Accueil">
+                <span>Ovni</span> Culinaire
+            </a>
+
+            <nav class="header-nav" aria-label="Navigation principale">
+                <a href="submit.html" class="header-link" aria-current="page">Poster une recette</a>
+                <button type="button" class="btn-cta" id="surprise-btn" aria-label="Surprends-moi avec une recette aléatoire">
+                    Surprends-moi
+                </button>
+                <button type="button" class="user-icon" id="user-btn" aria-label="Compte utilisateur">
+                    <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                    <span id="user-label">Se connecter</span>
+                </button>
+            </nav>
+
+            <button type="button" class="menu-toggle" id="menu-toggle" aria-controls="mobile-nav" aria-expanded="false" aria-label="Ouvrir le menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+
+        <nav class="mobile-nav" id="mobile-nav" aria-label="Navigation mobile">
+            <a href="index.html#salarie-creve">Salarié Crevé</a>
+            <a href="index.html#etudiant-fauche">Étudiant Fauché</a>
+            <a href="index.html#parent-epuise">Parent Épuisé</a>
+            <a href="submit.html" aria-current="page">Poster une recette</a>
+            <button type="button" class="btn-secondary" style="width:100%;margin-top:8px;" id="mobile-user-btn">Se connecter</button>
+        </nav>
+    </header>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <main id="main-content">
+        <!-- Page Header -->
+        <header class="submit-header">
+            <div class="container">
+                <h1>Poster une recette</h1>
+                <p class="text-muted">Partagez vos recettes testées avec la communauté Ovni Culinaire</p>
+            </div>
+        </header>
+
+        <!-- Login Required Message -->
+        <div id="login-required" class="container" style="display:none;padding:48px 16px;text-align:center;">
+            <div style="background:var(--color-surface);padding:32px;border-radius:var(--radius-lg);max-width:500px;margin:0 auto;">
+                <h2>Connexion requise</h2>
+                <p class="text-muted" style="margin:16px 0 24px;">Vous devez être connecté pour poster une recette.</p>
+                <button type="button" class="btn-cta" id="open-login-btn">Se connecter</button>
+            </div>
+        </div>
+
+        <!-- Success Message -->
+        <div id="submit-success" class="container" style="display:none;padding:48px 16px;">
+            <div class="submit-success">
+                <h2>✓ Recette envoyée!</h2>
+                <p>Votre recette est en attente de publication. Merci de contribuer à Ovni Culinaire!</p>
+                <a href="index.html" class="btn-cta" style="display:inline-block;margin-top:16px;">Voir les recettes</a>
+            </div>
+        </div>
+
+        <!-- Submit Form -->
+        <div id="submit-form-container" class="container" style="padding:32px 16px;">
+            <form class="submit-form" id="recipe-form" novalidate>
+                <div class="form-element-group">
+                    <label for="recipe-title">Titre de la recette *</label>
+                    <input type="text" id="recipe-title" name="title" required aria-required="true" 
+                           placeholder="ex: Pasta alla Carbonara express" maxlength="100">
+                    <p class="form-help">Maximum 100 caractères</p>
+                </div>
+
+                <div class="form-element-group">
+                    <label for="recipe-ingredients">Ingrédients *</label>
+                    <textarea id="recipe-ingredients" name="ingredients" required aria-required="true"
+                              placeholder="Listez les ingrédients, un par ligne:&#10;200g de pâtes&#10;100g de lardons&#10;2 œufs&#10;50g de parmesan"></textarea>
+                    <p class="form-help">Un ingrédient par ligne. Le format sera converti automatiquement.</p>
+                </div>
+
+                <div class="form-element-group">
+                    <label for="recipe-steps">Étapes de préparation *</label>
+                    <textarea id="recipe-steps" name="steps" required aria-required="true"
+                              placeholder="Décrivez les étapes, une par ligne:&#10;Faire cuire les pâtes 10 min&#10;Faire revenir les lardons&#10;Mélanger les œufs et le parmesan&#10;Assembler et servir"></textarea>
+                    <p class="form-help">Une étape par ligne. Be descriptif!</p>
+                </div>
+
+                <div class="form-element-group">
+                    <label for="recipe-anecdote">Anecdote (optionnel)</label>
+                    <textarea id="recipe-anecdote" name="anecdote"
+                              placeholder="Racontez l'histoire derrière cette recette. Comment l'avez-vous découverte?"></textarea>
+                    <p class="form-help">Ajoutez une touche personnelle à votre recette</p>
+                </div>
+
+                <div class="form-element-group">
+                    <label for="recipe-category">Catégorie *</label>
+                    <select id="recipe-category" name="category" required aria-required="true">
+                        <option value="">Sélectionnez une catégorie</option>
+                        <option value="Rapide">Rapide</option>
+                        <option value="Petit budget">Petit budget</option>
+                        <option value="Élaborée">Élaborée</option>
+                        <option value="Autre">Autre</option>
+                    </select>
+                </div>
+
+                <div class="form-element-group">
+                    <label for="recipe-cost">Coût estimé par portion (€) *</label>
+                    <input type="number" id="recipe-cost" name="cost" required aria-required="true"
+                           min="0.01" max="100" step="0.01" placeholder="ex: 3.50">
+                    <p class="form-help">Estimation du coût par personne</p>
+                </div>
+
+                <div class="form-element-group">
+                    <label for="recipe-prep-time">Temps de préparation (minutes) *</label>
+                    <input type="number" id="recipe-prep-time" name="prep_time" required aria-required="true"
+                           min="1" max="480" placeholder="ex: 20">
+                    <p class="form-help">En minutes, sans le temps de cuisson si applicable</p>
+                </div>
+
+                <button type="submit" class="btn-cta" style="width:100%;padding:16px;font-size:1.1rem;">
+                    Envoyer ma recette
+                </button>
+
+                <p class="text-center text-muted" style="margin-top:16px;font-size:0.85rem;">
+                    Votre recette sera examinée avant publication.
+                </p>
+            </form>
+        </div>
+    </main>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="site-footer" role="contentinfo">
+        <div class="container footer-inner">
+            <div class="footer-links">
+                <a href="styleguide.html">Design System</a>
+                <a href="submit.html">Poster une recette</a>
+            </div>
+            <p class="footer-copy">© 2025 Ovni Culinaire – Zine meets tech</p>
+        </div>
+    </footer>
+
+    <!-- ========== LOGIN MODAL ========== -->
+    <div class="modal-overlay" id="login-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1">
+        <div class="modal">
+            <button type="button" class="modal-close" aria-label="Fermer la fenêtre" id="modal-close">&times;</button>
+            <h2 id="modal-title">Connexion</h2>
+            <form id="login-form" novalidate>
+                <div class="form-group">
+                    <label for="login-pseudo">Pseudo</label>
+                    <input type="text" id="login-pseudo" name="pseudo" required autocomplete="username" aria-required="true">
+                </div>
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" name="email" required autocomplete="email" aria-required="true">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Mot de passe</label>
+                    <input type="password" id="login-password" name="password" required autocomplete="current-password" aria-required="true">
+                </div>
+                <button type="submit" class="btn-cta" style="width:100%;">Se connecter / Créer un compte</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========== JAVASCRIPT ========== -->
+    <script>
+        // ====== DOM ELEMENTS ======
+        const surpriseBtn = document.getElementById('surprise-btn');
+        const userBtn = document.getElementById('user-btn');
+        const mobileUserBtn = document.getElementById('mobile-user-btn');
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileNav = document.getElementById('mobile-nav');
+        const loginModal = document.getElementById('login-modal');
+        const modalClose = document.getElementById('modal-close');
+        const loginForm = document.getElementById('login-form');
+        const userLabel = document.getElementById('user-label');
+        const recipeForm = document.getElementById('recipe-form');
+        const loginRequired = document.getElementById('login-required');
+        const submitSuccess = document.getElementById('submit-success');
+        const submitFormContainer = document.getElementById('submit-form-container');
+        const openLoginBtn = document.getElementById('open-login-btn');
+
+        // ====== STATE ======
+        let userPseudo = localStorage.getItem('ovni_pseudo') || null;
+
+        // ====== USER AUTHENTICATION ======
+        function updateUserUI() {
+            if (userPseudo) {
+                userLabel.textContent = userPseudo;
+                userBtn.setAttribute('aria-label', `Compte ${userPseudo}`);
+            }
+        }
+
+        function openLoginModal() {
+            loginModal.classList.add('is-open');
+            document.getElementById('login-pseudo').focus();
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLoginModal() {
+            loginModal.classList.remove('is-open');
+            document.body.style.overflow = '';
+        }
+
+        function checkLoginState() {
+            if (userPseudo) {
+                loginRequired.style.display = 'none';
+                submitFormContainer.style.display = 'block';
+            } else {
+                loginRequired.style.display = 'block';
+                submitFormContainer.style.display = 'none';
+            }
+        }
+
+        // ====== MOBILE MENU ======
+        function toggleMobileMenu() {
+            const isOpen = mobileNav.classList.toggle('is-open');
+            menuToggle.setAttribute('aria-expanded', isOpen);
+        }
+
+        // ====== FORM PROCESSING ======
+        // Convert textarea input to JSON array
+        function parseListInput(text) {
+            return text.split('\n')
+                .map(line => line.trim())
+                .filter(line => line.length > 0);
+        }
+
+        // ====== EVENT LISTENERS ======
+        // Surprise me
+        surpriseBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/recipes/random');
+                if (response.ok) {
+                    const data = await response.json();
+                    window.location.href = `recipe.html?id=${data.id}`;
+                }
+            } catch (error) {
+                console.error('Surprise failed:', error);
+            }
+        });
+
+        // User buttons
+        userBtn.addEventListener('click', openLoginModal);
+        if (mobileUserBtn) mobileUserBtn.addEventListener('click', openLoginModal);
+        if (openLoginBtn) openLoginBtn.addEventListener('click', openLoginModal);
+
+        // Modal close
+        modalClose.addEventListener('click', closeLoginModal);
+        loginModal.addEventListener('click', (e) => {
+            if (e.target === loginModal) closeLoginModal();
+        });
+
+        // Mobile menu
+        menuToggle.addEventListener('click', toggleMobileMenu);
+        mobileNav.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileNav.classList.remove('is-open');
+                menuToggle.setAttribute('aria-expanded', 'false');
+            });
+        });
+
+        // Login form submission
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(loginForm);
+            const data = Object.fromEntries(formData.entries());
+            
+            if (data.pseudo && data.email && data.password) {
+                localStorage.setItem('ovni_pseudo', data.pseudo);
+                localStorage.setItem('ovni_email', data.email);
+                userPseudo = data.pseudo;
+                updateUserUI();
+                closeLoginModal();
+                loginForm.reset();
+                checkLoginState();
+            }
+        });
+
+        // Recipe form submission
+        recipeForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Check login state before submission
+            if (!userPseudo) {
+                openLoginModal();
+                return;
+            }
+
+            const formData = new FormData(recipeForm);
+            const data = Object.fromEntries(formData.entries());
+
+            // Validate required fields
+            if (!data.title || !data.ingredients || !data.steps || !data.category || !data.cost || !data.prep_time) {
+                alert('Veuillez remplir tous les champs obligatoires.');
+                return;
+            }
+
+            // Convert list inputs to JSON arrays
+            const payload = {
+                title: data.title,
+                ingredients: JSON.stringify(parseListInput(data.ingredients)),
+                steps: JSON.stringify(parseListInput(data.steps)),
+                anecdote: data.anecdote || null,
+                category: data.category,
+                cost_per_portion: parseFloat(data.cost),
+                prep_time: parseInt(data.prep_time, 10),
+                author_pseudo: userPseudo
+            };
+
+            try {
+                const response = await fetch('/api/recipes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('ovni_token') || ''}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    submitFormContainer.style.display = 'none';
+                    submitSuccess.style.display = 'block';
+                    recipeForm.reset();
+                } else {
+                    alert('Erreur lors de l\'envoi. Veuillez réessayer.');
+                }
+            } catch (error) {
+                console.error('Submit failed:', error);
+                alert('Erreur lors de l\'envoi. Veuillez réessayer.');
+            }
+        });
+
+        // Keyboard escape to close modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && loginModal.classList.contains('is-open')) {
+                closeLoginModal();
+            }
+        });
+
+        // ====== INITIALIZATION ======
+        function init() {
+            updateUserUI();
+            checkLoginState();
+        }
+
+        init();
+    </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"8607d2a720d14b038279025b2b5a82e5","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>

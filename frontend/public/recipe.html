@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Ovni Culinaire – Détails de la recette">
+    <title>Recette – Ovni Culinaire</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Skip link for keyboard navigation -->
+    <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
+    <!-- ========== HEADER ========== -->
+    <header class="site-header" role="banner">
+        <div class="container header-inner">
+            <a href="index.html" class="site-logo" aria-label="Ovni Culinaire – Accueil">
+                <span>Ovni</span> Culinaire
+            </a>
+
+            <nav class="header-nav" aria-label="Navigation principale">
+                <a href="submit.html" class="header-link">Poster une recette</a>
+                <button type="button" class="btn-cta" id="surprise-btn" aria-label="Surprends-moi avec une recette aléatoire">
+                    Surprends-moi
+                </button>
+                <button type="button" class="user-icon" id="user-btn" aria-label="Compte utilisateur">
+                    <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                    <span id="user-label">Se connecter</span>
+                </button>
+            </nav>
+
+            <button type="button" class="menu-toggle" id="menu-toggle" aria-controls="mobile-nav" aria-expanded="false" aria-label="Ouvrir le menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+
+        <nav class="mobile-nav" id="mobile-nav" aria-label="Navigation mobile">
+            <a href="index.html#salarie-creve">Salarié Crevé</a>
+            <a href="index.html#etudiant-fauche">Étudiant Fauché</a>
+            <a href="index.html#parent-epuise">Parent Épuisé</a>
+            <a href="submit.html">Poster une recette</a>
+            <button type="button" class="btn-secondary" style="width:100%;margin-top:8px;" id="mobile-user-btn">Se connecter</button>
+        </nav>
+    </header>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <main id="main-content">
+        <!-- Loading state -->
+        <div id="loading-state" class="container" style="padding:80px 16px 32px;text-align:center;" role="status" aria-live="polite">
+            <p>Chargement de la recette...</p>
+        </div>
+
+        <!-- Error state -->
+        <div id="error-state" class="container" style="display:none;padding:80px 16px 32px;" role="alert">
+            <h2>Recette introuvable</h2>
+            <p>Cette recette n'existe pas ou a été supprimée.</p>
+            <a href="index.html" class="btn-secondary" style="display:inline-block;margin-top:16px;">Retour aux recettes</a>
+        </div>
+
+        <!-- Recipe content -->
+        <article id="recipe-content" style="display:none;">
+            <!-- Recipe Header -->
+            <header class="recipe-header">
+                <div class="container">
+                    <span class="recipe-category" id="recipe-category">Catégorie</span>
+                    <h1 class="recipe-title" id="recipe-title">Titre de la recette</h1>
+                    
+                    <div class="recipe-info">
+                        <div class="recipe-info-item">
+                            <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+                                <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                            </svg>
+                            <strong id="recipe-time">0 min</strong>
+                            <span class="text-muted">de préparation</span>
+                        </div>
+                        <div class="recipe-info-item">
+                            <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+                                <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+                            </svg>
+                            <strong id="recipe-cost">0,00 €</strong>
+                            <span class="text-muted">par portion</span>
+                        </div>
+                    </div>
+
+                    <p class="recipe-author">
+                        Posté et vécu par <strong id="recipe-author">Auteur</strong>
+                    </p>
+                </div>
+            </header>
+
+            <!-- Recipe Body -->
+            <div class="container recipe-content">
+                <!-- Ingredients Section -->
+                <section aria-labelledby="ingredients-title">
+                    <h2 id="ingredients-title">Ingrédients</h2>
+                    <ul class="ingredients-list" id="ingredients-list">
+                        <!-- Populated by JavaScript from JSON -->
+                    </ul>
+                </section>
+
+                <!-- Steps Section -->
+                <section aria-labelledby="steps-title">
+                    <h2 id="steps-title">Étapes de préparation</h2>
+                    <ol class="steps-list" id="steps-list">
+                        <!-- Populated by JavaScript from JSON -->
+                    </ol>
+                </section>
+
+                <!-- Story Behind Section -->
+                <section class="recipe-story" aria-labelledby="story-title">
+                    <h3 id="story-title">L'histoire derrière</h3>
+                    <p id="recipe-story">
+                        <!-- Populated by JavaScript -->
+                    </p>
+                </section>
+
+                <!-- Action Buttons -->
+                <div class="recipe-actions">
+                    <button type="button" class="btn-action btn-save" id="btn-save" aria-label="Sauvegarder cette recette">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+                            <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
+                        </svg>
+                        Sauvegarder
+                    </button>
+                    <button type="button" class="btn-action btn-comment" id="btn-comment" aria-label="Laisser un commentaire">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+                            <path d="M21.99 4c-1.1 0-2 .9-2 2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18zM18 14H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+                        </svg>
+                        Commenter
+                    </button>
+                    <button type="button" class="btn-action btn-share" id="btn-share" aria-label="Partager cette recette">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+                            <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/>
+                        </svg>
+                        Partager
+                    </button>
+                </div>
+
+                <!-- Comment Form (hidden by default) -->
+                <div class="comment-form" id="comment-form" style="display:none;">
+                    <h3>Laisser un commentaire</h3>
+                    <form id="review-form" novalidate>
+                        <div class="form-group">
+                            <label for="review-pseudo">Votre pseudo *</label>
+                            <input type="text" id="review-pseudo" name="pseudo" required aria-required="true" placeholder="Comment vous appelez-vous?">
+                            <p class="form-hint">Pas de compte? Utilisez n'importe quel pseudo pour commenter.</p>
+                        </div>
+                        <div class="form-group">
+                            <label for="review-rating">Note *</label>
+                            <select id="review-rating" name="rating" required aria-required="true">
+                                <option value="">Sélectionnez une note</option>
+                                <option value="5">★★★★★ – Excellent</option>
+                                <option value="4">★★★★☆ – Très bien</option>
+                                <option value="3">★★★☆☆ – Bien</option>
+                                <option value="2">★★☆☆☆ – Correct</option>
+                                <option value="1">★☆☆☆☆ – Décevant</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="review-comment">Votre expérience *</label>
+                            <textarea id="review-comment" name="comment" required aria-required="true" placeholder="Racontez votre expérience avec cette recette..."></textarea>
+                        </div>
+                        <button type="submit" class="btn-cta">Envoyer mon commentaire</button>
+                    </form>
+                </div>
+
+                <!-- Reviews Section -->
+                <section class="reviews-section" aria-labelledby="reviews-title">
+                    <div class="reviews-header">
+                        <h2 id="reviews-title">Retours utilisateurs</h2>
+                        <div class="rating-display">
+                            <span class="rating-stars" id="avg-rating" aria-label="Note moyenne">★★★★★</span>
+                            <span class="rating-count" id="review-count">(0 avis)</span>
+                        </div>
+                    </div>
+
+                    <ul class="reviews-list" id="reviews-list" aria-live="polite">
+                        <!-- Populated by JavaScript -->
+                    </ul>
+
+                    <div id="no-reviews" class="text-center text-muted" style="padding:24px;">
+                        <p>Pas encore de commentaire. Soyez le premier à partager votre expérience!</p>
+                    </div>
+                </section>
+            </div>
+        </article>
+    </main>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="site-footer" role="contentinfo">
+        <div class="container footer-inner">
+            <div class="footer-links">
+                <a href="styleguide.html">Design System</a>
+                <a href="submit.html">Poster une recette</a>
+            </div>
+            <p class="footer-copy">© 2025 Ovni Culinaire – Zine meets tech</p>
+        </div>
+    </footer>
+
+    <!-- ========== LOGIN MODAL ========== -->
+    <div class="modal-overlay" id="login-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1">
+        <div class="modal">
+            <button type="button" class="modal-close" aria-label="Fermer la fenêtre" id="modal-close">&times;</button>
+            <h2 id="modal-title">Connexion</h2>
+            <form id="login-form" novalidate>
+                <div class="form-group">
+                    <label for="login-pseudo">Pseudo</label>
+                    <input type="text" id="login-pseudo" name="pseudo" required autocomplete="username" aria-required="true">
+                </div>
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" name="email" required autocomplete="email" aria-required="true">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Mot de passe</label>
+                    <input type="password" id="login-password" name="password" required autocomplete="current-password" aria-required="true">
+                </div>
+                <button type="submit" class="btn-cta" style="width:100%;">Se connecter / Créer un compte</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========== JAVASCRIPT ========== -->
+    <script>
+        // ====== CONFIGURATION ======
+        const API_BASE = '/api/recipes';
+
+        // ====== DOM ELEMENTS ======
+        const loadingState = document.getElementById('loading-state');
+        const errorState = document.getElementById('error-state');
+        const recipeContent = document.getElementById('recipe-content');
+        const surpriseBtn = document.getElementById('surprise-btn');
+        const userBtn = document.getElementById('user-btn');
+        const mobileUserBtn = document.getElementById('mobile-user-btn');
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileNav = document.getElementById('mobile-nav');
+        const loginModal = document.getElementById('login-modal');
+        const modalClose = document.getElementById('modal-close');
+        const loginForm = document.getElementById('login-form');
+        const userLabel = document.getElementById('user-label');
+        const btnSave = document.getElementById('btn-save');
+        const btnComment = document.getElementById('btn-comment');
+        const btnShare = document.getElementById('btn-share');
+        const commentForm = document.getElementById('comment-form');
+        const reviewForm = document.getElementById('review-form');
+
+        // ====== STATE ======
+        let recipe = null;
+        let userPseudo = localStorage.getItem('ovni_pseudo') || null;
+
+        // ====== UTILITY FUNCTIONS ======
+        function formatTime(minutes) {
+            if (minutes < 60) return `${minutes} min`;
+            const h = Math.floor(minutes / 60);
+            const m = minutes % 60;
+            return m > 0 ? `${h}h${m}` : `${h}h`;
+        }
+
+        function formatCost(amount) {
+            return `${amount.toFixed(2).replace('.', ',')} €`;
+        }
+
+        function toggleDisplay(element, show) {
+            element.style.display = show ? 'block' : 'none';
+        }
+
+        function getUrlParam(name) {
+            const params = new URLSearchParams(window.location.search);
+            return params.get(name);
+        }
+
+        // ====== USER AUTHENTICATION ======
+        function updateUserUI() {
+            if (userPseudo) {
+                userLabel.textContent = userPseudo;
+            }
+        }
+
+        function openLoginModal() {
+            loginModal.classList.add('is-open');
+            document.getElementById('login-pseudo').focus();
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLoginModal() {
+            loginModal.classList.remove('is-open');
+            document.body.style.overflow = '';
+        }
+
+        // ====== MOBILE MENU ======
+        function toggleMobileMenu() {
+            const isOpen = mobileNav.classList.toggle('is-open');
+            menuToggle.setAttribute('aria-expanded', isOpen);
+        }
+
+        // ====== RECIPE DATA ======
+        async function fetchRecipe(id) {
+            try {
+                const response = await fetch(`${API_BASE}/${id}`);
+                if (!response.ok) return null;
+                return await response.json();
+            } catch (error) {
+                console.error('Failed to fetch recipe:', error);
+                return null;
+            }
+        }
+
+        // Parse ingredients JSON stored in TEXT field
+        function parseIngredients(jsonString) {
+            try {
+                const data = JSON.parse(jsonString);
+                if (Array.isArray(data)) return data;
+                if (typeof data === 'object') return data.items || [];
+                return [];
+            } catch {
+                return [];
+            }
+        }
+
+        // Parse steps JSON stored in TEXT field
+        function parseSteps(jsonString) {
+            try {
+                const data = JSON.parse(jsonString);
+                if (Array.isArray(data)) return data;
+                if (typeof data === 'object') return data.steps || [];
+                return [];
+            } catch {
+                return [];
+            }
+        }
+
+        // ====== RENDER RECIPE ======
+        function renderRecipe(data) {
+            // Update page title
+            document.title = `${data.title} – Ovni Culinaire`;
+
+            // Header info
+            document.getElementById('recipe-category').textContent = data.category || 'Autre';
+            document.getElementById('recipe-title').textContent = data.title;
+            document.getElementById('recipe-time').textContent = formatTime(data.prep_time);
+            document.getElementById('recipe-cost').textContent = formatCost(data.cost_per_portion);
+            document.getElementById('recipe-author').textContent = data.author_pseudo || 'Anonyme';
+
+            // Ingredients list
+            const ingredientsList = document.getElementById('ingredients-list');
+            const ingredients = parseIngredients(data.ingredients);
+            ingredients.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                ingredientsList.appendChild(li);
+            });
+
+            // Steps list
+            const stepsList = document.getElementById('steps-list');
+            const steps = parseSteps(data.steps);
+            steps.forEach(step => {
+                const li = document.createElement('li');
+                li.textContent = step;
+                stepsList.appendChild(li);
+            });
+
+            // Story behind
+            const storyEl = document.getElementById('recipe-story');
+            if (data.anecdote || data.story) {
+                storyEl.textContent = data.anecdote || data.story;
+            } else {
+                storyEl.parentElement.style.display = 'none';
+            }
+
+            // Reviews
+            renderReviews(data.reviews || []);
+        }
+
+        function renderReviews(reviews) {
+            const reviewsList = document.getElementById('reviews-list');
+            const noReviews = document.getElementById('no-reviews');
+            const reviewCount = document.getElementById('review-count');
+            const avgRating = document.getElementById('avg-rating');
+
+            reviewCount.textContent = `(${reviews.length} avis)`;
+
+            if (reviews.length === 0) {
+                noReviews.style.display = 'block';
+                return;
+            }
+
+            noReviews.style.display = 'none';
+
+            // Calculate average rating
+            const total = reviews.reduce((sum, r) => sum + (r.rating || 0), 0);
+            const avg = reviews.length > 0 ? (total / reviews.length).toFixed(1) : '0';
+            const fullStars = Math.round(avg);
+            avgRating.textContent = '★'.repeat(fullStars) + '☆'.repeat(5 - fullStars);
+
+            // Render each review
+            reviews.forEach(review => {
+                const li = document.createElement('li');
+                li.className = 'review-item';
+                li.innerHTML = `
+                    <div class="review-item-meta">
+                        <span class="review-author">${review.pseudo || 'Anonyme'}</span>
+                        <span class="review-date">${review.created_at ? new Date(review.created_at).toLocaleDateString('fr-FR') : ''}</span>
+                    </div>
+                    <div class="rating-display" style="margin-bottom:8px;" aria-label="Note: ${review.rating} sur 5">
+                        ${'★'.repeat(review.rating || 0)}${'☆'.repeat(5 - (review.rating || 0))}
+                    </div>
+                    <p>${review.comment || ''}</p>
+                `;
+                reviewsList.appendChild(li);
+            });
+        }
+
+        // ====== SHARE FUNCTIONALITY ======
+        async function shareRecipe() {
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: recipe.title,
+                        text: `Découvrez cette recette: ${recipe.title}`,
+                        url: window.location.href
+                    });
+                } catch (err) {
+                    if (err.name !== 'AbortError') {
+                        copyLink();
+                    }
+                }
+            } else {
+                copyLink();
+            }
+        }
+
+        function copyLink() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                alert('Lien copié dans le presse-papier!');
+            }).catch(() => {
+                prompt('Copiez ce lien:', window.location.href);
+            });
+        }
+
+        // ====== EVENT LISTENERS ======
+        // Surprise me
+        surpriseBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/recipes/random');
+                if (response.ok) {
+                    const data = await response.json();
+                    window.location.href = `recipe.html?id=${data.id}`;
+                }
+            } catch (error) {
+                console.error('Surprise failed:', error);
+            }
+        });
+
+        // User buttons
+        userBtn.addEventListener('click', openLoginModal);
+        if (mobileUserBtn) mobileUserBtn.addEventListener('click', openLoginModal);
+
+        // Modal close
+        modalClose.addEventListener('click', closeLoginModal);
+        loginModal.addEventListener('click', (e) => {
+            if (e.target === loginModal) closeLoginModal();
+        });
+
+        // Mobile menu
+        menuToggle.addEventListener('click', toggleMobileMenu);
+        mobileNav.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileNav.classList.remove('is-open');
+                menuToggle.setAttribute('aria-expanded', 'false');
+            });
+        });
+
+        // Login form
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(loginForm);
+            const data = Object.fromEntries(formData.entries());
+            
+            if (data.pseudo && data.email && data.password) {
+                localStorage.setItem('ovni_pseudo', data.pseudo);
+                localStorage.setItem('ovni_email', data.email);
+                userPseudo = data.pseudo;
+                updateUserUI();
+                closeLoginModal();
+                loginForm.reset();
+            }
+        });
+
+        // Save button
+        btnSave.addEventListener('click', () => {
+            if (!userPseudo) {
+                openLoginModal();
+                return;
+            }
+            // TODO: Call save API
+            alert('Recette sauvegardée!');
+        });
+
+        // Comment button
+        btnComment.addEventListener('click', () => {
+            toggleDisplay(commentForm, true);
+            commentForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            document.getElementById('review-pseudo').focus();
+        });
+
+        // Share button
+        btnShare.addEventListener('click', shareRecipe);
+
+        // Review form submission
+        reviewForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(reviewForm);
+            const data = Object.fromEntries(formData.entries());
+            
+            if (!data.pseudo || !data.rating || !data.comment) {
+                alert('Veuillez remplir tous les champs obligatoires.');
+                return;
+            }
+
+            // TODO: POST to /api/recipes/:id/reviews
+            console.log('Review submitted:', data);
+            alert('Merci pour votre commentaire!');
+            reviewForm.reset();
+            toggleDisplay(commentForm, false);
+        });
+
+        // Keyboard escape to close modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && loginModal.classList.contains('is-open')) {
+                closeLoginModal();
+            }
+        });
+
+        // ====== INITIALIZATION ======
+        async function init() {
+            updateUserUI();
+            
+            const recipeId = getUrlParam('id');
+            if (!recipeId) {
+                toggleDisplay(loadingState, false);
+                toggleDisplay(errorState, true);
+                errorState.querySelector('h2').textContent = 'Paramètre manquant';
+                errorState.querySelector('p').textContent = 'Aucune recette spécifiée dans l\'URL.';
+                return;
+            }
+
+            recipe = await fetchRecipe(recipeId);
+            
+            if (!recipe) {
+                toggleDisplay(loadingState, false);
+                toggleDisplay(errorState, true);
+                return;
+            }
+
+            toggleDisplay(loadingState, false);
+            toggleDisplay(errorState, false);
+            toggleDisplay(recipeContent, true);
+            
+            renderRecipe(recipe);
+        }
+
+        init();
+    </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"8607d2a720d14b038279025b2b5a82e5","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
