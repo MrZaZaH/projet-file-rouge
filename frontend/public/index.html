@@ -200,9 +200,8 @@
             card.setAttribute('aria-label', recipe.title + ' – ' + formatTime(recipe.prep_time) + ' – ' + formatCost(recipe.cost_per_portion));
 
             const stars = '\u2605'.repeat(Math.round(recipe.average_rating || 0)) + '\u2606'.repeat(5 - Math.round(recipe.average_rating || 0));
-            const badge = (recipe.average_rating >= 4.5) ? '<span class="recipe-card-badge">Jackpot</span>' : '';
 
-            card.innerHTML = badge + '\n                <div class="recipe-card-meta">\n                    <div class="recipe-time">\n                        <strong>' + formatTime(recipe.prep_time) + '</strong>\n                        <span>préparation</span>\n                    </div>\n                    <div class="recipe-cost">\n                        <strong>' + formatCost(recipe.cost_per_portion) + '</strong>\n                        <span>portion</span>\n                    </div>\n                </div>\n                <h3>' + recipe.title + '</h3>\n                <div class="recipe-card-rating">\n                    ' + stars + '\n                    <span>(' + (recipe.comment_count || 0) + ' avis)</span>\n                </div>';
+            card.innerHTML = '<div class="recipe-card-meta">\n                    <div class="recipe-time">\n                        <strong>' + formatTime(recipe.prep_time) + '</strong>\n                        <span>préparation</span>\n                    </div>\n                    <div class="recipe-cost">\n                        <strong>' + formatCost(recipe.cost_per_portion) + '</strong>\n                        <span>portion</span>\n                    </div>\n                </div>\n                <h3>' + recipe.title + '</h3>\n                <div class="recipe-card-rating">\n                    ' + stars + '\n                    <span>(' + (recipe.comment_count || 0) + ' avis)</span>\n                </div>';
 
             if (recipe.anecdote) {
                 const anecdote = document.createElement('p');

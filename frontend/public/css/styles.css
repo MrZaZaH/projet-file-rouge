@@ -404,20 +404,6 @@
     margin-bottom: 0.8rem;
 }
 
-.recipe-card-badge {
-    display: inline-block;
-    border: 2px dashed var(--accent);
-    color: var(--accent);
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    padding: 0.2rem 0.5rem;
-    transform: rotate(-2deg);
-    position: absolute;
-    top: 0.8rem;
-    right: 0.8rem;
-}
-
 .recipe-card-rating {
     display: flex;
     align-items: center;

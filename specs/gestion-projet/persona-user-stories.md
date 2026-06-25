@@ -42,17 +42,14 @@ __En tant que__ salarié crevé, __Je veux__ sentir que la recette vient d'un vr
 
 - Filtres budget : __< 3€__ / __< 5€__ / "Peu importe"
 - __Coût estimé par portion__ affiché sur chaque carte recette (renseigné par l'auteur)
-- Badge __"Jackpot" 🎰__ pour les recettes : ✔️ Rapides ✔️ Originales ✔️ < 3€
 
 #### __🔹 US-04 – Recettes minimalistes__
 
-\*\*En tant qu'\*\*étudiant fauché, __Je veux__ des recettes avec peu d'ingrédients et zéro ustensile bizarre, __Afin de__ cuisiner avec ce que j'ai vraiment sous la main.
+\*\*En tant qu'\*\*étudiant fauché, __Je veux__ des recettes avec peu d'ingrédients, __Afin de__ cuisiner avec ce que j'ai vraiment sous la main.
 
 ✅ __Critères d'acceptation :__
 
 - Filtre __"Moins de 5 ingrédients"__
-- Chaque recette liste __uniquement des ustensiles basiques__
-- Si un ustensile inhabituel apparaît → __une alternative simple est proposée__ (ex : "Pas de rouleau ? Une bouteille fait l'affaire")
 
 ### __👩‍👧 PERSONA 3 – Le Parent Épuisé (critère : CONFIANCE)__
 

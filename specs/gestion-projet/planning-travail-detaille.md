@@ -316,7 +316,7 @@ __Détail concret__ :
 	- \+10 points à la publication d’une recette. 
 	- \+5 points par note ≥ 4 reçue. 
 	- Calcul de niveau en fonction du total de points (ex: niveau 1 = 0-50, niveau 2 = 51-150, etc.). 
-	- Table Badges et UserBadges (badges débloqués : “Débutant”, “Cuistot du soir”, “Jackpot”, “Légende des recettes”).
+	- Table Badges et UserBadges (badges débloqués : “Débutant”, “Cuistot du soir”, “Légende des recettes”).
 - Créer UserController.js avec getUserDashboard(userId) qui renvoie points, niveau, badges, recettes publiées et statistiques personnelles. 
 - Route protégée /me/dashboard. 
 - Page explicative statique (pour l’instant une route /badges qui renvoie la liste des badges et les conditions). 
@@ -340,7 +340,7 @@ __Détail concret__ :
 	- Temps de préparation (< 15 min) 
 	- Budget (< 3€, < 5€) 
 	- Nombre d’ingrédients (< 5) 
-	- Catégorie, popularité, “Jackpot” (combinaison rapide \+ original \+ <3€)
+	- Catégorie, popularité (combinaison rapide \+ original \+ <3€)
 - Ajouter un tri intelligent (par pertinence pour le persona : d’abord les recettes <15 min pour le salarié crevé, etc.). 
 - Créer des constantes dans src/constants/filters.js pour éviter la magie dans le code. 
 - Ajouter des tests unitaires spécifiques pour chaque combinaison de filtres (minimum 6 tests). 
@@ -478,10 +478,9 @@ __Jour 22__
 __Tâche__ : Page Recette détaillée \+ Bloc "L’histoire derrière" (US-02)  
 __Détail concret__ : 
 
-- Créer recette.html avec tous les éléments : titre, temps, coût, ingrédients (<5 pour le persona étudiant), ustensiles avec alternatives si besoin, étapes, et surtout le bloc narratif "L’histoire derrière" avec ton humain et humoristique. 
+- Créer recette.html avec tous les éléments : titre, temps, coût, ingrédients (<5 pour le persona étudiant), étapes, et surtout le bloc narratif "L’histoire derrière" avec ton humain et humoristique. 
 - Ajouter les commentaires (US-13) : formulaire simple avec pseudo (sans compte) \+ affichage des commentaires existants. 
 - Rendre la page accessible (landmarks, aria sur les listes d’ingrédients, contraste sur le récit). 
-- Ajouter un badge "Jackpot" conditionnel (visible si <3€ \+ rapide). 
 - Préparer des placeholders pour les données qui viendront du backend plus tard.
 
 __Livrable__ : 
@@ -600,7 +599,6 @@ __Tâche__ : Page Recette détaillée dynamique \+ Commentaires (US-02, US-13)
 __Détail concret__ : 
 
 - Rendre recette.html dynamique : récupérer l’ID via l’URL (?id=xx ou route avec paramètre), appeler l’API pour charger les détails, ingrédients, étapes, histoire, notes. 
-- Afficher le badge "Jackpot" dynamiquement selon les critères (<3€ et rapide). 
 - Implémenter le système de commentaires : formulaire d’ajout (avec sanitization basique), affichage des commentaires existants, mise à jour en temps réel après ajout. 
 - Ajouter un système simple de notation (étoiles cliquables) qui met à jour average_rating. 
 - Gérer les focus et les mises à jour du DOM de façon accessible.
