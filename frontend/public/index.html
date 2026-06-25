@@ -1,32 +1,26 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Ovni Culinaire – Recettes rapides, pas chères et testées par de vrais gens">
+    <meta name="description" content="Ovni Culinaire – Des recettes inventées par des gens normaux dans des situations anormales">
     <title>Ovni Culinaire – Recettes du quotidien</title>
-    <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400;1,700&family=Special+Elite&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
-
 <body>
-    <!-- Skip link for keyboard navigation -->
     <a href="#main-content" class="skip-link">Aller au contenu principal</a>
 
     <!-- ========== HEADER ========== -->
     <header class="site-header" role="banner">
-        <div class="container header-inner">
-            <!-- Logo -->
+        <div class="header-inner">
             <a href="index.html" class="site-logo" aria-label="Ovni Culinaire – Accueil">
                 <span>Ovni</span> Culinaire
             </a>
 
-            <!-- Desktop navigation -->
             <nav class="header-nav" aria-label="Navigation principale">
                 <a href="submit.html" class="header-link">Poster une recette</a>
                 <button type="button" class="btn-cta" id="surprise-btn"
@@ -35,14 +29,12 @@
                 </button>
                 <button type="button" class="user-icon" id="user-btn" aria-label="Compte utilisateur">
                     <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
-                        <path
-                            d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                     </svg>
                     <span id="user-label">Se connecter</span>
                 </button>
             </nav>
 
-            <!-- Mobile menu toggle -->
             <button type="button" class="menu-toggle" id="menu-toggle" aria-controls="mobile-nav" aria-expanded="false"
                 aria-label="Ouvrir le menu">
                 <span></span>
@@ -51,120 +43,121 @@
             </button>
         </div>
 
-        <!-- Mobile navigation -->
         <nav class="mobile-nav" id="mobile-nav" aria-label="Navigation mobile">
-            <a href="#salarie-creve">Salarié Crevé</a>
-            <a href="#etudiant-fauche">Étudiant Fauché</a>
-            <a href="#parent-epuise">Parent Épuisé</a>
+            <a href="index.html">Accueil</a>
             <a href="submit.html">Poster une recette</a>
-            <button type="button" class="btn-secondary" style="width:100%;margin-top:8px;" id="mobile-user-btn">Se
-                connecter</button>
+            <button type="button" class="btn-secondary" id="mobile-user-btn">Se connecter</button>
         </nav>
     </header>
 
     <!-- ========== MAIN CONTENT ========== -->
     <main id="main-content">
-        <!-- Hero Section -->
+        <!-- Hero -->
         <section class="hero" aria-labelledby="hero-title">
-            <div class="container">
-                <h1 id="hero-title">Des recettes rapides, pas chères et testées par de vrais gens</h1>
-                <p>Découvrez des plats simples qui respectent votre temps et votre budget</p>
-            </div>
+            <p class="hero-eyebrow">Numéro 47 &nbsp;·&nbsp; Juin 2026</p>
+            <h1 id="hero-title">Des recettes inventées<br>par des gens <em>normaux</em><br>dans des situations <em>anormales</em></h1>
+            <p class="hero-sub">Frigo vide. Budget serré. Ventre creux. Solutions improbables.</p>
+            <a href="#" class="btn-cta" id="hero-surprise">Surprends-moi !</a>
         </section>
+
+        <div class="separator">~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~</div>
 
         <!-- Persona Filter Section -->
         <section class="persona-section" aria-labelledby="persona-title">
-            <div class="container">
-                <h2 id="persona-title" class="section-title">Choisis ton filtre</h2>
-                <div class="persona-grid">
-                    <!-- Salarié Crevé Card -->
-                    <article class="persona-card" data-persona="salarie-creve" role="button" tabindex="0"
-                        aria-pressed="false" aria-label="Filtrer pour Salarié Crevé – Temps de préparation ≤ 15 min">
-                        <div class="persona-card-image" role="img" aria-label="Icône Salarié Crevé"></div>
-                        <h3>Salarié Crevé</h3>
-                        <p>Recettes prêtes en 15 minutes chrono</p>
-                    </article>
+            <p class="section-title">Choisir son profil de misère</p>
+            <div class="persona-grid">
+                <article class="persona-card" data-persona="salarie-creve" role="button" tabindex="0"
+                    aria-pressed="false" aria-label="Filtrer pour Salarié Crevé – Temps ≤ 15 min">
+                    <div class="persona-card-image" role="img" aria-label="Icône Salarié Crevé"></div>
+                    <h3>Salarié Crevé</h3>
+                    <p>Recettes prêtes en 15 minutes chrono</p>
+                </article>
 
-                    <!-- Étudiant Fauché Card -->
-                    <article class="persona-card" data-persona="etudiant-fauche" role="button" tabindex="0"
-                        aria-pressed="false" aria-label="Filtrer pour Étudiant Fauché – Budget ≤ 5€ par portion">
-                        <div class="persona-card-image" role="img" aria-label="Icône Étudiant Fauché"></div>
-                        <h3>Étudiant Fauché</h3>
-                        <p>Manger bon sans ruiner son compte</p>
-                    </article>
+                <article class="persona-card" data-persona="etudiant-fauche" role="button" tabindex="0"
+                    aria-pressed="false" aria-label="Filtrer pour Étudiant Fauché – Budget ≤ 5€">
+                    <div class="persona-card-image" role="img" aria-label="Icône Étudiant Fauché"></div>
+                    <h3>Étudiant Fauché</h3>
+                    <p>Manger bon sans ruiner son compte</p>
+                </article>
 
-                    <!-- Parent Épuisé Card -->
-                    <article class="persona-card" data-persona="parent-epuise" role="button" tabindex="0"
-                        aria-pressed="false" aria-label="Filtrer pour Parent Épuisé – Rapide et bien noté">
-                        <div class="persona-card-image" role="img" aria-label="Icône Parent Épuisé"></div>
-                        <h3>Parent Épuisé</h3>
-                        <p>Repas express notés par d'autres parents</p>
-                    </article>
-                </div>
+                <article class="persona-card" data-persona="parent-epuise" role="button" tabindex="0"
+                    aria-pressed="false" aria-label="Filtrer pour Parent Épuisé – Rapide et bien noté">
+                    <div class="persona-card-image" role="img" aria-label="Icône Parent Épuisé"></div>
+                    <h3>Parent Épuisé</h3>
+                    <p>Repas express notés par d'autres parents</p>
+                </article>
             </div>
         </section>
 
+        <div class="separator">~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~</div>
+
         <!-- Recipe Grid Section -->
         <section class="recipes-section" aria-labelledby="recipes-title">
-            <div class="container">
-                <h2 id="recipes-title" class="section-title">Nos recettes</h2>
+            <p class="section-title">Recettes du moment</p>
 
-                <!-- Loading state -->
-                <div id="recipes-loading" class="text-center" role="status" aria-live="polite">
-                    <p>Chargement des recettes...</p>
-                </div>
+            <div id="recipes-loading" class="text-center" role="status" aria-live="polite">
+                <p>Chargement des recettes...</p>
+            </div>
 
-                <!-- Error state -->
-                <div id="recipes-error" class="text-center" style="display:none;" role="alert">
-                    <p>Impossible de charger les recettes. Veuillez réessayer.</p>
-                </div>
+            <div id="recipes-error" class="text-center" style="display:none;" role="alert">
+                <p>Impossible de charger les recettes. Veuillez réessayer.</p>
+            </div>
 
-                <!-- Recipe cards container -->
-                <div class="recipe-grid" id="recipe-grid" aria-live="polite">
-                    <!-- Recipe cards are populated by JavaScript -->
-                </div>
+            <div class="recipe-grid" id="recipe-grid" aria-live="polite">
+            </div>
 
-                <!-- No results message -->
-                <div id="no-recipes" class="text-center" style="display:none;">
-                    <p>Aucune recette ne correspond à ce filtre pour le moment.</p>
-                </div>
+            <div id="no-recipes" class="text-center" style="display:none;">
+                <p>Aucune recette ne correspond à ce filtre pour le moment.</p>
+            </div>
+        </section>
+
+        <div class="separator">~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~</div>
+
+        <!-- Anecdote Block -->
+        <section style="padding: 0 1.5rem; position: relative;" aria-labelledby="story-title">
+            <p class="section-title">L'histoire derrière</p>
+            <div class="anecdote-block">
+                <p id="featured-story">
+                    C'était un mercredi soir de novembre. Le frigo contenait
+                    exactement deux œufs, un fond de crème fraîche douteuse,
+                    et des lardons périmés depuis hier. J'avais 12 euros
+                    jusqu'au vendredi. J'ai improvisé. Ma fille a demandé
+                    si on pouvait avoir ça tous les soirs.
+                </p>
+                <cite id="featured-author">Marie D., maman de 3 enfants, Lyon</cite>
+                <span class="stamp">Approuvé<br>par la<br>communauté</span>
             </div>
         </section>
     </main>
 
     <!-- ========== FOOTER ========== -->
     <footer class="site-footer" role="contentinfo">
-        <div class="container footer-inner">
+        <div class="footer-inner">
             <div class="footer-links">
                 <a href="styleguide.html">Design System</a>
                 <a href="submit.html">Poster une recette</a>
             </div>
-            <p class="footer-copy">© 2025 Ovni Culinaire – Zine meets tech</p>
+            <p class="footer-copy"><strong>Ovni Culinaire</strong> — Les recettes que personne n'ose publier ailleurs. Depuis 2026.</p>
         </div>
     </footer>
 
     <!-- ========== LOGIN MODAL ========== -->
-    <div class="modal-overlay" id="login-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"
-        tabindex="-1">
-        <!-- TODO: Implement focus trap here using JavaScript -->
+    <div class="modal-overlay" id="login-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1">
         <div class="modal">
             <button type="button" class="modal-close" aria-label="Fermer la fenêtre" id="modal-close">&times;</button>
             <h2 id="modal-title">Connexion</h2>
             <form id="login-form" novalidate>
                 <div class="form-group">
                     <label for="login-pseudo">Pseudo</label>
-                    <input type="text" id="login-pseudo" name="pseudo" required autocomplete="username"
-                        aria-required="true">
+                    <input type="text" id="login-pseudo" name="pseudo" required autocomplete="username" aria-required="true">
                 </div>
                 <div class="form-group">
                     <label for="login-email">Email</label>
-                    <input type="email" id="login-email" name="email" required autocomplete="email"
-                        aria-required="true">
+                    <input type="email" id="login-email" name="email" required autocomplete="email" aria-required="true">
                 </div>
                 <div class="form-group">
                     <label for="login-password">Mot de passe</label>
-                    <input type="password" id="login-password" name="password" required autocomplete="current-password"
-                        aria-required="true">
+                    <input type="password" id="login-password" name="password" required autocomplete="current-password" aria-required="true">
                 </div>
                 <button type="submit" class="btn-cta" style="width:100%;">Se connecter / Créer un compte</button>
             </form>
@@ -172,23 +165,10 @@
     </div>
 
     <!-- ========== JAVASCRIPT ========== -->
+    <script src="js/app.js"></script>
     <script>
-        // ====== CONFIGURATION ======
-        const API = {
-            random: '/api/recipes/random',
-            recipes: '/api/recipes'
-        };
-
         // ====== DOM ELEMENTS ======
-        const surpriseBtn = document.getElementById('surprise-btn');
-        const userBtn = document.getElementById('user-btn');
-        const mobileUserBtn = document.getElementById('mobile-user-btn');
-        const menuToggle = document.getElementById('menu-toggle');
-        const mobileNav = document.getElementById('mobile-nav');
-        const loginModal = document.getElementById('login-modal');
-        const modalClose = document.getElementById('modal-close');
-        const loginForm = document.getElementById('login-form');
-        const userLabel = document.getElementById('user-label');
+        const heroSurprise = document.getElementById('hero-surprise');
         const recipeGrid = document.getElementById('recipe-grid');
         const recipesLoading = document.getElementById('recipes-loading');
         const recipesError = document.getElementById('recipes-error');
@@ -197,126 +177,6 @@
 
         // ====== STATE ======
         let currentPersona = null;
-        let userPseudo = localStorage.getItem('ovni_pseudo') || null;
-
-        // ====== UTILITY FUNCTIONS ======
-        function formatTime(minutes) {
-            if (minutes < 60) return `${minutes} min`;
-            const h = Math.floor(minutes / 60);
-            const m = minutes % 60;
-            return m > 0 ? `${h}h${m}` : `${h}h`;
-        }
-
-        function formatCost(amount) {
-            return `${amount.toFixed(2).replace('.', ',')} €`;
-        }
-
-        function toggleDisplay(element, show) {
-            element.style.display = show ? 'block' : 'none';
-        }
-
-        // ====== USER AUTHENTICATION ======
-        function updateUserUI() {
-            if (userPseudo) {
-                userLabel.textContent = userPseudo;
-                userBtn.setAttribute('aria-label', `Compte ${userPseudo}`);
-            }
-        }
-
-        function openLoginModal() {
-            loginModal.classList.add('is-open');
-            document.getElementById('login-pseudo').focus();
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeLoginModal() {
-            loginModal.classList.remove('is-open');
-            document.body.style.overflow = '';
-        }
-
-        // ====== MOBILE MENU ======
-        function toggleMobileMenu() {
-            const isOpen = mobileNav.classList.toggle('is-open');
-            menuToggle.setAttribute('aria-expanded', isOpen);
-        }
-
-        // ====== API FUNCTIONS ======
-        async function fetchRecipes(persona = null) {
-            const url = persona
-                ? `${API.recipes}?persona=${persona}`
-                : API.recipes;
-
-            try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error('API error');
-                return await response.json();
-            } catch (error) {
-                console.error('Failed to fetch recipes:', error);
-                return null;
-            }
-        }
-
-        async function surpriseMe() {
-            try {
-                const response = await fetch(API.random);
-                if (response.ok) {
-                    const recipe = await response.json();
-                    window.location.href = `recipe.html?id=${recipe.id}`;
-                }
-            } catch (error) {
-                console.error('Surprise failed:', error);
-                alert('Impossible de trouver une recette. Réessayez.');
-            }
-        }
-
-        // ====== RECIPE RENDERING ======
-        function createRecipeCard(recipe) {
-            const card = document.createElement('a');
-            card.href = `recipe.html?id=${recipe.id}`;
-            card.className = 'recipe-card';
-            card.setAttribute('aria-label', `${recipe.title} – ${formatTime(recipe.prep_time)} – ${formatCost(recipe.cost_per_portion)}`);
-
-            card.innerHTML = `
-                <div class="recipe-card-meta">
-                    <div class="recipe-time">
-                        <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
-                            <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
-                        </svg>
-                        <strong>${formatTime(recipe.prep_time)}</strong>
-                    </div>
-                    <div class="recipe-cost">
-                        <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
-                            <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
-                        </svg>
-                        <strong>${formatCost(recipe.cost_per_portion)}</strong>
-                    </div>
-                </div>
-                <h3>${recipe.title}</h3>
-                <div class="recipe-card-rating" aria-label="Note ${recipe.average_rating?.toFixed(1) || '0'} sur 5">
-                    ${'★'.repeat(Math.round(recipe.average_rating || 0))}${'☆'.repeat(5 - Math.round(recipe.average_rating || 0))}
-                    <span>(${recipe.comment_count || 0})</span>
-                </div>
-            `;
-
-            return card;
-        }
-
-        function renderRecipes(recipes) {
-            recipeGrid.innerHTML = '';
-
-            if (!recipes || recipes.length === 0) {
-                toggleDisplay(recipesLoading, false);
-                toggleDisplay(noRecipes, true);
-                return;
-            }
-
-            recipes.forEach(recipe => {
-                recipeGrid.appendChild(createRecipeCard(recipe));
-            });
-
-            toggleDisplay(recipesLoading, false);
-            toggleDisplay(noRecipes, false);
-        }
 
         // ====== PERSONA FILTER ======
         function getPersonaFilter(persona) {
@@ -332,56 +192,81 @@
             }
         }
 
-        async function handlePersonaClick(event) {
-            const card = event.currentTarget;
-            const persona = card.dataset.persona;
+        // ====== RECIPE RENDERING ======
+        function createRecipeCard(recipe) {
+            const card = document.createElement('a');
+            card.href = 'recipe.html?id=' + recipe.id;
+            card.className = 'recipe-card';
+            card.setAttribute('aria-label', recipe.title + ' – ' + formatTime(recipe.prep_time) + ' – ' + formatCost(recipe.cost_per_portion));
 
-            // Update active state
-            personaCards.forEach(c => {
-                c.classList.remove('persona-card--active');
-                c.setAttribute('aria-pressed', 'false');
-            });
-            card.classList.add('persona-card--active');
-            card.setAttribute('aria-pressed', 'true');
+            const stars = '\u2605'.repeat(Math.round(recipe.average_rating || 0)) + '\u2606'.repeat(5 - Math.round(recipe.average_rating || 0));
+            const badge = (recipe.average_rating >= 4.5) ? '<span class="recipe-card-badge">Jackpot</span>' : '';
 
-            // Show loading
-            toggleDisplay(recipesLoading, true);
-            toggleDisplay(noRecipes, false);
+            card.innerHTML = badge + '\n                <div class="recipe-card-meta">\n                    <div class="recipe-time">\n                        <strong>' + formatTime(recipe.prep_time) + '</strong>\n                        <span>préparation</span>\n                    </div>\n                    <div class="recipe-cost">\n                        <strong>' + formatCost(recipe.cost_per_portion) + '</strong>\n                        <span>portion</span>\n                    </div>\n                </div>\n                <h3>' + recipe.title + '</h3>\n                <div class="recipe-card-rating">\n                    ' + stars + '\n                    <span>(' + (recipe.comment_count || 0) + ' avis)</span>\n                </div>';
 
-            // Fetch filtered recipes
-            const filter = getPersonaFilter(persona);
-            const recipes = await fetchRecipes(filter);
-
-            if (recipes) {
-                currentPersona = persona;
-                renderRecipes(recipes);
-            } else {
-                toggleDisplay(recipesLoading, false);
-                toggleDisplay(recipesError, true);
+            if (recipe.anecdote) {
+                const anecdote = document.createElement('p');
+                anecdote.className = 'recipe-card-anecdote';
+                anecdote.textContent = '\u201C' + recipe.anecdote + '\u201D';
+                card.appendChild(anecdote);
             }
+
+            return card;
         }
 
-        // ====== EVENT LISTENERS ======
-        surpriseBtn.addEventListener('click', surpriseMe);
-        userBtn.addEventListener('click', openLoginModal);
-        if (mobileUserBtn) mobileUserBtn.addEventListener('click', openLoginModal);
-        modalClose.addEventListener('click', closeLoginModal);
-        loginModal.addEventListener('click', (e) => {
-            if (e.target === loginModal) closeLoginModal();
-        });
-        menuToggle.addEventListener('click', toggleMobileMenu);
-        mobileNav.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                mobileNav.classList.remove('is-open');
-                menuToggle.setAttribute('aria-expanded', 'false');
+        function renderRecipes(recipes) {
+            recipeGrid.innerHTML = '';
+
+            if (!recipes || recipes.length === 0) {
+                toggleDisplay(recipesLoading, false);
+                toggleDisplay(noRecipes, true);
+                return;
+            }
+
+            recipes.forEach(function(recipe) {
+                recipeGrid.appendChild(createRecipeCard(recipe));
             });
-        });
-        personaCards.forEach(card => {
-            card.addEventListener('click', handlePersonaClick);
-        });
-        // Keyboard support for persona cards (role="button" on non-button elements)
-        personaCards.forEach(card => {
-            card.addEventListener('keydown', (e) => {
+
+            toggleDisplay(recipesLoading, false);
+            toggleDisplay(noRecipes, false);
+        }
+
+        // ====== EVENT HANDLERS ======
+        if (heroSurprise) {
+            heroSurprise.addEventListener('click', function(e) {
+                e.preventDefault();
+                surpriseMe();
+            });
+        }
+
+        personaCards.forEach(function(card) {
+            card.addEventListener('click', async function() {
+                const persona = card.dataset.persona;
+
+                personaCards.forEach(function(c) {
+                    c.classList.remove('persona-card--active');
+                    c.setAttribute('aria-pressed', 'false');
+                });
+                card.classList.add('persona-card--active');
+                card.setAttribute('aria-pressed', 'true');
+
+                toggleDisplay(recipesLoading, true);
+                toggleDisplay(noRecipes, false);
+
+                const filter = getPersonaFilter(persona);
+                const url = filter ? '/api/recipes?persona=' + filter : '/api/recipes';
+                const recipes = await fetchRecipes(url);
+
+                if (recipes) {
+                    currentPersona = persona;
+                    renderRecipes(recipes);
+                } else {
+                    toggleDisplay(recipesLoading, false);
+                    toggleDisplay(recipesError, true);
+                }
+            });
+
+            card.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     card.click();
@@ -389,31 +274,8 @@
             });
         });
 
-        // Login form submission
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(loginForm);
-            const data = Object.fromEntries(formData.entries());
-
-            if (data.pseudo && data.email && data.password) {
-                localStorage.setItem('ovni_pseudo', data.pseudo);
-                localStorage.setItem('ovni_email', data.email);
-                userPseudo = data.pseudo;
-                updateUserUI();
-                closeLoginModal();
-                loginForm.reset();
-            }
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && loginModal.classList.contains('is-open')) {
-                closeLoginModal();
-            }
-        });
-
-        // ====== INITIALIZATION ======
+        // ====== INIT ======
         async function init() {
-            updateUserUI();
             toggleDisplay(recipesLoading, true);
             const recipes = await fetchRecipes();
             renderRecipes(recipes);
@@ -421,16 +283,5 @@
 
         init();
     </script>
-    <script defer
-        src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447"
-        integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ=="
-        data-cf-beacon='{"version":"2024.11.0","token":"8607d2a720d14b038279025b2b5a82e5","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}'
-        crossorigin="anonymous"></script>
-    <script defer
-        src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447"
-        integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ=="
-        data-cf-beacon='{"version":"2024.11.0","token":"8607d2a720d14b038279025b2b5a82e5","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}'
-        crossorigin="anonymous"></script>
 </body>
-
 </html>

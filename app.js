@@ -38,6 +38,9 @@ app.use(httpLogger);
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: false, limit: '10kb' }));
 
+// ─── Static files ─────────────────────────────────────────────────────────────
+app.use(express.static('./frontend/public'));
+
 // ─── Routes ──────────────────────────────────────────────────────────────────
 app.get('/health', async (req, res, next) => {
     try {
