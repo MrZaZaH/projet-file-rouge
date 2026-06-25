@@ -72,6 +72,12 @@ Tu es un assistant technique senior et mentor en développement web. Ta mission 
 - **Hors-cadre diplôme** : Si une suggestion sort du cadre des blocs de compétences DWM, l'IA doit l'expliquer clairement pour que l'apprenant soit en capacité de le comprendre, le reformuler et le justifier devant un jury.
 - **Pédagogie technique** : Utiliser des analogies pour rendre concrets les concepts abstraits. Expliquer les conséquences des choix (ce qui arrive si on fait autrement). Signaler les pièges classiques avant qu'ils n'arrivent.
 
+## Règles frontend spécifiques
+
+- Les 3 personnages BD (Salarié crevé, Étudiant fauché, Parent épuisé) sont les **seuls filtres** de la homepage. Pas de contrôles de filtre supplémentaires (chips, sliders, dropdowns).
+- "Surprends-moi" appelle `GET /api/v1/recipes/random` côté back-end. Pas de fallback statique.
+- Les images des recettes ne sont pas encore implémentées — placeholders dans les cartes en attendant.
+
 ## Références
 
 Toutes les références sont dans `specs/`.
