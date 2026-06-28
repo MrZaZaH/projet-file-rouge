@@ -47,6 +47,31 @@ No additional filter controls exist — no dropdowns, sliders, or standalone fil
 - Focus outlines visible on all interactive elements
 - `role="alert"` on error messages
 
+## Status — Day 22
+
+### Completed
+
+- **Recipe detail page** (`recipe.html`): Fully implemented with:
+  - Recipe header (category, title, prep time, cost per portion, author)
+  - Ingredients section with accessible list (`aria-labelledby`)
+  - Steps section with ordered list
+  - "L'histoire derrière" narrative block (hidden when no anecdote)
+  - Save / Comment / Share actions (Web Share API with clipboard fallback)
+  - Comment form with pseudo (no account required), rating (select), and text
+  - Reviews section with average rating calculation and comment list
+  - Loading / Error / Content state management
+- **API connectivity**: `fetchRecipe(id)` calls `GET /api/v1/recipes/:id`; `fetchRecipes()` with persona-based query params
+- **Data parsing**: JSON columns (ingredients, steps) parsed client-side
+- **Accessibility**: skip link, landmarks, `aria-labelledby` on all sections, `aria-live` on reviews, `role="alert"` on errors, `aria-required` on form fields, visible focus states
+- **Dynamic behavior**: recipe ID read from URL params (`?id=xx`), share via `navigator.share()`, comment form toggle, smooth scroll
+- **Jackpot badge removed**: `refactor: remove Jackpot badge and utensils section from frontend and specs`
+
+### Not yet implemented
+
+- **Persistent comments**: Currently stored in memory only; backend connection planned for Day 27
+- **Clickable star rating**: Using `<select>` for now; interactive stars planned for Day 27
+- **Image display**: Placeholder containers remain; actual images from backend pending
+
 ## Performance
 
 - `loading="lazy"` ready for future images
