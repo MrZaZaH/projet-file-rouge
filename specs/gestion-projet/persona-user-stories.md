@@ -43,13 +43,9 @@ __En tant que__ salarié crevé, __Je veux__ sentir que la recette vient d'un vr
 - Filtres budget : __< 3€__ / __< 5€__ / "Peu importe"
 - __Coût estimé par portion__ affiché sur chaque carte recette (renseigné par l'auteur)
 
-#### __🔹 US-04 – Recettes minimalistes__
+#### __🔹 US-04 – ~~Recettes minimalistes~~__
 
-\*\*En tant qu'\*\*étudiant fauché, __Je veux__ des recettes avec peu d'ingrédients, __Afin de__ cuisiner avec ce que j'ai vraiment sous la main.
-
-✅ __Critères d'acceptation :__
-
-- Filtre __"Moins de 5 ingrédients"__
+~~Supprimée — filtre ingrédients jugé non pertinent.~~
 
 ### __👩‍👧 PERSONA 3 – Le Parent Épuisé (critère : CONFIANCE)__
 

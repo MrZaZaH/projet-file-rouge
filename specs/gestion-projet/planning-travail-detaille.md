@@ -87,7 +87,7 @@ __Tâche__ : Données de test réalistes \+ jeu d’essai
 __Détail concret__ : 
 
 - Créer un jeu d’essai complet (minimum 8 recettes, 5 utilisateurs, 12 commentaires, catégories, notes). 
-- Les données doivent refléter les 3 personas (recettes <15 min, <5 ingrédients, <3€, avec anecdotes humaines et humour). 
+- Les données doivent refléter les 3 personas (recettes <15 min, <3€, avec anecdotes humaines et humour). 
 - Écrire un script 04_seed_data.sql qui insère ces données de façon cohérente (respecter les foreign keys). 
 - Créer un fichier TEST_CASES.md listant 10 tests manuels (ex: "Vérifier qu’une recette avec coût 2.5€ apparaît dans le filtre <3€").
 
@@ -333,13 +333,12 @@ __Compétences RNCP travaillées__ :
 2.3 (composants métier, logique métier complexe), 2.2 (intégrité des données), tests unitaires, documentation des règles métier en anglais dans GAMIFICATION.md
 
 __Jour 16__  
-__Tâche__ : Finalisation des filtres avancés côté backend (US-01, US-03, US-04, US-07)  
+__Tâche__ : Finalisation des filtres avancés côté backend (US-01, US-03, US-07)  
 __Détail concret__ : 
 
 - Améliorer Recipe.js → méthode findAllWithFilters(filters) pour supporter : 
 	- Temps de préparation (< 15 min) 
 	- Budget (< 3€, < 5€) 
-	- Nombre d’ingrédients (< 5) 
 	- Catégorie, popularité (combinaison rapide \+ original \+ <3€)
 - Ajouter un tri intelligent (par pertinence pour le persona : d’abord les recettes <15 min pour le salarié crevé, etc.). 
 - Créer des constantes dans src/constants/filters.js pour éviter la magie dans le code. 
@@ -493,12 +492,11 @@ __Compétences RNCP travaillées__ :
 1.3 & 1.4 (interface dynamique statique pour l’instant, accessibilité, UX pour les 3 personas), documentation des choix narratifs
 
 __Jour 23__  
-__Tâche__ : Filtres avancés \+ Recherche (US-03, US-04, US-07)  
+__Tâche__ : Filtres avancés \+ Recherche (US-03, US-07)  
 __Détail concret__ : 
 
-- Sur la homepage et une page /recettes.html, implémenter : 
+- Sur la homepage, implémenter : 
 	- Filtres budget (<3€, <5€) 
-	- Filtre "Moins de 5 ingrédients" 
 	- Filtre temps (<15 min) 
 	- Combinaison de plusieurs filtres en JavaScript vanilla.
 - Afficher le coût estimé par portion sur chaque carte. 

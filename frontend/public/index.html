@@ -91,6 +91,11 @@
 
         <div class="separator">~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~</div>
 
+        <div id="active-filters" class="active-filters" role="status" aria-live="polite" style="display:none; max-width: var(--max-width); margin: 0 auto; padding: 0 1.5rem 1rem;">
+            <div class="active-filters-tags" id="filter-tags"></div>
+            <p class="result-count" id="result-count"></p>
+        </div>
+
         <!-- Recipe Grid Section -->
         <section class="recipes-section" aria-labelledby="recipes-title">
             <p class="section-title">Recettes du moment</p>
@@ -182,11 +187,11 @@
         function getPersonaFilter(persona) {
             switch (persona) {
                 case 'salarie-creve':
-                    return 'prep_time<=15';
+                    return { max_prep_time: 15 };
                 case 'etudiant-fauche':
-                    return 'cost<=5';
+                    return { max_cost: 5 };
                 case 'parent-epuise':
-                    return 'prep_time<=20&min_rating=4';
+                    return { max_prep_time: 20, min_rating: 4 };
                 default:
                     return null;
             }
@@ -201,7 +206,7 @@
 
             const stars = '\u2605'.repeat(Math.round(recipe.average_rating || 0)) + '\u2606'.repeat(5 - Math.round(recipe.average_rating || 0));
 
-            card.innerHTML = '<div class="recipe-card-meta">\n                    <div class="recipe-time">\n                        <strong>' + formatTime(recipe.prep_time) + '</strong>\n                        <span>préparation</span>\n                    </div>\n                    <div class="recipe-cost">\n                        <strong>' + formatCost(recipe.cost_per_portion) + '</strong>\n                        <span>portion</span>\n                    </div>\n                </div>\n                <h3>' + recipe.title + '</h3>\n                <div class="recipe-card-rating">\n                    ' + stars + '\n                    <span>(' + (recipe.comment_count || 0) + ' avis)</span>\n                </div>';
+            card.innerHTML = '<div class="recipe-card-meta">\n                    <div class="recipe-time">\n                        <strong>' + formatTime(recipe.prep_time) + '</strong>\n                        <span>préparation</span>\n                    </div>\n                    <div class="recipe-cost">\n                        <strong>' + formatCost(recipe.cost_per_portion) + '</strong>\n                        <span>portion</span>\n                    </div>\n                </div>\n                <h3>' + recipe.title + '</h3>\n                <div class="recipe-card-rating">\n                    ' + stars + '\n                    <span>(' + (recipe.rating_count || 0) + ' avis)</span>\n                </div>';
 
             if (recipe.anecdote) {
                 const anecdote = document.createElement('p');
@@ -215,10 +220,12 @@
 
         function renderRecipes(recipes) {
             recipeGrid.innerHTML = '';
+            const countEl = document.getElementById('result-count');
 
             if (!recipes || recipes.length === 0) {
                 toggleDisplay(recipesLoading, false);
                 toggleDisplay(noRecipes, true);
+                if (countEl) countEl.textContent = 'Aucune recette trouv\u00e9e';
                 return;
             }
 
@@ -226,8 +233,49 @@
                 recipeGrid.appendChild(createRecipeCard(recipe));
             });
 
+            if (countEl) {
+                const text = recipes.length === 1
+                    ? '1 recette trouv\u00e9e'
+                    : recipes.length + ' recettes trouv\u00e9es';
+                countEl.textContent = text;
+            }
+
             toggleDisplay(recipesLoading, false);
             toggleDisplay(noRecipes, false);
+        }
+
+        function updateActiveFilter(persona) {
+            const container = document.getElementById('active-filters');
+            const tags = document.getElementById('filter-tags');
+            const count = document.getElementById('result-count');
+
+            if (!persona) {
+                container.style.display = 'none';
+                tags.innerHTML = '';
+                count.textContent = '';
+                return;
+            }
+
+            const labels = {
+                'salarie-creve': 'Salari\u00e9 crev\u00e9 \u2014 \u2264 15 min',
+                'etudiant-fauche': '\u00c9tudiant fauch\u00e9 \u2014 \u2264 5 \u20ac',
+                'parent-epuise': 'Parent \u00e9puis\u00e9 \u2014 \u2264 20 min, \u2265 4\u2605'
+            };
+
+            container.style.display = 'flex';
+            tags.innerHTML = '\n                <span class="filter-tag">\n                    ' + labels[persona] + '\n                    <button type="button" id="remove-filter" aria-label="Retirer le filtre">\u00d7</button>\n                </span>\n            ';
+
+            document.getElementById('remove-filter').addEventListener('click', async function() {
+                personaCards.forEach(function(c) {
+                    c.classList.remove('persona-card--active');
+                    c.setAttribute('aria-pressed', 'false');
+                });
+                currentPersona = null;
+                toggleDisplay(recipesLoading, true);
+                const recipes = await fetchRecipes('/api/recipes');
+                renderRecipes(recipes);
+                updateActiveFilter(null);
+            });
         }
 
         // ====== EVENT HANDLERS ======
@@ -242,6 +290,18 @@
             card.addEventListener('click', async function() {
                 const persona = card.dataset.persona;
 
+                // Toggle: deselect if same persona already active
+                if (currentPersona === persona && card.classList.contains('persona-card--active')) {
+                    card.classList.remove('persona-card--active');
+                    card.setAttribute('aria-pressed', 'false');
+                    currentPersona = null;
+                    toggleDisplay(recipesLoading, true);
+                    const recipes = await fetchRecipes('/api/recipes');
+                    renderRecipes(recipes);
+                    updateActiveFilter(null);
+                    return;
+                }
+
                 personaCards.forEach(function(c) {
                     c.classList.remove('persona-card--active');
                     c.setAttribute('aria-pressed', 'false');
@@ -253,12 +313,14 @@
                 toggleDisplay(noRecipes, false);
 
                 const filter = getPersonaFilter(persona);
-                const url = filter ? '/api/recipes?persona=' + filter : '/api/recipes';
+                const params = new URLSearchParams(filter);
+                const url = filter ? '/api/recipes?' + params.toString() : '/api/recipes';
                 const recipes = await fetchRecipes(url);
 
                 if (recipes) {
                     currentPersona = persona;
                     renderRecipes(recipes);
+                    updateActiveFilter(persona);
                 } else {
                     toggleDisplay(recipesLoading, false);
                     toggleDisplay(recipesError, true);

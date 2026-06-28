@@ -202,7 +202,7 @@ tests/
 | US-01 | Quick recipe access | `/api/recipes/featured` endpoint, prep time displayed |
 | US-02 | Recipe stories | Story/anecdote field in Recipe model |
 | US-03 | Budget filtering | `cost` field with filter query params |
-| US-04 | Minimal ingredients | Ingredient count displayed, filter available |
+| US-04 | ~~Minimal ingredients~~ | ~~Supprimée~~ |
 | US-05 | Community trust | Comments visible, author pseudo displayed |
 | US-06 | Frictionless navigation | Clean API, no blocking elements |
 
