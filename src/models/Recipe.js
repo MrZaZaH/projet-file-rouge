@@ -929,6 +929,71 @@ class Recipe {
             throw error;
         }
     }
+
+    // ============================================================
+    //  FIND BY USER ID
+    // ============================================================
+
+    /**
+     * findByUserId(userId)
+     *
+     * Returns all non-deleted recipes for a given user, ordered by
+     * most recent first. Includes all statuses (published, pending,
+     * rejected) — used for the user dashboard.
+     *
+     * Parameters:
+     * - userId: number — the user's primary key
+     *
+     * Returns: array of recipe objects (same shape as findAllWithFilters)
+     * Returns [] if the user has no recipes.
+     */
+    static async findByUserId(userId) {
+        try {
+            const query = `
+                SELECT r.*
+                FROM recipes r
+                WHERE r.user_id = ?
+                  AND r.deleted_at IS NULL
+                ORDER BY r.created_at DESC
+            `;
+
+            const [rows] = await pool.query(query, [userId]);
+
+            const recipes = rows.map((row) => {
+                let ingredients = [];
+                let steps = [];
+                try {
+                    ingredients = row.ingredients ? JSON.parse(row.ingredients) : [];
+                    steps = row.steps ? JSON.parse(row.steps) : [];
+                } catch (parseError) {
+                    logger.warn(`Failed to parse JSON for recipe ${row.id}: ${parseError.message}`);
+                }
+
+                return {
+                    id: row.id,
+                    user_id: row.user_id,
+                    category_id: row.category_id,
+                    title: row.title,
+                    anecdote: row.anecdote,
+                    ingredients,
+                    steps,
+                    prep_time: row.prep_time,
+                    cost_per_portion: parseFloat(row.cost_per_portion),
+                    status: row.status,
+                    average_rating: parseFloat(row.average_rating),
+                    rating_count: row.rating_count,
+                    created_at: row.created_at,
+                    updated_at: row.updated_at,
+                };
+            });
+
+            return recipes;
+
+        } catch (error) {
+            logger.error(`Recipe.findByUserId(${userId}) failed: ${error.message}`);
+            throw error;
+        }
+    }
 }
 
 // Export the class — consumed by RecipeController and test files

@@ -497,3 +497,59 @@ Timestamp
 Deletion reason (if applicable)
 
 Rejected or deleted recipes trigger user_notifications entry to inform the author.
+
+---
+
+## User Dashboard Endpoints
+
+### `GET /api/v1/users/me/profile`
+Return the authenticated user's profile with aggregate statistics.
+Auth required: Yes
+
+Response 200:
+```json
+{
+  "success": true,
+  "data": {
+    "user": {
+      "id": 1,
+      "username": "mickael",
+      "email": "mickael@example.com",
+      "role": "user",
+      "created_at": "2025-01-15T10:00:00.000Z"
+    },
+    "stats": {
+      "total_recipes": 3,
+      "published_recipes": 2,
+      "pending_recipes": 1,
+      "rejected_recipes": 0,
+      "total_comments_received": 12
+    }
+  }
+}
+```
+Response 401: Missing or invalid token.
+
+### `GET /api/v1/users/me/recipes`
+Return all non-deleted recipes for the authenticated user, ordered by most recent first.
+Includes all statuses (published, pending, rejected).
+Auth required: Yes
+
+Response 200:
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "title": "Poire chocolat micro-ondes",
+      "prep_time": 5,
+      "cost_per_portion": 0.80,
+      "average_rating": 4.2,
+      "status": "published",
+      "created_at": "2025-01-15T10:00:00.000Z"
+    }
+  ]
+}
+```
+Response 401: Missing or invalid token.

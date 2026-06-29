@@ -154,6 +154,12 @@ function updateAuthUI() {
         mobileUserBtn.textContent = authed ? 'Se déconnecter' : 'Se connecter';
         mobileUserBtn.onclick = authed ? logout : openLoginModal;
     }
+
+    // Show/hide dashboard links based on auth state
+    var dashLinks = document.querySelectorAll('.auth-link');
+    dashLinks.forEach(function(link) {
+        link.style.display = authed ? '' : 'none';
+    });
 }
 
 // ====== 7. ROUTE PROTECTION ======
