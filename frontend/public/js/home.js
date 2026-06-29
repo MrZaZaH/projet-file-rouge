@@ -5,7 +5,6 @@
    ================================================ */
 
 // ====== DOM ELEMENTS ======
-const heroSurprise = document.getElementById('hero-surprise');
 const recipeGrid = document.getElementById('recipe-grid');
 const recipesLoading = document.getElementById('recipes-loading');
 const recipesError = document.getElementById('recipes-error');
@@ -117,12 +116,6 @@ function updateActiveFilter(persona) {
 }
 
 // ====== EVENT HANDLERS ======
-if (heroSurprise) {
-    heroSurprise.addEventListener('click', function(e) {
-        e.preventDefault();
-        surpriseMe();
-    });
-}
 
 personaCards.forEach(function(card) {
     card.addEventListener('click', async function() {

@@ -110,48 +110,6 @@
     <!-- ========== JAVASCRIPT ========== -->
     <script src="js/auth.js"></script>
     <script src="js/app.js"></script>
-    <script>
-        // ====== DOM ELEMENTS ======
-        var loginForm = document.getElementById('login-page-form');
-        var loginError = document.getElementById('login-error');
-        var loginSuccess = document.getElementById('login-success');
-        var formContainer = document.querySelector('.submit-form-container');
-
-        // ====== LOGIN HANDLER ======
-        loginForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            var email = document.getElementById('login-email').value.trim();
-            var password = document.getElementById('login-password').value;
-
-            // Basic client-side validation
-            if (!email || !password) {
-                loginError.textContent = 'Veuillez remplir tous les champs.';
-                loginError.style.display = 'block';
-                return;
-            }
-
-            // Hide previous error
-            loginError.style.display = 'none';
-
-            try {
-                await loginUser(email, password);
-
-                // Success
-                formContainer.style.display = 'none';
-                loginSuccess.style.display = 'block';
-
-                // Redirect after short delay
-                var redirect = getUrlParam('redirect') || 'index.html';
-                setTimeout(function() {
-                    window.location.href = redirect;
-                }, 1200);
-
-            } catch (error) {
-                loginError.textContent = error.message;
-                loginError.style.display = 'block';
-            }
-        });
-    </script>
+    <script src="js/login.js"></script>
 </body>
 </html>
