@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This report documents the backend development for the Ovni Culinaire project, a culinary recipe sharing platform with gamification features. The backend was developed over 12 days using Node.js, Express.js, MariaDB, and various security and testing libraries.
+This report documents the backend development for the Ovni Culinaire project, a culinary recipe sharing platform. The backend was built over 12 initial days using Node.js, Express.js, MariaDB, and various security and testing libraries, then extended with additional features through Day 28.
 
 ---
 
@@ -28,11 +28,11 @@ The backend follows a **MVC (Model-View-Controller)** architecture with clear se
 ```
 src/
 ├── config/           # Configuration files
-├── controllers/      # Business logic (Auth, Recipe, Comment, Rating)
+├── controllers/      # Business logic (Auth, Recipe, Comment, Rating, User)
 ├── database/         # Database connection and queries
-├── middlewares/      # Security (JWT auth, error handling, logging)
+├── middlewares/      # Security (JWT auth, error handling, logging, rate limiting)
 ├── models/           # Data models (User, Recipe, Comment, Rating, Category)
-├── routes/           # API route definitions
+├── routes/           # API route definitions (auth, recipe, comment, rating, user)
 ├── utils/            # Utility functions (API responses)
 ├── tests/            # Jest test suites
 └── app.js            # Main application entry point
@@ -41,11 +41,13 @@ src/
 ### 1.3 Database Schema
 
 The database consists of 5 main tables:
-- **users**: User accounts with username, email, password hash, points, badges
-- **recipes**: Recipe data with title, ingredients, steps, story, category, cost
-- **comments**: User comments linked to recipes (no account required for posting)
-- **ratings**: 1-5 star ratings for recipes
+- **users**: User accounts with username, email, password hash, role, created_at
+- **recipes**: Recipe data with title, ingredients (JSON), steps (JSON), anecdote, prep_time, cost_per_portion, status, average_rating (denormalized), rating_count, user_id, category_id
+- **comments**: User comments linked to recipes — supports dual mode: authenticated (user_id) or guest (guest_name)
+- **ratings**: 1-5 star ratings for recipes — upsert via `INSERT ... ON DUPLICATE KEY UPDATE`
 - **categories**: Recipe categories (Rapide, Petit budget, Élaborée, etc.)
+
+All main tables (users, recipes, comments, categories) implement **soft delete** via a `deleted_at DATETIME NULL` column. Every public query filters with `WHERE deleted_at IS NULL`.
 
 ---
 
@@ -87,7 +89,13 @@ All user inputs are validated using express-validator:
 - Non-technical error messages for client exposure
 - Detailed logging for debugging (without exposing sensitive data)
 
-### 2.5 Logging
+### 2.5 Rate Limiting
+
+Two tiers of rate limiting using `express-rate-limit`:
+- **Global** : 100 requests per 15 minutes for all `/api/v1/` routes
+- **Auth (stricter)** : 10 requests per 15 minutes on `/api/v1/auth/` login and register endpoints — brute force protection
+
+### 2.6 Logging
 
 Winston logger implementation with:
 - **combined.log**: All logs (info, warn, error)
@@ -143,6 +151,22 @@ Winston logger implementation with:
 - Users can update their rating by re-submitting
 - Only one rating per user per recipe allowed
 
+### 3.6 Challenge: NULL Handling in Aggregate Stats (User Dashboard)
+
+**Problem**: When a user has 0 recipes, `SUM(CASE WHEN status = 'published' THEN 1 ELSE 0 END)` returns `NULL` instead of `0`. `Number(NULL)` in JavaScript evaluates to `0`, but if a property arrives as `undefined` from the destructured row, the frontend displays `NaN`.
+
+**Resolution**:
+- `COALESCE(SUM(...), 0)` in SQL to guarantee `0` at the database level
+- `?? 0` fallback in the controller as a safety net for any `undefined` that slips through
+- Defense in depth — SQL guarantees + JS fallback
+
+### 3.7 Challenge: mysql2 Result Shape
+
+**Problem**: `pool.execute()` returns `[rows, fields]` as an array, not `{ rows, fields }` as an object. Attempting `const { rows } = await pool.execute(...)` silently fails.
+
+**Resolution**:
+- Use `const [rows] = await pool.execute(...)` — array destructuring, position 0 is the row data
+
 ---
 
 ## 4. Testing Implementation
@@ -162,7 +186,7 @@ tests/
 ├── helpers/
 │   └── testDb.js          # Test database setup
 ├── integration/
-│   ├── auth.test.js       # Authentication tests
+│   ├── auth.test.js       # Authentication tests (includes user dashboard flows)
 │   ├── comments.test.js   # Comment endpoint tests
 │   └── recipes.test.js    # Recipe endpoint tests
 └── unit/
@@ -176,9 +200,10 @@ tests/
 |----------|-------|--------|
 | Auth Controller | 15+ | Passing |
 | Recipe Controller | 20+ | Passing |
-| Comment Controller | 10+ | Passing |
+| Comment Controller | 10+ | Passing (2 known failures — pre-existing) |
 | Rating Controller | 10+ | Passing |
 | Model Validation | 15+ | Passing |
+| User Dashboard | 4 | Passing (profile, recipes, auth, 401) |
 
 ### 4.4 Key Test Scenarios
 
@@ -190,6 +215,15 @@ tests/
 - Admin-only routes protection
 - Input validation enforcement
 - Error handling verification
+- **User dashboard** : profile with stats, my recipes listing, 401 without token
+
+### 4.5 Known Test Failures
+
+Two pre-existing failures in `comments.test.js` (not related to current features):
+1. `should create comment with pseudo (no auth required)` — test expects property `pseudo` but model returns `guest_name`
+2. `should reject empty pseudo` — test expects message `"Guest name is required"` but model now returns `"A name is required to comment as a guest"`
+
+These failures pre-date the user dashboard feature and need a separate cleanup session.
 
 ---
 
@@ -215,7 +249,16 @@ tests/
 | US-09 | Simplified signup | POST `/api/auth/register` - immediate activation |
 | US-10 | Recipe submission | POST `/api/recipes` with JWT auth |
 
-### 5.3 US-11 to US-15: Gamification & Admin
+### 5.3 US-DASHBOARD: User Dashboard (Post-MVP Feature)
+
+| Feature | Implementation |
+|---------|----------------|
+| Profile view | `GET /api/v1/users/me/profile` — returns user info + aggregate recipe stats |
+| Recipe history | `GET /api/v1/users/me/recipes` — returns all user recipes with statuses |
+| Auth protection | Both endpoints require valid JWT; return 401 if missing/invalid |
+| Stats aggregation | Single SQL query with `SUM(CASE WHEN ...)` per status + separate comment count query |
+
+### 5.4 US-11 to US-15: Gamification & Admin (Pre-MVP, documented for reference)
 
 | US | Feature | Implementation |
 |----|---------|----------------|
@@ -229,30 +272,36 @@ tests/
 
 ## 6. API Endpoints Summary
 
+All endpoints are prefixed with `/api/v1/`.
+
 ### 6.1 Authentication (Public)
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/login` - User login, returns JWT
+- `POST /api/v1/auth/register` — User registration
+- `POST /api/v1/auth/login` — User login, returns JWT
 
 ### 6.2 Recipes (Public/Protected)
-- `GET /api/recipes` - List all recipes with filters
-- `GET /api/recipes/:id` - Get single recipe
-- `GET /api/recipes/featured` - Top recipes for homepage
-- `POST /api/recipes` - Create recipe (JWT required)
-- `PUT /api/recipes/:id` - Update recipe (JWT required)
-- `DELETE /api/recipes/:id` - Delete recipe (JWT required)
+- `GET /api/v1/recipes` — List all recipes with filters
+- `GET /api/v1/recipes/random` — Random recipe ("Surprends-moi" feature)
+- `GET /api/v1/recipes/:id` — Get single recipe with comments
+- `POST /api/v1/recipes` — Create recipe (JWT required)
+- `PUT /api/v1/recipes/:id` — Update recipe (JWT required, author only)
+- `DELETE /api/v1/recipes/:id` — Soft delete recipe (JWT required, author only)
 
 ### 6.3 Comments (Public/Protected)
-- `GET /api/comments/:recipeId` - Get comments for recipe
-- `POST /api/comments` - Add comment (no auth, pseudo required)
+- `GET /api/v1/recipes/:recipeId/comments` — Get comments for a recipe
+- `POST /api/v1/recipes/:recipeId/comments` — Add comment (dual mode: JWT optional; pseudo required for guests)
 
 ### 6.4 Ratings (Protected)
-- `GET /api/ratings/:recipeId` - Get ratings for recipe
-- `POST /api/ratings` - Add/update rating (JWT required)
+- `GET /api/v1/recipes/:recipeId/ratings` — Get ratings for a recipe
+- `POST /api/v1/recipes/:recipeId/ratings` — Add/update rating (JWT required, upsert)
 
-### 6.5 Admin (JWT Required + Admin Role)
-- `GET /api/admin/users` - List all users
-- `GET /api/admin/recipes` - List all recipes
-- `GET /api/admin/stats` - Dashboard statistics
+### 6.5 User Dashboard (JWT Required)
+- `GET /api/v1/users/me/profile` — User info + aggregate stats (total/published/pending/rejected recipes + comments received)
+- `GET /api/v1/users/me/recipes` — All user recipes with statuses, ordered by most recent
+
+### 6.6 Admin (JWT Required + Admin Role)
+- `GET /api/v1/admin/users` — List all users
+- `GET /api/v1/admin/recipes` — List all recipes
+- `GET /api/v1/admin/stats` — Dashboard statistics
 
 ---
 
@@ -286,16 +335,17 @@ tests/
 
 ## 8. Conclusion
 
-The Ovni Culinaire backend is now fully functional and meets all user story requirements. The architecture provides a solid foundation for future enhancements including:
+The Ovni Culinaire backend is fully functional and covers all core features: authentication, recipe CRUD, comments (auth + guest), ratings, admin moderation, and user dashboard. The architecture provides a solid foundation for future enhancements including:
 
-- Advanced gamification features
-- Partner integration for rewards
-- Enhanced search capabilities
+- Advanced gamification features (badges, points, levels — V2/V3)
 - Image upload and storage
+- Enhanced search and filtering
+- Pagination for large datasets
 
-All critical security measures are in place, and the testing infrastructure supports ongoing development and maintenance.
+All critical security measures are in place (Helmet CSP, JWT, rate limiting, express-validator, parameterized queries), and the testing infrastructure supports ongoing development.
 
 ---
 
-*Report generated on Day 12 of the Ovni Culinaire project.*
-*Project Status: MVP Complete ✅*
+*Initial report: Day 12 of the Ovni Culinaire project.*
+*Last updated: Day 28 — User dashboard (UserController, userRoutes, Recipe.findByUserId, front-end dashboard page)*
+*Project Status: Core features complete ✅*

@@ -518,3 +518,137 @@ Expected: ids 1 (2min, 0.80€), 2 (5min, 1.50€)Not expected: id 3 (5min but 5
 **Condition:** Valid JWT with `role: "user"`
 **Expected:** `403`
 **Result:** ✅ Passed
+
+---
+
+## User Dashboard Tests (Jour 28)
+
+### TC-77 — Get user profile (authenticated)
+**Method:** `GET /api/v1/users/me/profile`
+**Condition:** Valid JWT (user freshly registered with no recipes yet)
+**Expected:** `200`
+**Response shape:**
+```json
+{
+  "success": true,
+  "data": {
+    "user": {
+      "id": 1,
+      "username": "testuser",
+      "email": "test@test.com",
+      "role": "user",
+      "created_at": "2025-06-29T..."
+    },
+    "stats": {
+      "total_recipes": 0,
+      "published_recipes": 0,
+      "pending_recipes": 0,
+      "rejected_recipes": 0,
+      "total_comments_received": 0
+    }
+  }
+}
+```
+**Validation points:**
+- `user.id`, `user.username`, `user.email`, `user.role`, `user.created_at` all present and non-null
+- All 5 stats fields present and equal to 0 for a new user
+- No `NaN`, `null`, or `undefined` values in stats
+**Result:** ✅ Passed
+
+### TC-78 — Get my recipes (empty list)
+**Method:** `GET /api/v1/users/me/recipes`
+**Condition:** Same authenticated user, no recipes submitted yet
+**Expected:** `200` with `"data": []`
+**Result:** ✅ Passed
+
+### TC-79 — Get user profile after creating a recipe
+**Method:** `GET /api/v1/users/me/profile`
+**Condition:** Same user after successfully creating a recipe via `POST /api/v1/recipes`
+**Expected:** `200`
+**Validation:**
+- `stats.total_recipes` = 1
+- `stats.pending_recipes` = 1 (new recipes default to 'pending')
+- `stats.published_recipes` = 0
+- `stats.rejected_recipes` = 0
+**Result:** ✅ Passed
+
+### TC-80 — Get my recipes after creation
+**Method:** `GET /api/v1/users/me/recipes` (JWT required)
+**Condition:** Same user, after recipe creation
+**Expected:** `200` with array containing 1 recipe
+**Validation:**
+- Array length >= 1
+- Each item has `id`, `title`, `status`, `created_at`
+- Recipe data includes parsed `ingredients` and `steps` (arrays)
+- `average_rating` is numeric
+- `status` matches the submitted recipe's status
+**Result:** ✅ Passed
+
+### TC-81 — Profile endpoint without token
+**Method:** `GET /api/v1/users/me/profile`
+**Condition:** No `Authorization` header
+**Expected:** `401`
+**Response:**
+```json
+{
+  "success": false,
+  "error": { "message": "...", "code": "UNAUTHORIZED" }
+}
+```
+**Result:** ✅ Passed
+
+### TC-82 — My recipes endpoint without token
+**Method:** `GET /api/v1/users/me/recipes`
+**Condition:** No `Authorization` header
+**Expected:** `401`
+**Result:** ✅ Passed
+
+### TC-83 — Profile endpoint with invalid token
+**Method:** `GET /api/v1/users/me/profile`
+**Condition:** `Authorization: Bearer invalidtoken123`
+**Expected:** `401`
+**Result:** ✅ Passed
+
+### TC-84 — Dashboard frontend loading state
+**Method:** Navigate to `dashboard.html`
+**Condition:** User is authenticated (valid token in localStorage)
+**Expected:**
+- Loading spinner visible while API calls are in flight
+- After response, profile section shows username, email, member since date
+- Stats cards show numeric values (not `NaN`)
+- Recipe list shows cards with title, time, cost, rating, and status badge
+**Result:** ⬜ Pending (manual test required)
+
+### TC-85 — Dashboard frontend error state
+**Method:** Navigate to `dashboard.html`
+**Condition:** Network error (server down) or invalid/expired token
+**Expected:**
+- Error message displayed: "Impossible de charger vos données."
+- No partial data shown
+- Retry button or navigation option available
+**Result:** ⬜ Pending (manual test required)
+
+### TC-86 — Dashboard redirect to login when unauthenticated
+**Method:** Navigate to `dashboard.html`
+**Condition:** No token in localStorage
+**Expected:**
+- Redirect to `login.html?redirect=dashboard.html`
+- After successful login, redirect back to dashboard
+**Result:** ⬜ Pending (manual test required)
+
+### TC-87 — Dashboard link visibility in header
+**Method:** Load any page (index, recipe, submit, etc.)
+**Condition:**
+1. No token → "Tableau de bord" link hidden
+2. Valid token → "Tableau de bord" link visible in navigation
+**Expected:** Link toggles based on auth state
+**Result:** ⬜ Pending (manual test required)
+
+### TC-88 — Status badge colors (visual check)
+**Method:** Navigate to `dashboard.html` with a user who has recipes in all 3 statuses
+**Condition:** Authenticated user with published, pending, and rejected recipes
+**Expected:**
+- Badge "Publiée" → green background (`#1b4332`), light green text (`#95d5b2`)
+- Badge "En attente" → dark orange background (`#7f4f24`), yellow text (`#f6e05e`)
+- Badge "Non retenue" → dark red background (`#4a1c1c`), light red text (`#f5a5a5`)
+**Result:** ⬜ Pending (manual test required)
