@@ -55,15 +55,17 @@ const corsMiddleware = cors(corsOptions);
 // standardHeaders: true  → sends RateLimit-* headers so clients know their quota
 // legacyHeaders: false   → disables the older X-RateLimit-* headers (redundant)
 
-// Global: 100 requests per 15 minutes.
+// Global: 100 requests per 15 minutes (dev: 500 or RATE_LIMIT_MAX from env).
 // Protects all routes against scraping and basic flood attacks.
 const noopMiddleware = (_req, _res, next) => next();
+
+const GLOBAL_MAX = parseInt(process.env.RATE_LIMIT_MAX, 10) || (process.env.NODE_ENV === 'development' ? 500 : 100);
 
 const globalLimiter = process.env.NODE_ENV === 'test'
     ? noopMiddleware
     : rateLimit({
         windowMs: 15 * 60 * 1000,
-        max: 100,
+        max: GLOBAL_MAX,
         standardHeaders: true,
         legacyHeaders: false,
         message: {

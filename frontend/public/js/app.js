@@ -82,8 +82,9 @@ async function surpriseMe() {
     try {
         const response = await fetch('/api/v1/recipes/random');
         if (response.ok) {
-            const data = await response.json();
-            window.location.href = 'recipe.html?id=' + data.id;
+            const result = await response.json();
+            const recipe = result.data || result;
+            window.location.href = 'recipe.html?id=' + recipe.id;
         }
     } catch (error) {
         console.error('Surprise failed:', error);
@@ -93,10 +94,19 @@ async function surpriseMe() {
 // ====== 4. API ======
 
 async function fetchRecipes(url) {
+    const controller = new AbortController();
+    const timeout = setTimeout(function () {
+        controller.abort();
+    }, 10000);
+
     try {
-        const response = await fetch(url || '/api/v1/recipes');
+        const response = await fetch(url || '/api/v1/recipes', {
+            signal: controller.signal
+        });
+        clearTimeout(timeout);
         if (!response.ok) return null;
-        return await response.json();
+        const result = await response.json();
+        return Array.isArray(result.data) ? result.data : [];
     } catch (error) {
         console.error('Failed to fetch recipes:', error);
         return null;
