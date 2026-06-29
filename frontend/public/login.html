@@ -58,7 +58,7 @@
         </header>
 
         <div class="submit-form-container" style="padding:2rem 1.5rem;">
-            <form class="submit-form" id="login-form" novalidate>
+            <form class="submit-form" id="login-page-form" novalidate>
                 <!-- Error message -->
                 <div id="login-error" class="form-error" style="display:none;margin-bottom:1.5rem;padding:0.75rem 1rem;background:var(--surface);border:1px solid var(--error);" role="alert"></div>
 
@@ -110,7 +110,7 @@
     <script src="js/app.js"></script>
     <script>
         // ====== DOM ELEMENTS ======
-        var loginForm = document.getElementById('login-form');
+        var loginForm = document.getElementById('login-page-form');
         var loginError = document.getElementById('login-error');
         var loginSuccess = document.getElementById('login-success');
         var formContainer = document.querySelector('.submit-form-container');

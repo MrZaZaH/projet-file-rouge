@@ -8,6 +8,7 @@
 
 require('dotenv').config();
 
+const path = require('path');
 const express = require('express');
 
 // Single import — one path, one source of truth
@@ -39,7 +40,7 @@ app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: false, limit: '10kb' }));
 
 // ─── Static files ─────────────────────────────────────────────────────────────
-app.use(express.static('./frontend/public'));
+app.use(express.static(path.join(__dirname, 'frontend', 'public')));
 
 // ─── Routes ──────────────────────────────────────────────────────────────────
 app.get('/health', async (req, res, next) => {

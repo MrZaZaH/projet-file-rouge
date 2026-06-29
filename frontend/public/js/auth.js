@@ -146,13 +146,13 @@ function updateAuthUI() {
     }
 
     if (userBtn) {
-        userBtn.onclick = authed ? logout : function() { window.location.href = '/login.html'; };
+        userBtn.onclick = authed ? logout : openLoginModal;
         userBtn.setAttribute('aria-label', authed ? 'Se déconnecter (' + (user && user.username || '') + ')' : 'Se connecter');
     }
 
     if (mobileUserBtn) {
         mobileUserBtn.textContent = authed ? 'Se déconnecter' : 'Se connecter';
-        mobileUserBtn.onclick = authed ? logout : function() { window.location.href = '/login.html'; };
+        mobileUserBtn.onclick = authed ? logout : openLoginModal;
     }
 }
 
@@ -160,7 +160,7 @@ function updateAuthUI() {
 
 function requireAuth(redirectTo) {
     if (!isAuthenticated()) {
-        window.location.href = redirectTo || '/login.html';
+        window.location.href = redirectTo || 'login.html';
         return false;
     }
     return true;

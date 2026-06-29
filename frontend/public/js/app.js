@@ -80,7 +80,7 @@ function toggleMobileMenu() {
 
 async function surpriseMe() {
     try {
-        const response = await fetch('/api/recipes/random');
+        const response = await fetch('/api/v1/recipes/random');
         if (response.ok) {
             const data = await response.json();
             window.location.href = 'recipe.html?id=' + data.id;
@@ -94,7 +94,7 @@ async function surpriseMe() {
 
 async function fetchRecipes(url) {
     try {
-        const response = await fetch(url || '/api/recipes');
+        const response = await fetch(url || '/api/v1/recipes');
         if (!response.ok) return null;
         return await response.json();
     } catch (error) {

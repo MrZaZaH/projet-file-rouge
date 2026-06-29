@@ -272,7 +272,7 @@
                 });
                 currentPersona = null;
                 toggleDisplay(recipesLoading, true);
-                const recipes = await fetchRecipes('/api/recipes');
+                const recipes = await fetchRecipes('/api/v1/recipes');
                 renderRecipes(recipes);
                 updateActiveFilter(null);
             });
@@ -296,7 +296,7 @@
                     card.setAttribute('aria-pressed', 'false');
                     currentPersona = null;
                     toggleDisplay(recipesLoading, true);
-                    const recipes = await fetchRecipes('/api/recipes');
+                    const recipes = await fetchRecipes('/api/v1/recipes');
                     renderRecipes(recipes);
                     updateActiveFilter(null);
                     return;
@@ -314,7 +314,7 @@
 
                 const filter = getPersonaFilter(persona);
                 const params = new URLSearchParams(filter);
-                const url = filter ? '/api/recipes?' + params.toString() : '/api/recipes';
+                const url = filter ? '/api/v1/recipes?' + params.toString() : '/api/v1/recipes';
                 const recipes = await fetchRecipes(url);
 
                 if (recipes) {

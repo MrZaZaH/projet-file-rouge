@@ -151,12 +151,12 @@ No additional filter controls exist — no dropdowns, sliders, or standalone fil
   - `updateAuthUI()` dynamically re-wires header buttons (redirect to login or logout)
   - `requireAuth(redirectTo)` for front-end route protection
   - JWT stored in `localStorage` as `ovni_token`; user object as `ovni_user` JSON
-- **`login.html`**: Dedicated login page with email + password, inline error display (role="alert"), success state with redirect (`?redirect=` param), accessible labels and ARIA attributes
+- **`login.html`**: Dedicated login page with email + password, inline error display (role="alert"), success state with redirect (`?redirect=` param), accessible labels and ARIA attributes. Gardé pour les redirections depuis recipe.html et submit.html (bouton "Sauvegarder" / "Poster" quand non connecté) ainsi que le lien depuis register.html.
 - **`register.html`**: Dedicated registration page with username, email, password, confirm password; client-side validation (password match, min length, empty field checks), inline error messages, success state
-- **Modal login**: Updated in all pages (index, recipe, submit, styleguide) — simplified form (email + password only, removed pseudo field), button "Se connecter", "Créer un compte" link to register.html
+- **Modal login (index.html)**: Modal de connexion intégrée dans index.html (email + password). Préférée à la page login.html pour l'accueil car plus fluide (pas de navigation). Bouton "Se connecter" du header ouvre la modal via `openLoginModal()`. Le formulaire appelle `loginUser(email, password)` via l'API avec gestion d'erreur et loading state.
 - **`submit.html` auth update**: Uses `isAuthenticated()` + `getCurrentUser()` + `getToken()` from auth.js, redirects to login with return URL (`?redirect=submit.html`), fetch error messages from backend
 - **`recipe.html` auth update**: Save button checks `isAuthenticated()` before allowing, redirects to login with return URL
-- **Header dynamic**: `#user-btn` and `#mobile-user-btn` wired by `updateAuthUI()` — shows "Se connecter" → login.html or username → logout based on auth state
+- **Header dynamic**: `#user-btn` and `#mobile-user-btn` wired by `updateAuthUI()` — shows "Se connecter" → ouvre la modal (index.html) ou redirige vers login.html (recipe/submit) or username → logout based on auth state
 - **Route protection**: `requireAuth()` utility redirects unauthenticated users to login page
 - **Backward compat**: `updateUserUI()` kept as a wrapper calling `updateAuthUI()`; all existing `localStorage` keys preserved
 

@@ -214,7 +214,7 @@
         // ====== RECIPE FETCH ======
         async function fetchRecipe(id) {
             try {
-                const response = await fetch('/api/recipes/' + id);
+                const response = await fetch('/api/v1/recipes/' + id);
                 if (!response.ok) return null;
                 const data = await response.json();
                 return data.data || data;
