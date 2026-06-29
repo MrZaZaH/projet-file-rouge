@@ -350,55 +350,55 @@ class Recipe {
                 logger.warn(`Failed to parse JSON fields for recipe ${id}: ${parseError.message}`);
             }
 
-            // ====================================================
-            // PARSE NUMERIC FIELDS
-            // ====================================================
-            // MariaDB DECIMAL columns come back as strings in mysql2
-            // parseFloat() converts "2.50" → 2.5 (proper JS number)
-
             const costPerPortion = parseFloat(row.cost_per_portion);
             const averageRating = parseFloat(row.average_rating);
 
-            // ====================================================
-            // RETURN FORMATTED OBJECT
-            // ====================================================
+            const [commentRows] = await pool.execute(
+                `SELECT c.id, c.recipe_id, c.user_id, c.guest_name, c.content, c.created_at,
+                        u.username AS user_pseudo
+                 FROM comments c
+                 LEFT JOIN users u ON c.user_id = u.id
+                 WHERE c.recipe_id = ?
+                   AND c.deleted_at IS NULL
+                 ORDER BY c.created_at DESC`,
+                [id]
+            );
+
+            const comments = commentRows.map(function(c) {
+                return {
+                    id: c.id,
+                    pseudo: c.user_pseudo || c.guest_name || 'Anonyme',
+                    content: c.content,
+                    created_at: c.created_at
+                };
+            });
 
             return {
-                // --- Core recipe fields ---
                 id: row.id,
                 user_id: row.user_id,
                 category_id: row.category_id,
                 title: row.title,
                 anecdote: row.anecdote,
-                ingredients,                          // parsed array (not raw JSON string)
-                steps,                                // parsed array (not raw JSON string)
+                ingredients,
+                steps,
                 prep_time: row.prep_time,
-                cost_per_portion: costPerPortion,     // parsed float
+                cost_per_portion: costPerPortion,
                 status: row.status,
-                average_rating: averageRating,      // parsed float
+                average_rating: averageRating,
                 rating_count: row.rating_count,
                 image_url: row.image_url,
-
-                // --- Timestamps ---
                 created_at: row.created_at,
                 updated_at: row.updated_at,
                 deleted_at: row.deleted_at,
-
-                // --- Flat author field ---
-                // Exposed directly on the recipe object so tests can do:
-                //   expect(recipe.username).toBeDefined()
-                // and API consumers can read it without digging into a nested object
                 username: row.user_pseudo,
-
-                // --- Nested relationship objects ---
-                // For consumers that prefer structured data
                 user: {
-                    username: row.user_pseudo,    // users.username (not pseudo)
+                    username: row.user_pseudo,
                     email: row.user_email,
                 },
                 category: {
                     name: row.category_name,
                 },
+                comments: comments,
             };
 
         } catch (error) {

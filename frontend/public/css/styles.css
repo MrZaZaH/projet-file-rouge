@@ -729,6 +729,53 @@
     font-style: italic;
 }
 
+/* ---------- 8b. STAR RATING ---------- */
+.star-rating {
+    border: none;
+    padding: 0;
+    margin-bottom: 1rem;
+}
+
+.star-rating legend {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.star-rating-stars {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: 0;
+}
+
+.star-rating-stars input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+}
+
+.star-rating-stars label {
+    font-size: 2rem;
+    color: #ddd;
+    cursor: pointer;
+    transition: color 0.15s;
+    padding: 0 2px;
+}
+
+.star-rating-stars label:hover,
+.star-rating-stars label:hover ~ label,
+.star-rating-stars input:checked ~ label {
+    color: var(--accent);
+}
+
+.star-rating-stars label:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
 /* ---------- 9. ACTION BUTTONS ---------- */
 .recipe-actions {
     display: flex;

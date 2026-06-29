@@ -47,11 +47,11 @@ async function createComment(req, res, next) {
         const userId = req.user?.id || null;
         const guestName = userId ? null : req.body.guest_name;
 
-        // Create comment
         const comment = await Comment.create({
             recipe_id: recipeId,
             user_id: userId,
             guest_name: guestName,
+            username: req.user?.username || null,
             content: req.body.content,
         });
 
