@@ -158,23 +158,23 @@
             <h2 id="modal-title">Connexion</h2>
             <form id="login-form" novalidate>
                 <div class="form-group">
-                    <label for="login-pseudo">Pseudo</label>
-                    <input type="text" id="login-pseudo" name="pseudo" required autocomplete="username" aria-required="true">
-                </div>
-                <div class="form-group">
                     <label for="login-email">Email</label>
-                    <input type="email" id="login-email" name="email" required autocomplete="email" aria-required="true">
+                    <input type="email" id="login-email" name="email" required autocomplete="email" aria-required="true" placeholder="ex: marie@exemple.fr">
                 </div>
                 <div class="form-group">
                     <label for="login-password">Mot de passe</label>
-                    <input type="password" id="login-password" name="password" required autocomplete="current-password" aria-required="true">
+                    <input type="password" id="login-password" name="password" required autocomplete="current-password" aria-required="true" placeholder="Votre mot de passe">
                 </div>
-                <button type="submit" class="btn-cta" style="width:100%;">Se connecter / Créer un compte</button>
+                <button type="submit" class="btn-cta" style="width:100%;">Se connecter</button>
+                <p class="text-center text-muted" style="margin-top:1rem;font-size:0.85rem;">
+                    <a href="register.html">Créer un compte</a>
+                </p>
             </form>
         </div>
     </div>
 
     <!-- ========== JAVASCRIPT ========== -->
+    <script src="js/auth.js"></script>
     <script src="js/app.js"></script>
     <script>
         // ====== DOM ELEMENTS ======
@@ -186,8 +186,8 @@
 
         // ====== LOGIN STATE ======
         function checkLoginState() {
-            var pseudo = localStorage.getItem('ovni_pseudo');
-            if (pseudo) {
+            var authed = typeof isAuthenticated === 'function' && isAuthenticated();
+            if (authed) {
                 loginRequired.style.display = 'none';
                 submitFormContainer.style.display = 'block';
             } else {
@@ -201,7 +201,9 @@
         };
 
         if (openLoginBtn) {
-            openLoginBtn.addEventListener('click', openLoginModal);
+            openLoginBtn.addEventListener('click', function() {
+                window.location.href = '/login.html?redirect=submit.html';
+            });
         }
 
         // ====== FORM ======
@@ -214,8 +216,8 @@
         recipeForm.addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            if (!localStorage.getItem('ovni_pseudo')) {
-                openLoginModal();
+            if (!(typeof isAuthenticated === 'function' && isAuthenticated())) {
+                window.location.href = '/login.html?redirect=submit.html';
                 return;
             }
 
@@ -227,6 +229,7 @@
                 return;
             }
 
+            var currentUser = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
             var payload = {
                 title: data.title,
                 ingredients: JSON.stringify(parseListInput(data.ingredients)),
@@ -235,7 +238,7 @@
                 category: data.category,
                 cost_per_portion: parseFloat(data.cost),
                 prep_time: parseInt(data.prep_time, 10),
-                author_pseudo: localStorage.getItem('ovni_pseudo')
+                author_pseudo: currentUser ? currentUser.username : (localStorage.getItem('ovni_pseudo') || 'Anonyme')
             };
 
             try {
@@ -243,7 +246,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + (localStorage.getItem('ovni_token') || '')
+                        'Authorization': 'Bearer ' + (typeof getToken === 'function' ? getToken() : localStorage.getItem('ovni_token') || '')
                     },
                     body: JSON.stringify(payload)
                 });
@@ -253,7 +256,8 @@
                     submitSuccess.style.display = 'block';
                     recipeForm.reset();
                 } else {
-                    alert('Erreur lors de l\'envoi. Veuillez réessayer.');
+                    var errData = await response.json().catch(function() { return {}; });
+                    alert(errData.error && errData.error.message || 'Erreur lors de l\'envoi. Veuillez réessayer.');
                 }
             } catch (error) {
                 console.error('Submit failed:', error);

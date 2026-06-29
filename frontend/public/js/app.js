@@ -3,11 +3,16 @@
    Fichier : app.js
    Contenu :
      1. Utilitaires (formatTime, formatCost, toggleDisplay, getUrlParam)
-     2. Auth (updateUserUI, openLoginModal, closeLoginModal)
+     2. Auth UI (openLoginModal, closeLoginModal)
      3. Navigation (toggleMobileMenu, surpriseMe)
      4. API (fetchRecipes)
      5. Initialisation partagée
    ================================================ */
+
+// auth.js must be loaded BEFORE app.js
+// It provides: loginUser, registerUser, isAuthenticated,
+//              getCurrentUser, updateAuthUI, requireAuth,
+//              logout, apiRequest
 
 // ====== 1. UTILITAIRES ======
 
@@ -31,13 +36,19 @@ function getUrlParam(name) {
     return params.get(name);
 }
 
-// ====== 2. AUTH ======
+// ====== 2. AUTH UI ======
 
+// Backward compat — calls updateAuthUI from auth.js
 function updateUserUI() {
-    const userLabel = document.getElementById('user-label');
-    const pseudo = localStorage.getItem('ovni_pseudo');
-    if (userLabel && pseudo) {
-        userLabel.textContent = pseudo;
+    if (typeof updateAuthUI === 'function') {
+        updateAuthUI();
+    } else {
+        // Fallback if auth.js not loaded
+        const userLabel = document.getElementById('user-label');
+        const pseudo = localStorage.getItem('ovni_pseudo');
+        if (userLabel && pseudo) {
+            userLabel.textContent = pseudo;
+        }
     }
 }
 
@@ -45,7 +56,7 @@ function openLoginModal() {
     const modal = document.getElementById('login-modal');
     if (!modal) return;
     modal.classList.add('is-open');
-    const firstInput = document.getElementById('login-pseudo');
+    const firstInput = document.getElementById('login-email');
     if (firstInput) firstInput.focus();
     document.body.style.overflow = 'hidden';
 }
@@ -72,7 +83,7 @@ async function surpriseMe() {
         const response = await fetch('/api/recipes/random');
         if (response.ok) {
             const data = await response.json();
-            window.location.href = `recipe.html?id=${data.id}`;
+            window.location.href = 'recipe.html?id=' + data.id;
         }
     } catch (error) {
         console.error('Surprise failed:', error);
@@ -95,6 +106,7 @@ async function fetchRecipes(url) {
 // ====== 5. INIT PARTAGÉE ======
 
 function initShared() {
+    // Update auth UI
     updateUserUI();
 
     // Surprise me button
@@ -103,13 +115,14 @@ function initShared() {
         surpriseBtn.addEventListener('click', surpriseMe);
     }
 
-    // User button → open login modal
+    // User button → handle by auth.js (updateAuthUI sets onclick)
+    // But add fallback: if auth.js not loaded, open modal
     const userBtn = document.getElementById('user-btn');
-    if (userBtn) {
+    if (userBtn && typeof isAuthenticated === 'undefined') {
         userBtn.addEventListener('click', openLoginModal);
     }
     const mobileUserBtn = document.getElementById('mobile-user-btn');
-    if (mobileUserBtn) {
+    if (mobileUserBtn && typeof isAuthenticated === 'undefined') {
         mobileUserBtn.addEventListener('click', openLoginModal);
     }
 
@@ -143,7 +156,7 @@ function initShared() {
         });
     }
 
-    // Login form
+    // Login form (modal) — real API call
     const loginForm = document.getElementById('login-form');
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
@@ -151,14 +164,40 @@ function initShared() {
             const formData = new FormData(loginForm);
             const data = Object.fromEntries(formData.entries());
 
-            if (data.pseudo && data.email && data.password) {
-                localStorage.setItem('ovni_pseudo', data.pseudo);
-                localStorage.setItem('ovni_email', data.email);
+            // Use email + password for login via API
+            var email = data.email && data.email.trim();
+            var password = data.password;
+
+            if (!email || !password) {
+                alert('Veuillez remplir l\'email et le mot de passe.');
+                return;
+            }
+
+            // Show loading state
+            var submitBtn = loginForm.querySelector('button[type="submit"]');
+            var originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Connexion...';
+
+            try {
+                if (typeof loginUser === 'function') {
+                    await loginUser(email, password);
+                } else {
+                    // Fallback: store locally if auth.js not loaded
+                    var pseudo = data.pseudo || email.split('@')[0];
+                    localStorage.setItem('ovni_pseudo', pseudo);
+                    localStorage.setItem('ovni_email', email);
+                }
                 updateUserUI();
                 closeLoginModal();
                 loginForm.reset();
                 // Hook for pages that need extra logic after login
                 if (window.afterLogin) window.afterLogin();
+            } catch (err) {
+                alert(err.message || 'Échec de connexion. Vérifiez vos identifiants.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
             }
         });
     }

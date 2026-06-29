@@ -30,7 +30,6 @@ This document tracks frontend development progress, architectural choices, and a
 ### Not yet implemented
 
 - **Images**: Recipe cards have a placeholder container; actual images will be added in a later iteration
-- **Authentication**: Login/register frontend pages and token management are planned for Day 25
 - **Dynamic recipe detail**: Currently static; will be connected to backend API on Day 27
 - **User dashboard**: Planned for Day 28
 - **Admin dashboard**: Planned for Day 29
@@ -138,6 +137,39 @@ No additional filter controls exist — no dropdowns, sliders, or standalone fil
 - Tablet: `@media (min-width: 576px)` — 2 columns, full nav
 - Desktop: `@media (min-width: 768px)` — 3 columns
 - Wide: `@media (min-width: 992px)` — max-width constrained with margin auto
+
+## Status — Day 25
+
+### Completed
+
+- **`js/auth.js`**: Full authentication module with:
+  - `loginUser(email, password)` → `POST /api/v1/auth/login` with error handling
+  - `registerUser(username, email, password)` → `POST /api/v1/auth/register` with validation
+  - `fetchCurrentUser()` → `GET /api/v1/auth/me` to verify token server-side
+  - `isAuthenticated()` / `getCurrentUser()` for client-side state checks
+  - `apiRequest(endpoint, options)` generic fetch with automatic Bearer token injection
+  - `updateAuthUI()` dynamically re-wires header buttons (redirect to login or logout)
+  - `requireAuth(redirectTo)` for front-end route protection
+  - JWT stored in `localStorage` as `ovni_token`; user object as `ovni_user` JSON
+- **`login.html`**: Dedicated login page with email + password, inline error display (role="alert"), success state with redirect (`?redirect=` param), accessible labels and ARIA attributes
+- **`register.html`**: Dedicated registration page with username, email, password, confirm password; client-side validation (password match, min length, empty field checks), inline error messages, success state
+- **Modal login**: Updated in all pages (index, recipe, submit, styleguide) — simplified form (email + password only, removed pseudo field), button "Se connecter", "Créer un compte" link to register.html
+- **`submit.html` auth update**: Uses `isAuthenticated()` + `getCurrentUser()` + `getToken()` from auth.js, redirects to login with return URL (`?redirect=submit.html`), fetch error messages from backend
+- **`recipe.html` auth update**: Save button checks `isAuthenticated()` before allowing, redirects to login with return URL
+- **Header dynamic**: `#user-btn` and `#mobile-user-btn` wired by `updateAuthUI()` — shows "Se connecter" → login.html or username → logout based on auth state
+- **Route protection**: `requireAuth()` utility redirects unauthenticated users to login page
+- **Backward compat**: `updateUserUI()` kept as a wrapper calling `updateAuthUI()`; all existing `localStorage` keys preserved
+
+### Security front-end
+
+- Password never stored in localStorage, only the JWT token
+- Token stored alongside user JSON, sent via `Authorization: Bearer` header
+- `apiRequest()` centralises credential transmission — one place to audit
+- Server-side validation exists on all auth endpoints (express-validator, bcrypt, JWT 24h expiry)
+- Auth rate limiting: 10 requests/15min on `/api/v1/auth` (brute force protection)
+- XSS protection: all backend responses sanitised via express-validator; front-end uses `textContent` not `innerHTML` where user data is rendered
+- No sensitive data exposed in URLs (tokens never in query strings)
+- Login page errors do not distinguish between "email not found" and "wrong password" (prevents user enumeration)
 
 ## Self-Assessment (Competences 1.2 & 1.3)
 

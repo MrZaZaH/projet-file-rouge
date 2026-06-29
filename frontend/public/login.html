@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Ovni Culinaire – Connexion à votre compte">
+    <title>Connexion – Ovni Culinaire</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400;1,700&family=Special+Elite&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
+    <!-- ========== HEADER ========== -->
+    <header class="site-header" role="banner">
+        <div class="header-inner">
+            <a href="index.html" class="site-logo" aria-label="Ovni Culinaire – Accueil">
+                <span>Ovni</span> Culinaire
+            </a>
+
+            <nav class="header-nav" aria-label="Navigation principale">
+                <a href="submit.html" class="header-link">Poster une recette</a>
+                <button type="button" class="btn-cta" id="surprise-btn"
+                    aria-label="Surprends-moi avec une recette aléatoire">
+                    Surprends-moi
+                </button>
+                <button type="button" class="user-icon" id="user-btn" aria-label="Compte utilisateur">
+                    <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                    <span id="user-label">Se connecter</span>
+                </button>
+            </nav>
+
+            <button type="button" class="menu-toggle" id="menu-toggle" aria-controls="mobile-nav" aria-expanded="false"
+                aria-label="Ouvrir le menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+
+        <nav class="mobile-nav" id="mobile-nav" aria-label="Navigation mobile">
+            <a href="index.html">Accueil</a>
+            <a href="submit.html">Poster une recette</a>
+            <button type="button" class="btn-secondary" id="mobile-user-btn">Se connecter</button>
+        </nav>
+    </header>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <main id="main-content">
+        <header class="submit-header">
+            <h1>Connexion</h1>
+            <p class="text-muted">Retrouvez vos recettes, badges et statistiques</p>
+        </header>
+
+        <div class="submit-form-container" style="padding:2rem 1.5rem;">
+            <form class="submit-form" id="login-form" novalidate>
+                <!-- Error message -->
+                <div id="login-error" class="form-error" style="display:none;margin-bottom:1.5rem;padding:0.75rem 1rem;background:var(--surface);border:1px solid var(--error);" role="alert"></div>
+
+                <div class="form-element-group">
+                    <label for="login-email">Email *</label>
+                    <input type="email" id="login-email" name="email" required autocomplete="email"
+                           aria-required="true" placeholder="ex: marie@exemple.fr">
+                </div>
+
+                <div class="form-element-group">
+                    <label for="login-password">Mot de passe *</label>
+                    <input type="password" id="login-password" name="password" required autocomplete="current-password"
+                           aria-required="true" placeholder="Votre mot de passe">
+                </div>
+
+                <button type="submit" class="btn-cta" style="width:100%;padding:1rem;font-size:1.1rem;">
+                    Se connecter
+                </button>
+
+                <p class="text-center text-muted" style="margin-top:1.5rem;font-size:0.9rem;">
+                    Pas encore de compte ?
+                    <a href="register.html" style="font-weight:700;">Créer un compte</a>
+                </p>
+            </form>
+        </div>
+
+        <!-- Success state (hidden by default) -->
+        <div id="login-success" class="text-center" style="display:none;padding:3rem 1.5rem;">
+            <div class="submit-success">
+                <h2>Connexion réussie !</h2>
+                <p>Vous allez être redirigé dans un instant.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="site-footer" role="contentinfo">
+        <div class="footer-inner">
+            <div class="footer-links">
+                <a href="styleguide.html">Design System</a>
+                <a href="submit.html">Poster une recette</a>
+            </div>
+            <p class="footer-copy"><strong>Ovni Culinaire</strong> — Les recettes que personne n'ose publier ailleurs. Depuis 2026.</p>
+        </div>
+    </footer>
+
+    <!-- ========== JAVASCRIPT ========== -->
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // ====== DOM ELEMENTS ======
+        var loginForm = document.getElementById('login-form');
+        var loginError = document.getElementById('login-error');
+        var loginSuccess = document.getElementById('login-success');
+        var formContainer = document.querySelector('.submit-form-container');
+
+        // ====== LOGIN HANDLER ======
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            var email = document.getElementById('login-email').value.trim();
+            var password = document.getElementById('login-password').value;
+
+            // Basic client-side validation
+            if (!email || !password) {
+                loginError.textContent = 'Veuillez remplir tous les champs.';
+                loginError.style.display = 'block';
+                return;
+            }
+
+            // Hide previous error
+            loginError.style.display = 'none';
+
+            try {
+                await loginUser(email, password);
+
+                // Success
+                formContainer.style.display = 'none';
+                loginSuccess.style.display = 'block';
+
+                // Redirect after short delay
+                var redirect = getUrlParam('redirect') || 'index.html';
+                setTimeout(function() {
+                    window.location.href = redirect;
+                }, 1200);
+
+            } catch (error) {
+                loginError.textContent = error.message;
+                loginError.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

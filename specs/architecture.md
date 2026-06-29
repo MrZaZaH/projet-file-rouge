@@ -66,71 +66,141 @@ with the story behind each one.
 
 ```
 projet-file-rouge/
+├── Admin/                             # Admin frontend pages (HTML/CSS/JS)
+│   ├── export/
+│   │   └── recipesCSV.js              # CSV export utility
+│   ├── recipes/
+│   │   └── top.js                     # Top recipes admin page
+│   └── stats.js                       # Admin dashboard stats
 ├── database/
 │   └── scripts/
-│       ├── 01_create_database.sql   # DB creation (recettes_humaines + test)
-│       ├── 02_create_users.sql      # 3 MariaDB users with least privilege
-│       ├── 03_create_tables.sql     # DDL: categories, users, recipes, comments, ratings, admin_logs
-│       ├── 04_seed_data.sql         # Seed: 3 categories, 5 users, 8 recipes, 30 comments, 28 ratings
-│       ├── 05_add_image_url.sql     # Migration: add image_url column to recipes
-│       └── 06_indexes.sql          # Performance indexes, views counter column
-├── docs/                           # Documentation (briefs, specs, planning, quality, memos, syntheses)
-├── logs/                           # Winston log files (error.log, combined.log), auto-rotated
+│       ├── 01_create_database.sql     # DB creation (recettes_humaines + test)
+│       ├── 02_create_users.sql        # 3 MariaDB users with least privilege
+│       ├── 03_create_tables.sql       # DDL: categories, users, recipes, comments, ratings, admin_logs
+│       ├── 04_seed_data.sql           # Seed: 3 categories, 5 users, 8 recipes, 30 comments, 28 ratings
+│       ├── 05_add_image_url.sql       # Migration: add image_url column to recipes
+│       └── 06_indexes.sql            # Performance indexes, views counter column
+├── docs/                              # Documentation
+│   ├── accessibility.md
+│   ├── mvp-decisions.md
+│   ├── memos/
+│   │   ├── memo-pour-concept-flou.md
+│   │   └── memo-session.md
+│   ├── prompts/
+│   │   ├── commande-memo-revision-session.md
+│   │   ├── commande-synthese.md
+│   │   ├── prompt-instruction-ia.md
+│   │   ├── prompt-instruction-ia-2.md
+│   │   └── prompt-instruction-ia-3-reformuler.md
+│   ├── qualite/
+│   │   ├── bonnes-pratiques.md
+│   │   └── test-cases.md
+│   ├── recettes/
+│   │   ├── recettes.md
+│   │   └── selection-des-8-recettes-tests.md
+│   └── syntheses/                     # Session syntheses (jour 2 — 23)
+├── frontend/                          # Frontend app (vanilla HTML/CSS/JS)
+│   ├── docs/
+│   │   ├── architecture-frontend.md
+│   │   └── frontend-report.md
+│   └── public/
+│       ├── assets/
+│       ├── css/
+│       │   ├── styles.css
+│       │   └── variables.css
+│       ├── js/
+│       │   └── app.js
+│       ├── demo.html
+│       ├── index.html
+│       ├── recipe.html
+│       ├── styleguide.html
+│       └── submit.html
+├── logs/                              # Winston log files (gitignored, auto-rotated)
+│   ├── combined.log
+│   └── error.log
+├── specs/
+│   ├── architecture.md
+│   ├── gestion-projet/
+│   │   ├── persona-user-stories.md
+│   │   └── planning-travail-detaille.md
+│   └── technique/
+│       ├── api.md
+│       ├── backend-report.md
+│       ├── brief.md
+│       ├── database-design.md
+│       └── structure.md
 ├── src/
 │   ├── config/
-│   │   └── database.js             # DB connection config from env vars, validates required fields
+│   │   └── database.js                # DB connection config from env vars, validates required fields
 │   ├── constants/
-│   │   └── filters.js              # Filter thresholds (prep time, budget) & sort strategies
+│   │   └── filters.js                 # Filter thresholds (prep time, budget) & sort strategies
 │   ├── controllers/
-│   │   ├── AuthController.js       # register, login, getMe
-│   │   ├── RecipeController.js     # CRUD, filtered listing, random recipe, view counter
-│   │   ├── CommentController.js    # List, create (guest or auth), delete (author/admin)
-│   │   ├── RatingController.js     # Create/update rating (auth only, self-rating blocked)
-│   │   └── AdminController.js      # Dashboard, moderation, stats, logs, CSV export
+│   │   ├── AdminController.js         # Dashboard, moderation, stats, logs, CSV export
+│   │   ├── AuthController.js          # register, login, getMe
+│   │   ├── CommentController.js       # List, create (guest or auth), delete (author/admin)
+│   │   ├── RatingController.js        # Create/update rating (auth only, self-rating blocked)
+│   │   ├── RecipeController.js        # CRUD, filtered listing, random recipe, view counter
+│   │   ├── AdminController1.js        # Legacy / backup
+│   │   ├── AuthController1.js         # Legacy / backup
+│   │   ├── CommentController1.js      # Legacy / backup
+│   │   ├── RatingController1.js       # Legacy / backup
+│   │   └── RecipeController1.js       # Legacy / backup
 │   ├── database/
-│   │   └── connection.js           # mysql2/promise pool, testConnection() on startup
+│   │   └── connection.js              # mysql2/promise pool, testConnection() on startup
 │   ├── middlewares/
-│   │   ├── security.js             # helmet headers, CORS whitelist, rate limiters (global + auth)
-│   │   ├── jwtAuth.js              # authenticate (JWT verify), requireAdmin (role guard)
-│   │   ├── requireAdmin.js         # Standalone admin check (403 if not admin)
-│   │   ├── logger.js               # Winston (file rotation + console), HTTP request logger
-│   │   └── errorHandler.js         # 4-param error middleware, standardised JSON errors
+│   │   ├── errorHandler.js            # 4-param error middleware, standardised JSON errors
+│   │   ├── jwtAuth.js                 # authenticate (JWT verify), requireAdmin (role guard)
+│   │   ├── logger.js                  # Winston (file rotation + console), HTTP request logger
+│   │   ├── requireAdmin.js            # Standalone admin check (403 if not admin)
+│   │   ├── security.js                # helmet headers, CORS whitelist, rate limiters (global + auth)
+│   │   ├── errorHandler1.js           # Legacy / backup
+│   │   └── jwtAuth2.js                # Legacy / backup
 │   ├── models/
-│   │   ├── User.js                 # CRUD, findByEmail, addPoints, softDelete, findAll (admin)
-│   │   ├── Recipe.js               # CRUD, findAllWithFilters (dynamic WHERE + smart ORDER BY)
-│   │   ├── Category.js             # CRUD, slug auto-generation, softDelete
-│   │   ├── comment.js              # findByRecipeId (with author info), create, softDelete
-│   │   └── Rating.js               # rate() with upsert, average recalculation, points system
+│   │   ├── Category.js                # CRUD, slug auto-generation, softDelete
+│   │   ├── comment.js                 # findByRecipeId (with author info), create, softDelete
+│   │   ├── Rating.js                  # rate() with upsert, average recalculation, points system
+│   │   ├── Recipe.js                  # CRUD, findAllWithFilters (dynamic WHERE + smart ORDER BY)
+│   │   ├── User.js                    # CRUD, findByEmail, addPoints, softDelete, findAll (admin)
+│   │   ├── comment1.js                # Legacy / backup
+│   │   └── Recipe1.js                 # Legacy / backup
 │   ├── routes/
-│   │   ├── authRoutes.js           # POST /register, POST /login, GET /me (protected)
-│   │   ├── recipeRoutes.js         # GET /, /random, /:id — POST/PUT/DELETE (protected)
-│   │   ├── commentRoutes.js        # GET /, POST / (guest|auth), DELETE /:id (protected)
-│   │   ├── ratingRoutes.js         # POST / (protected, score 1-5)
-│   │   └── adminRoutes.js          # All protected (authenticate + requireAdmin on every route)
+│   │   ├── adminRoutes.js             # All protected (authenticate + requireAdmin on every route)
+│   │   ├── authRoutes.js              # POST /register, POST /login, GET /me (protected)
+│   │   ├── commentRoutes.js           # GET /, POST / (guest|auth), DELETE /:id (protected)
+│   │   ├── ratingRoutes.js            # POST / (protected, score 1-5)
+│   │   └── recipeRoutes.js            # GET /, /random, /:id — POST/PUT/DELETE (protected)
 │   └── utils/
-│       └── apiResponse.js          # sendSuccess / sendError — enforces standard JSON contract
+│       └── apiResponse.js             # sendSuccess / sendError — enforces standard JSON contract
 ├── tests/
-│   ├── setup.js                    # Loads .env.test globally
+│   ├── setup.js                       # Loads .env.test globally
 │   ├── helpers/
-│   │   └── testDb.js              # Test utilities: clearDatabase, createFixtures, closeDatabase
+│   │   └── testDb.js                  # Test utilities: clearDatabase, createFixtures, closeDatabase
 │   ├── integration/
-│   │   ├── auth.test.js           # Registration & login flows
-│   │   ├── recipes.test.js        # Recipe CRUD + filter queries
-│   │   └── comments.test.js       # Comment creation, listing, deletion
+│   │   ├── admin.test.js              # Admin dashboard, moderation, stats
+│   │   ├── auth.test.js               # Registration & login flows
+│   │   ├── comments.test.js           # Comment creation, listing, deletion
+│   │   └── ratings.test.js            # Rating creation, update, self-rating block
 │   └── unit/
-│       ├── userModel.test.js      # User model behavior
-│       └── recipeModel.test.js    # Recipe model behavior
-├── Admin/                         # Admin frontend (HTML/CSS/JS pages)
-├── test-scripts/                  # Manual test scripts (for development)
-├── app.js                         # Express app: middleware chain, route mounting, 404 handler
-├── server.js                      # Entry point: DB connection check, graceful shutdown
-├── jest.config.js                 # Jest config: node env, 10s timeout, 70% coverage threshold
-├── .env.example                   # Environment variable template
-└── package.json
+│       ├── categoryModel.test.js      # Category model behavior
+│       ├── ratingModel.test.js        # Rating model behavior
+│       ├── recipeModel.test.js        # Recipe model behavior
+│       └── userModel.test.js          # User model behavior
+├── .env                               # Local environment variables (gitignored)
+├── .env.example                       # Environment variable template
+├── .env.test                          # Test environment variables (gitignored)
+├── .env.test.example                  # Test env variable template
+├── .gitignore
+├── AGENTS.md                          # AI assistant instructions
+├── app.js                             # Express app: middleware chain, route mounting, 404 handler
+├── jest.config.js                     # Jest config: node env, 10s timeout, 70% coverage threshold
+├── package.json
+├── package-lock.json
+├── README.md
+└── server.js                          # Entry point: DB connection check, graceful shutdown
 ```
 
 ---
 
 ## Author
 
-trezaz — training project, 2025
+trezaz — training project, 2026
