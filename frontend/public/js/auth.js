@@ -160,6 +160,45 @@ function updateAuthUI() {
     dashLinks.forEach(function(link) {
         link.style.display = authed ? '' : 'none';
     });
+
+    // Admin link – injected dynamically if user has admin role
+    var isAdmin = authed && user && user.role === 'admin';
+
+    var existingAdminLink = document.querySelector('.header-nav .admin-link');
+    if (existingAdminLink) existingAdminLink.remove();
+
+    var existingMobileAdminLink = document.querySelector('.mobile-nav .admin-link');
+    if (existingMobileAdminLink) existingMobileAdminLink.remove();
+
+    if (isAdmin) {
+        var nav = document.querySelector('.header-nav');
+        if (nav) {
+            var link = document.createElement('a');
+            link.href = 'moderation-panel.html';
+            link.className = 'header-link admin-link';
+            link.textContent = 'Admin';
+            var userBtn = document.getElementById('user-btn');
+            if (userBtn) {
+                nav.insertBefore(link, userBtn);
+            } else {
+                nav.appendChild(link);
+            }
+        }
+
+        var mobileNav = document.getElementById('mobile-nav');
+        if (mobileNav) {
+            var mlink = document.createElement('a');
+            mlink.href = 'moderation-panel.html';
+            mlink.className = 'admin-link';
+            mlink.textContent = 'Admin';
+            var mobileUserBtn = document.getElementById('mobile-user-btn');
+            if (mobileUserBtn) {
+                mobileNav.insertBefore(mlink, mobileUserBtn);
+            } else {
+                mobileNav.appendChild(mlink);
+            }
+        }
+    }
 }
 
 // ====== 7. ROUTE PROTECTION ======

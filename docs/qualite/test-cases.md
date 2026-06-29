@@ -652,3 +652,91 @@ Expected: ids 1 (2min, 0.80€), 2 (5min, 1.50€)Not expected: id 3 (5min but 5
 - Badge "En attente" → dark orange background (`#7f4f24`), yellow text (`#f6e05e`)
 - Badge "Non retenue" → dark red background (`#4a1c1c`), light red text (`#f5a5a5`)
 **Result:** ⬜ Pending (manual test required)
+
+---
+
+## Admin Panel — Manual Test Cases (Jour 29)
+
+### TC-Admin-01 — Non-admin access denied
+**Goal:** Users without admin role must not see the panel
+**Method:** 
+1. Log in as a regular user (role = 'user')
+2. Navigate to `moderation-panel.html`
+**Expected:** "Accès refusé" message displayed, no dashboard content
+**Result:** ⬜
+
+### TC-Admin-02 — Admin access granted
+**Goal:** Admin users can see the full moderation panel
+**Method:**
+1. Log in as an admin user (role = 'admin')
+2. Navigate to `moderation-panel.html`
+**Expected:** 5 stat cards visible (total recipes, pending, published, users, avg rating), top recipes, moderation table, logs table, export button
+**Result:** ⬜
+
+### TC-Admin-03 — Admin link in header (visible for admin)
+**Goal:** Admin link appears in navigation for admin users
+**Method:**
+1. Log in as admin
+2. Navigate to any page (index.html, recipe.html, etc.)
+**Expected:** "Admin" link visible in header navigation and mobile navigation
+**Result:** ⬜
+
+### TC-Admin-04 — Admin link hidden for non-admin
+**Goal:** Admin link must NOT appear for regular users
+**Method:**
+1. Log in as regular user
+2. Navigate to any page
+**Expected:** No "Admin" link in header or mobile navigation
+**Result:** ⬜
+
+### TC-Admin-05 — Moderation: publish recipe
+**Goal:** Admin can publish a pending recipe
+**Method:**
+1. Admin on `moderation-panel.html`
+2. Ensure there is at least one pending recipe
+3. Click "Publier" on a pending recipe
+4. Confirm in dialog
+**Expected:** Recipe row fades out and disappears from table. Pending counter decrements. Recipe appears on homepage.
+**Result:** ⬜
+
+### TC-Admin-06 — Moderation: reject recipe
+**Goal:** Admin can reject a pending recipe with optional reason
+**Method:**
+1. Admin on `moderation-panel.html`
+2. Click "Rejeter" on a pending recipe
+3. Enter a reason (or leave empty) in prompt
+**Expected:** Recipe row fades out and disappears. Status updated in DB.
+**Result:** ⬜
+
+### TC-Admin-07 — CSV export
+**Goal:** Admin can download recipes as CSV
+**Method:**
+1. Admin on `moderation-panel.html`
+2. Click "Télécharger CSV"
+**Expected:** A CSV file is downloaded containing published recipes
+**Result:** ⬜
+
+### TC-Admin-08 — Admin logs table
+**Goal:** Admin action logs are displayed correctly
+**Method:**
+1. Perform some admin actions (publish, reject)
+2. Refresh `moderation-panel.html`
+**Expected:** Logs table shows entries with admin name, action type, target, and timestamp
+**Result:** ⬜
+
+### TC-Admin-09 — Stats update after moderation
+**Goal:** Stats card values update after publish/reject
+**Method:**
+1. Note the "En attente" count
+2. Publish or reject a pending recipe
+3. Refresh the page
+**Expected:** "En attente" count decreased by 1; "Publiées" or "Non retenues" increased accordingly
+**Result:** ⬜
+
+### TC-Admin-10 — XSS protection in titles
+**Goal:** Recipe titles with HTML/JS are safely escaped
+**Method:**
+1. As admin, check the moderation table
+2. Look at recipe titles in the table, top recipes, and logs
+**Expected:** If any title contains `<script>` or HTML tags, they appear as plain text (escaped), not executed
+**Result:** ⬜

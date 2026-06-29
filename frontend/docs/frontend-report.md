@@ -31,8 +31,6 @@ This document tracks frontend development progress, architectural choices, and a
 
 - **Images**: Recipe cards have a placeholder container; actual images will be added in a later iteration
 - **Dynamic recipe detail**: Currently static; will be connected to backend API on Day 27
-- **User dashboard**: Planned for Day 28
-- **Admin dashboard**: Planned for Day 29
 
 ## Filtering & Navigation
 
@@ -170,6 +168,57 @@ No additional filter controls exist — no dropdowns, sliders, or standalone fil
 - XSS protection: all backend responses sanitised via express-validator; front-end uses `textContent` not `innerHTML` where user data is rendered
 - No sensitive data exposed in URLs (tokens never in query strings)
 - Login page errors do not distinguish between "email not found" and "wrong password" (prevents user enumeration)
+
+## Status — Day 29
+
+### Completed
+
+- **Admin moderation panel** (`moderation-panel.html`, `js/moderation-panel.js`) with:
+  - **Stats cards**: total recipes, pending count, published count, total users, average rating
+  - **Top recipes**: two-column layout showing most viewed (by views) and best rated (minimum 3 ratings)
+  - **Moderation table**: pending recipes with columns (title, author, date, cost, prep time) and action buttons (Publish / Reject)
+  - **Admin logs table**: recent admin actions with ID, admin name, action type, target, date
+  - **CSV export**: button that opens `/api/v1/admin/export/recipes` for download
+  - **Role-based access**: `requireAuth()` + explicit `user.role === 'admin'` check; non-admins see an "Accès refusé" page
+  - **Loading/Error/Unauthorized/Content states**: same pattern as `dashboard.js`
+  - **Accessibility**: `aria-label` on action buttons, `role="status"` with `aria-live="polite"` for moderation feedback, `scope="col"` on table headers, keyboard-navigable action buttons, focus management
+- **Dynamic admin link** in header: `auth.js` injects an "Admin" link into `.header-nav` and `.mobile-nav` only when `user.role === 'admin'` (invisible for regular users)
+- **Admin table CSS**: `.admin-table` with sticky headers, hover states, focus outlines
+
+### Architecture
+
+```
+moderation-panel.html     → Page structure with 5 content sections
+js/moderation-panel.js    → Fetch, render, moderation actions, export
+js/auth.js (+update)      → Admin link injection in updateAuthUI()
+css/styles.css (+update)  → .admin-table styles
+```
+
+### API endpoints used
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/v1/admin/dashboard` | GET | Stats + top viewed + top rated + categories |
+| `/api/v1/admin/recipes?status=pending` | GET | Pending recipes for moderation |
+| `/api/v1/admin/recipes/:id/status` | PATCH | Publish or reject a recipe |
+| `/api/v1/admin/logs` | GET | Admin action logs (last 50) |
+| `/api/v1/admin/export/recipes` | GET | CSV download of published recipes |
+
+### Security
+
+- Front-end role check: page hidden behind `requireAuth()` + `user.role === 'admin'`
+- Back-end double verification: `authenticate` + `requireAdmin` middlewares on every admin route (returns 403)
+- Action confirmation: `confirm()` dialog before publish/reject to prevent accidental clicks
+- No sensitive data exposed in error messages
+- XSS protection: `escapeHtml()` and `escapeAttr()` on all user-supplied content rendered in tables
+
+### Accessibility
+
+- Tables with `aria-label`, `scope="col"`, `<caption class="sr-only">`
+- `aria-live="polite"` feedback on moderation actions (`#moderation-feedback`)
+- Focus outlines on table rows with `:focus-within`
+- `aria-label` on publish/reject buttons containing recipe title
+- Skip link, semantic landmarks, keyboard-navigable interface
 
 ## Self-Assessment (Competences 1.2 & 1.3)
 

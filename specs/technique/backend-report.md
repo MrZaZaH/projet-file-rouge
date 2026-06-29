@@ -347,5 +347,5 @@ All critical security measures are in place (Helmet CSP, JWT, rate limiting, exp
 ---
 
 *Initial report: Day 12 of the Ovni Culinaire project.*
-*Last updated: Day 28 — User dashboard (UserController, userRoutes, Recipe.findByUserId, front-end dashboard page)*
-*Project Status: Core features complete ✅*
+*Last updated: Day 29 — Admin moderation panel (moderation-panel.html, moderation-panel.js, auth.js admin link injection, admin-utils unit tests)*
+*Project Status: All core features complete ✅ — Day 30: Final review*
