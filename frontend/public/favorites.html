@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Ovni Culinaire – Connexion à votre compte">
-    <title>Connexion – Ovni Culinaire</title>
+    <meta name="description" content="Ovni Culinaire – Mes recettes favorites">
+    <title>Mes favoris – Ovni Culinaire</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400;1,700&family=Special+Elite&display=swap" rel="stylesheet">
@@ -22,13 +22,14 @@
             </a>
 
             <nav class="header-nav" aria-label="Navigation principale">
+                <a href="index.html" class="header-link">Accueil</a>
                 <a href="submit.html" class="header-link">Poster une recette</a>
                 <a href="dashboard.html" class="header-link auth-link" id="desktop-dashboard-link" style="display:none;">Tableau de bord</a>
                 <button type="button" class="btn-cta" id="surprise-btn"
                     aria-label="Surprends-moi avec une recette aléatoire">
                     Surprends-moi
                 </button>
-                <a href="favorites.html" class="header-link auth-link fav-link" id="desktop-fav-link" style="display:none;" aria-label="Mes recettes favorites">
+                <a href="favorites.html" class="header-link auth-link fav-link" id="desktop-fav-link" style="display:none;" aria-label="Mes recettes favorites" aria-current="page">
                     <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false" class="icon-heart">
                         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                     </svg>
@@ -52,7 +53,7 @@
         <nav class="mobile-nav" id="mobile-nav" aria-label="Navigation mobile">
             <a href="index.html">Accueil</a>
             <a href="dashboard.html" class="auth-link" id="mobile-dashboard-link" style="display:none;">Tableau de bord</a>
-            <a href="favorites.html" class="auth-link" id="mobile-fav-link" style="display:none;">Mes favoris</a>
+            <a href="favorites.html" class="auth-link" id="mobile-fav-link" style="display:none;" aria-current="page">Mes favoris</a>
             <a href="submit.html">Poster une recette</a>
             <button type="button" class="btn-secondary" id="mobile-user-btn">Se connecter</button>
         </nav>
@@ -60,44 +61,35 @@
 
     <!-- ========== MAIN CONTENT ========== -->
     <main id="main-content">
-        <header class="submit-header">
-            <h1>Connexion</h1>
-            <p class="text-muted">Retrouvez vos recettes, badges et statistiques</p>
-        </header>
-
-        <div class="submit-form-container" style="padding:2rem 1.5rem;">
-            <form class="submit-form" id="login-page-form" novalidate>
-                <!-- Error message -->
-                <div id="login-error" class="form-error" style="display:none;margin-bottom:1.5rem;padding:0.75rem 1rem;background:var(--surface);border:1px solid var(--error);" role="alert"></div>
-
-                <div class="form-element-group">
-                    <label for="login-email">Email *</label>
-                    <input type="email" id="login-email" name="email" required autocomplete="email"
-                           aria-required="true" placeholder="ex: marie@exemple.fr">
-                </div>
-
-                <div class="form-element-group">
-                    <label for="login-password">Mot de passe *</label>
-                    <input type="password" id="login-password" name="password" required autocomplete="current-password"
-                           aria-required="true" placeholder="Votre mot de passe">
-                </div>
-
-                <button type="submit" class="btn-cta" style="width:100%;padding:1rem;font-size:1.1rem;">
-                    Se connecter
-                </button>
-
-                <p class="text-center text-muted" style="margin-top:1.5rem;font-size:0.9rem;">
-                    Pas encore de compte ?
-                    <a href="register.html" style="font-weight:700;">Créer un compte</a>
-                </p>
-            </form>
+        <!-- Loading State -->
+        <div id="loading-state" class="text-center" style="padding:6rem 1.5rem;" role="status" aria-live="polite">
+            <p>Chargement de vos favoris...</p>
         </div>
 
-        <!-- Success state (hidden by default) -->
-        <div id="login-success" class="text-center" style="display:none;padding:3rem 1.5rem;">
-            <div class="submit-success">
-                <h2>Connexion réussie !</h2>
-                <p>Vous allez être redirigé dans un instant.</p>
+        <!-- Error State -->
+        <div id="error-state" class="text-center" style="display:none;padding:6rem 1.5rem;" role="alert">
+            <h1 style="font-style:italic;margin-bottom:1rem;">Oups</h1>
+            <p id="error-message">Impossible de charger vos favoris.</p>
+            <a href="favorites.html" class="btn-cta" style="margin-top:1.5rem;">Réessayer</a>
+        </div>
+
+        <!-- Favorites Content -->
+        <div id="favorites-content" style="display:none;">
+            <header class="submit-header">
+                <h1>Mes recettes favorites</h1>
+                <p class="text-muted" id="favorites-subtitle">Les recettes que vous avez sauvegardées</p>
+            </header>
+
+            <div style="max-width:var(--max-width);margin:0 auto;padding:2rem 1.5rem;">
+                <div id="favorites-loading" class="text-center" style="padding:2rem;">
+                    <p>Chargement des recettes...</p>
+                </div>
+                <div id="favorites-empty" class="text-center" style="display:none;padding:2rem;">
+                    <p>Vous n'avez pas encore de recettes favorites.</p>
+                    <a href="index.html" class="btn-cta" style="margin-top:1rem;">Découvrir des recettes</a>
+                </div>
+                <div class="recipe-grid" id="favorites-grid" aria-live="polite">
+                </div>
             </div>
         </div>
     </main>
@@ -113,9 +105,31 @@
         </div>
     </footer>
 
+    <!-- ========== LOGIN MODAL ========== -->
+    <div class="modal-overlay" id="login-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1">
+        <div class="modal">
+            <button type="button" class="modal-close" aria-label="Fermer la fenêtre" id="modal-close">&times;</button>
+            <h2 id="modal-title">Connexion</h2>
+            <form id="login-form" novalidate>
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" name="email" required autocomplete="email" aria-required="true" placeholder="ex: marie@exemple.fr">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Mot de passe</label>
+                    <input type="password" id="login-password" name="password" required autocomplete="current-password" aria-required="true" placeholder="Votre mot de passe">
+                </div>
+                <button type="submit" class="btn-cta" style="width:100%;">Se connecter</button>
+                <p class="text-center text-muted" style="margin-top:1rem;font-size:0.85rem;">
+                    <a href="register.html">Créer un compte</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
     <!-- ========== JAVASCRIPT ========== -->
     <script src="js/auth.js"></script>
     <script src="js/app.js"></script>
-    <script src="js/login.js"></script>
+    <script src="js/favorites.js"></script>
 </body>
 </html>

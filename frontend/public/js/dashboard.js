@@ -58,6 +58,8 @@ function renderStats(stats) {
     document.getElementById('stat-pending').textContent = stats.pending_recipes;
     document.getElementById('stat-rejected').textContent = stats.rejected_recipes;
     document.getElementById('stat-comments').textContent = stats.total_comments_received;
+    var favEl = document.getElementById('stat-favorites');
+    if (favEl) favEl.textContent = stats.favorite_count || 0;
 }
 
 function renderRecipes(recipes) {

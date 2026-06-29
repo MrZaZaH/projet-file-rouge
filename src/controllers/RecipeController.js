@@ -11,9 +11,9 @@
 
 'use strict';
 
-const Recipe = require('../models/Recipe'); // Model handling DB logic
-const { sendSuccess, sendError } = require('../utils/apiResponse'); // Standard API responses
-//add after connection's bug in day 14 
+const Recipe = require('../models/Recipe');
+const Favorite = require('../models/Favorite');
+const { sendSuccess, sendError } = require('../utils/apiResponse');
 const { pool } = require('../database/connection');
 const { logger } = require('../middlewares/logger');
 
@@ -82,6 +82,11 @@ async function getRecipeById(req, res, next) {
         if (!isAdmin && recipe.status !== 'published') {
             return sendError(res, 'Recipe not found.', 404);
         }
+        // Attach is_favorited if user is authenticated
+        if (req.user) {
+            recipe.is_favorited = await Favorite.isFavorited(req.user.id, recipe.id);
+        }
+
         // Increment view counter — fire and forget, don't block the response
         const id = req.params.id;
         pool.query(

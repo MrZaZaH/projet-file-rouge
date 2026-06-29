@@ -75,6 +75,20 @@ __En tant que__ parent épuisé, __Je veux__ trouver une recette originale en mo
 
 (US-07 à US-10)
 
+### __💾 Sauvegarde & Favoris__
+
+#### __🔹 US-16 – Sauvegarder une recette pour plus tard__
+
+__En tant que__ visiteur connecté, __Je veux__ pouvoir sauvegarder une recette en un clic et la retrouver depuis n'importe quelle page, __Afin de__ ne pas perdre une recette qui m'intéresse.
+
+✅ __Critères d'acceptation :__
+
+- Bouton "Sauvegarder" sur chaque page détail recette → toggle (ajouter/retirer)
+- Icône cœur dans le header (visible uniquement quand connecté) → lien direct vers la liste des favoris
+- Page "Mes favoris" listant toutes les recettes sauvegardées par l'utilisateur
+- Les recettes supprimées ou dépubliées disparaissent automatiquement de la liste
+- Compteur de favoris dans le tableau de bord
+
 ### __🎯 Navigation & Découverte__
 
 #### __🔹 US-07 – Découverte par filtres__

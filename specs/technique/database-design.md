@@ -67,6 +67,16 @@ FK: user_id → users(id)
 FK: recipe_id → recipes(id)
 UNIQUE KEY unique_rating (user_id, recipe_id)
 
+### favorites
+id                INT UNSIGNED    NOT NULL AUTO_INCREMENT PRIMARY KEY
+user_id           INT UNSIGNED    NOT NULL
+recipe_id         INT UNSIGNED    NOT NULL
+created_at        DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP
+
+FK: user_id → users(id) ON DELETE CASCADE
+FK: recipe_id → recipes(id) ON DELETE CASCADE
+UNIQUE KEY unique_favorite (user_id, recipe_id)
+
 ### admin_logs
 id                INT UNSIGNED    NOT NULL AUTO_INCREMENT PRIMARY KEY
 admin_id          INT UNSIGNED    NOT NULL
@@ -86,6 +96,8 @@ FK: admin_id → users(id)
 - users (1) → ratings (N) : one user can rate many recipes
 - recipes (1) → ratings (N) : one recipe can receive many ratings
 - users (1) → admin_logs (N) : one admin can perform many logged actions
+- users (1) → favorites (N) : one user can save many recipes
+- recipes (1) → favorites (N) : one recipe can be saved by many users
 
 ## Security Considerations
 - `password_hash` : passwords are never stored in plain text. bcryptjs is used 

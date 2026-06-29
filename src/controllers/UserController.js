@@ -8,6 +8,7 @@
 const { pool } = require('../database/connection');
 const User = require('../models/User');
 const Recipe = require('../models/Recipe');
+const Favorite = require('../models/Favorite');
 const { sendSuccess, sendError } = require('../utils/apiResponse');
 
 class UserController {
@@ -42,6 +43,8 @@ class UserController {
                 [userId]
             );
 
+            const favoriteCount = await Favorite.countByUserId(userId);
+
             const result = {
                 user: {
                     id: user.id,
@@ -56,6 +59,7 @@ class UserController {
                     pending_recipes: Number(stats.pending_recipes ?? 0),
                     rejected_recipes: Number(stats.rejected_recipes ?? 0),
                     total_comments_received: Number(commentRows[0].total ?? 0),
+                    favorite_count: favoriteCount,
                 }
             };
 

@@ -8,7 +8,7 @@
 
 const express = require('express');
 const { body, query, validationResult } = require('express-validator');
-const { authenticate } = require('../middlewares/jwtAuth');
+const { authenticate, attachUser } = require('../middlewares/jwtAuth');
 const RecipeController = require('../controllers/RecipeController');
 
 const router = express.Router();
@@ -68,7 +68,7 @@ const recipeBodyRules = [
 router.get('/', RecipeController.getAllRecipes);
 router.get('/random', RecipeController.getRandomRecipe);
 // /random MUST be declared before /:id — otherwise Express matches "random" as an id.
-router.get('/:id', RecipeController.getRecipeById);
+router.get('/:id', attachUser, RecipeController.getRecipeById);
 
 // Protected
 router.post(

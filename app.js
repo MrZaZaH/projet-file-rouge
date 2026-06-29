@@ -75,6 +75,7 @@ const recipeRoutes = require('./src/routes/recipeRoutes');
 const commentRoutes = require('./src/routes/commentRoutes');
 const ratingRoutes = require('./src/routes/ratingRoutes');
 const userRoutes = require('./src/routes/userRoutes');
+const favoriteRoutes = require('./src/routes/favoriteRoutes');
 
 // authLimiter is stricter than globalLimiter — brute force protection on login/register
 app.use('/api/v1/auth', authLimiter, authRoutes);
@@ -82,6 +83,7 @@ app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/recipes', recipeRoutes);
 app.use('/api/v1/recipes/:recipeId/comments', commentRoutes);
 app.use('/api/v1/recipes/:recipeId/ratings', ratingRoutes);
+app.use('/api/v1/favorites', favoriteRoutes);
 
 // ─── 404 ─────────────────────────────────────────────────────────────────────
 app.use((req, res) => {

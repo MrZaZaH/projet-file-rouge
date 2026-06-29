@@ -54,6 +54,7 @@ PROJET-FILE-ROUGE/
 │   │   ├── AuthController1.js          ← doublon
 │   │   ├── CommentController.js
 │   │   ├── CommentController1.js       ← doublon
+│   │   ├── FavoriteController.js
 │   │   ├── RatingController.js
 │   │   ├── RatingController1.js        ← doublon
 │   │   ├── RecipeController.js
@@ -72,6 +73,7 @@ PROJET-FILE-ROUGE/
 │   │   ├── Category.js
 │   │   ├── comment.js
 │   │   ├── comment1.js                 ← doublon
+│   │   ├── Favorite.js
 │   │   ├── Rating.js
 │   │   ├── Recipe.js
 │   │   ├── Recipe1.js                  ← doublon
@@ -80,6 +82,7 @@ PROJET-FILE-ROUGE/
 │   │   ├── adminRoutes.js
 │   │   ├── authRoutes.js
 │   │   ├── commentRoutes.js
+│   │   ├── favoriteRoutes.js
 │   │   ├── ratingRoutes.js
 │   │   └── recipeRoutes.js
 │   └── utils/

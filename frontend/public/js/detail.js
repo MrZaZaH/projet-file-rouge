@@ -6,7 +6,12 @@ let currentComments = [];
 
 async function fetchRecipe(id) {
     try {
-        const response = await fetch('/api/v1/recipes/' + id);
+        var headers = {};
+        var token = getToken();
+        if (token) {
+            headers['Authorization'] = 'Bearer ' + token;
+        }
+        const response = await fetch('/api/v1/recipes/' + id, { headers: headers });
         if (!response.ok) return null;
         const result = await response.json();
         return result.data || null;
@@ -245,16 +250,46 @@ function copyLink() {
     });
 }
 
+// ====== FAVORITE TOGGLE ======
+
+async function toggleFavorite() {
+    if (!isAuthenticated()) {
+        openLoginModal();
+        return;
+    }
+
+    var btn = document.getElementById('btn-save');
+    var originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.textContent = '...';
+
+    try {
+        var result = await apiRequest('/favorites/' + recipe.id, { method: 'POST' });
+        recipe.is_favorited = result.favorited;
+        updateSaveButton();
+    } catch (err) {
+        alert(err.message || 'Erreur lors de la sauvegarde.');
+    } finally {
+        btn.disabled = false;
+    }
+}
+
+function updateSaveButton() {
+    var btn = document.getElementById('btn-save');
+    if (!btn) return;
+    if (recipe.is_favorited) {
+        btn.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg> Sauvegardée';
+        btn.classList.add('is-saved');
+    } else {
+        btn.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg> Sauvegarder';
+        btn.classList.remove('is-saved');
+    }
+}
+
 // ====== EVENT LISTENERS ======
 
 function initEventListeners() {
-    document.getElementById('btn-save').addEventListener('click', function() {
-        if (!isAuthenticated()) {
-            openLoginModal();
-            return;
-        }
-        alert('Recette sauvegardée !');
-    });
+    document.getElementById('btn-save').addEventListener('click', toggleFavorite);
 
     document.getElementById('btn-comment').addEventListener('click', function() {
         toggleDisplay(document.getElementById('comment-form'), true);
@@ -299,6 +334,7 @@ async function init() {
     toggleDisplay(document.getElementById('recipe-content'), true);
 
     renderRecipe(recipe);
+    updateSaveButton();
     initEventListeners();
 }
 

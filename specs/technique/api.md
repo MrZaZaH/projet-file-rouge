@@ -155,7 +155,7 @@ Response 200: Single recipe object (same shape as list item above).Response 404:
 
 `GET /api/v1/recipes/:id`
 Return full details for one recipe, including author info and comments.
-Auth required: No
+Auth required: No (but if a valid Bearer token is present, `is_favorited` is returned)
 Path parameter: id — integer, recipe ID.
 Response 200:
 ```json
@@ -171,6 +171,7 @@ Response 200:
     "cost_per_portion": 0.80,
     "average_rating": 4.2,
     "category_id": 3,
+    "is_favorited": true,
     "author": {
       "id": 1,
       "username": "mickael"
@@ -180,6 +181,8 @@ Response 200:
 }
 ```
 Response 404: Recipe not found or soft-deleted.
+
+Note: `is_favorited` is only present when the request includes a valid Bearer token. Guests see `is_favorited: false` implicitly.
 
 `POST /api/v1/recipes`
 Create a new recipe.
@@ -523,7 +526,8 @@ Response 200:
       "published_recipes": 2,
       "pending_recipes": 1,
       "rejected_recipes": 0,
-      "total_comments_received": 12
+      "total_comments_received": 12,
+      "favorite_count": 5
     }
   }
 }
@@ -553,3 +557,58 @@ Response 200:
 }
 ```
 Response 401: Missing or invalid token.
+
+### Favorites
+
+#### `GET /api/v1/favorites`
+Return all recipes saved by the authenticated user.
+Auth required: Yes
+
+Response 200:
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "title": "Poire chocolat micro-ondes",
+      "prep_time": 5,
+      "cost_per_portion": 0.80,
+      "average_rating": 4.2,
+      "author": "mickael",
+      "favorited_at": "2025-01-20T10:00:00.000Z"
+    }
+  ]
+}
+```
+Response 401: Missing or invalid token.
+
+#### `POST /api/v1/favorites/:recipeId`
+Toggle a recipe as favorite for the authenticated user.
+If the recipe is already favorited → removes it (unfavorite).
+If not favorited → adds it.
+
+Auth required: Yes
+
+Response 200 (added):
+```json
+{
+  "success": true,
+  "data": {
+    "favorited": true,
+    "recipe_id": 1
+  }
+}
+```
+Response 200 (removed):
+```json
+{
+  "success": true,
+  "data": {
+    "favorited": false,
+    "recipe_id": 1
+  }
+}
+```
+Response 401: Not authenticated.
+Response 404: Recipe not found.

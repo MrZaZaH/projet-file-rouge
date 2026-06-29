@@ -220,6 +220,56 @@ css/styles.css (+update)  → .admin-table styles
 - `aria-label` on publish/reject buttons containing recipe title
 - Skip link, semantic landmarks, keyboard-navigable interface
 
+---
+
+### Favorites (bookmarks) — suite Day 29
+
+User recipe favorites system with header shortcut and dedicated page.
+
+**Backend:**
+
+| File | Purpose |
+|------|---------|
+| `src/models/Favorite.js` | Toggle, findByUserId, isFavorited, countByUserId |
+| `src/controllers/FavoriteController.js` | toggle, getMyFavorites |
+| `src/routes/favoriteRoutes.js` | `GET /api/v1/favorites`, `POST /api/v1/favorites/:recipeId` |
+| `src/middlewares/jwtAuth.js` | Added `attachUser` (optional auth — doesn't block guests) |
+
+**Database:**
+
+- `database/scripts/07_create_favorites_table.sql` — new table `favorites` with CASCADE deletes, UNIQUE(user_id, recipe_id), and indexes
+
+**API endpoints added:**
+
+| Endpoint | Method | Auth | Purpose |
+|----------|--------|------|---------|
+| `/api/v1/favorites` | GET | Required | List user's saved recipes |
+| `/api/v1/favorites/:recipeId` | POST | Required | Toggle favorite (add/remove) |
+
+**Recipe detail also updated:** `GET /api/v1/recipes/:id` now returns `is_favorited: boolean` when a valid Bearer token is present (`attachUser` middleware).
+
+**User profile updated:** `GET /api/v1/users/me/profile` now includes `favorite_count` in stats.
+
+**Frontend:**
+
+| File | Purpose |
+|------|---------|
+| `frontend/public/favorites.html` | New page listing saved recipes |
+| `frontend/public/js/favorites.js` | Fetch + render favorites with grid of recipe cards |
+| `frontend/public/js/detail.js` | Save button wired to API toggle with visual state feedback |
+| `frontend/public/css/styles.css` | `.fav-link` heart icon, `.is-saved` button state |
+
+**Header:** Heart icon (`fav-link`) added to every page's `.header-nav` and `.mobile-nav`, hidden by default (`auth-link` class), shown dynamically by `updateAuthUI()` when user is authenticated. Links to `favorites.html`.
+
+**Dashboard:** Favorites count card added to stats grid, linked to favorites page.
+
+**Specs updated:**
+
+- `specs/technique/api.md` — Favorites endpoints documented
+- `specs/technique/database-design.md` — favorites table, relationships, indexes
+- `specs/gestion-projet/persona-user-stories.md` — US-16 added
+- `specs/technique/structure.md` — new files listed
+
 ## Self-Assessment (Competences 1.2 & 1.3)
 
 See full evaluation in `docs/competences/auto-evaluation-bloc1.md`.

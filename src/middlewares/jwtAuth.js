@@ -62,4 +62,26 @@ const requireAdmin = (req, res, next) => {
     next();
 };
 
-module.exports = { authenticate, requireAdmin };
+// attachUser — optional authentication.
+// If a valid token is present in the Authorization header, attaches the decoded
+// user to req.user. If the token is missing or invalid, continues without blocking.
+const attachUser = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return next();
+    }
+
+    const token = authHeader.substring(7);
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded;
+    } catch {
+        // Token invalid or expired — silently continue as guest
+    }
+
+    next();
+};
+
+module.exports = { authenticate, requireAdmin, attachUser };
