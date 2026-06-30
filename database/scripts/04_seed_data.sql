@@ -1,10 +1,37 @@
--- 04_seed_data.sql (uniquement pour du test en local à NE JAMAIS EXECUTER EN PROD !!!!!!!)
--- Test dataset for recettes_humaines database.
--- Run as dev_admin after 01, 02, 03 scripts.
--- Covers all filter test cases: prep_time, cost_per_portion, status variants.
--- Password hashes generated with bcryptjs, cost factor 12.
-
-USE recettes_humaines;
+-- 04_seed_data.sql  —  DONNÉES DE TEST (local uniquement, JAMAIS en production)
+--
+-- ==============================================================================
+-- IMPORTANT : Ce script seed les DEUX bases de données. Il est conçu pour être
+-- exécuté SANS instruction USE — la base cible est passée en argument via le
+-- client mysql (mysql -u user -p MA_BASE < 04_seed_data.sql).
+--
+-- Commande pour seed la base de dev :
+--   mysql -u dev_admin -p recettes_humaines < database/scripts/04_seed_data.sql
+--
+-- Commande pour seed la base de test :
+--   mysql -u dev_admin -p recettes_humaines_test < database/scripts/04_seed_data.sql
+--
+-- Les DEUX bases doivent contenir les MÊMES données de test pour que :
+--   1. Le développement et les tests manuels aient des données cohérentes
+--   2. Les tests Jest (Supertest) puissent TRUNCATE la base test sans impact
+--      sur les données de dev
+--   3. La démo/soutenance fonctionne sur n'importe laquelle des deux bases
+-- ==============================================================================
+--
+-- Contenu du jeu de données :
+--   - 5  utilisateurs  (dont 1 admin) — hash bcrypt cost 12
+--   - 3  catégories    (filtres métier du projet)
+--   - 8  recettes      (couvrent tous les cas de filtrage : temps, budget, statut)
+--   - 30 commentaires  (dont certains invités sans compte)
+--   - 29 notations     (moyennes pré-calculées dans average_rating)
+--
+-- Détail des personnages et leurs mots de passe :
+--   admin_ovni    | admin@example.com    | Admin123!    → admin
+--   mickael_b     | mickael@example.com  | User1234!    → user  (Salarié crevé)
+--   sofia_r       | sofia@example.com    | User1234!    → user  (Parent épuisé)
+--   jerome_k      | jerome@example.com   | User1234!    → user  (Étudiant fauché)
+--   anonyme_test  | anon@example.com     | User1234!    → user  (Test modération)
+-- ============================================================
 
 -- ============================================================
 -- CATEGORIES (3)
@@ -15,12 +42,17 @@ INSERT INTO categories (id, name, slug) VALUES
 (3, 'Accident heureux','accident-heureux');
 
 -- ============================================================
+-- USERS (5)
+-- Hash bcrypt générés avec bcryptjs, cost factor 12.
+--   Admin123! → $2b$12$w89hz/RaFW14c5wMgfiuH.M1q36gagS8DJuA6mX9j5zEdY7mx6Xoa
+--   User1234! → $2b$12$/ZEJDq.vnEg2SF3VFOQ1reiosU4wPRaD59soyl/H8KdWsWf965YK.
+-- ============================================================
 INSERT INTO users (id, username, email, password_hash, role) VALUES
-(1, 'mickael_b',    'mickael@example.com', '$2b$12$uEpXtbdLiWAkt6GHAci6DeJUW.vW/LBa/cefjuxcWRYDqBLab3ViK', 'user'),
-(2, 'sofia_r',      'sofia@example.com',   '$2b$12$uEpXtbdLiWAkt6GHAci6DeJUW.vW/LBa/cefjuxcWRYDqBLab3ViK', 'user'),
-(3, 'jerome_k',     'jerome@example.com',  '$2b$12$uEpXtbdLiWAkt6GHAci6DeJUW.vW/LBa/cefjuxcWRYDqBLab3ViK', 'user'),
-(4, 'anonyme_test', 'anon@example.com',    '$2b$12$uEpXtbdLiWAkt6GHAci6DeJUW.vW/LBa/cefjuxcWRYDqBLab3ViK', 'user'),
-(5, 'admin_ovni',   'admin@example.com',   '$2b$12$SL2bmYXzwlw.zaEFwxetr.QSyakqW3fhQoVo4V2RWpLy8SCz6buTa', 'admin');
+(1, 'mickael_b',    'mickael@example.com', '$2b$12$/ZEJDq.vnEg2SF3VFOQ1reiosU4wPRaD59soyl/H8KdWsWf965YK.', 'user'),
+(2, 'sofia_r',      'sofia@example.com',   '$2b$12$/ZEJDq.vnEg2SF3VFOQ1reiosU4wPRaD59soyl/H8KdWsWf965YK.', 'user'),
+(3, 'jerome_k',     'jerome@example.com',  '$2b$12$/ZEJDq.vnEg2SF3VFOQ1reiosU4wPRaD59soyl/H8KdWsWf965YK.', 'user'),
+(4, 'anonyme_test', 'anon@example.com',    '$2b$12$/ZEJDq.vnEg2SF3VFOQ1reiosU4wPRaD59soyl/H8KdWsWf965YK.', 'user'),
+(5, 'admin_ovni',   'admin@example.com',   '$2b$12$w89hz/RaFW14c5wMgfiuH.M1q36gagS8DJuA6mX9j5zEdY7mx6Xoa', 'admin');
 
 -- ============================================================
 -- RECIPES (8)
