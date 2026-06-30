@@ -192,7 +192,7 @@ Request body:
 | Field | Type | Rules |
 |-------|------|-------|
 | `title` | string | Required, max 255 chars |
-| `anecdote` | string | Required, min 20 chars — the soul of the project |
+| `anecdote` | string | Required, min 2 chars — the soul of the project |
 | `category_id` | integer | Required, positive integer |
 | `ingredients` | string[] | Non-empty array, each item non-empty string |
 | `steps` | string[] | Non-empty array, each item non-empty string |
@@ -211,7 +211,7 @@ Request body:
 | Field | Type | Rules |
 |-------|------|-------|
 | `title` | string | Required, max 255 chars |
-| `anecdote` | string | Required, min 20 chars — the soul of the project |
+| `anecdote` | string | Required, min 2 chars — the soul of the project |
 | `category_id` | integer | Required, positive integer |
 | `ingredients` | string[] | Non-empty array, each item non-empty string |
 | `steps` | string[] | Non-empty array, each item non-empty string |

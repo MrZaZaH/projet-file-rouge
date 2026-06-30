@@ -35,7 +35,7 @@ const recipeBodyRules = [
         .trim()
         .notEmpty().withMessage('Anecdote is required.')
         // Core value of the project — a recipe without a story gets rejected.
-        .isLength({ min: 20 }).withMessage('Anecdote must be at least 20 characters.'),
+        .isLength({ min: 2 }).withMessage('Anecdote must be at least 2 characters.'),
 
     body('category_id')
         .notEmpty().withMessage('Category is required.')

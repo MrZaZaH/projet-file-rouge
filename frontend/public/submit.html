@@ -104,10 +104,20 @@
                 </div>
 
                 <div class="form-element-group">
-                    <label for="recipe-anecdote">Anecdote (optionnel)</label>
-                    <textarea id="recipe-anecdote" name="anecdote"
+                    <label for="recipe-anecdote">Anecdote *</label>
+                    <textarea id="recipe-anecdote" name="anecdote" required aria-required="true"
                               placeholder="Racontez l'histoire derrière cette recette. Comment l'avez-vous découverte?"></textarea>
-                    <p class="form-help">Ajoutez une touche personnelle à votre recette</p>
+                    <div class="anecdote-quickfill">
+                        <button type="button" class="btn-anecdote-preset" data-target="recipe-anecdote"
+                                data-text="C'était il y a trop longtemps, je ne m'en rappelle plus, je me rappelle juste que je me suis régalé et j'ai recommencé">
+                            🤷 Je ne m'en rappelle plus
+                        </button>
+                        <button type="button" class="btn-anecdote-preset" data-target="recipe-anecdote"
+                                data-text="J'ai pas fait exprès, c'est du hasard pur">
+                            🎲 Hasard pur
+                        </button>
+                    </div>
+                    <p class="form-help">Cliquez sur une option si vous manquez d'inspiration, ou écrivez votre propre anecdote.</p>
                 </div>
 
                 <div class="form-element-group">

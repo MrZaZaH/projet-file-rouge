@@ -40,6 +40,16 @@ function parseListInput(text) {
         .filter(function(line) { return line.length > 0; });
 }
 
+// Fill anecdote textarea when a preset button is clicked
+document.querySelectorAll('.btn-anecdote-preset').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        var target = document.getElementById(this.dataset.target);
+        if (target) {
+            target.value = this.dataset.text;
+        }
+    });
+});
+
 recipeForm.addEventListener('submit', async function(e) {
     e.preventDefault();
 
@@ -51,7 +61,7 @@ recipeForm.addEventListener('submit', async function(e) {
     var formData = new FormData(recipeForm);
     var data = Object.fromEntries(formData.entries());
 
-    if (!data.title || !data.ingredients || !data.steps || !data.category || !data.cost || !data.prep_time) {
+    if (!data.title || !data.ingredients || !data.steps || !data.anecdote || !data.category || !data.cost || !data.prep_time) {
         alert('Veuillez remplir tous les champs obligatoires.');
         return;
     }
@@ -61,7 +71,7 @@ recipeForm.addEventListener('submit', async function(e) {
         title: data.title,
         ingredients: JSON.stringify(parseListInput(data.ingredients)),
         steps: JSON.stringify(parseListInput(data.steps)),
-        anecdote: data.anecdote || null,
+        anecdote: data.anecdote,
         category: data.category,
         cost_per_portion: parseFloat(data.cost),
         prep_time: parseInt(data.prep_time, 10),

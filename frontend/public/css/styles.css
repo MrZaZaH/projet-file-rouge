@@ -942,6 +942,30 @@ textarea {
     margin-top: 0.25rem;
 }
 
+.anecdote-quickfill {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.btn-anecdote-preset {
+    background: var(--surface);
+    border: var(--border-thin);
+    padding: 0.4rem 0.8rem;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: var(--ink-muted);
+    cursor: pointer;
+    transition: box-shadow 0.1s, transform 0.1s, color 0.1s;
+}
+
+.btn-anecdote-preset:hover {
+    box-shadow: 1px 1px 0 var(--ink);
+    transform: translate(1px, 1px);
+    color: var(--ink);
+}
+
 .form-error {
     color: var(--error);
     font-size: 0.85rem;
