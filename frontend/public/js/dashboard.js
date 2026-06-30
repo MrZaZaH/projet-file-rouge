@@ -50,7 +50,21 @@ function renderProfile(data) {
     document.getElementById('profile-created').textContent = formatDate(data.user.created_at);
     document.getElementById('dashboard-subtitle').textContent =
         'Bienvenue ' + data.user.username + ' — voici votre activité sur Ovni Culinaire';
+
+    var adminBtn = document.getElementById('admin-btn');
+    if (adminBtn) {
+        adminBtn.style.display = data.user.role === 'admin' ? '' : 'none';
+    }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    var logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+            logout();
+        });
+    }
+});
 
 function renderStats(stats) {
     document.getElementById('stat-total').textContent = stats.total_recipes;

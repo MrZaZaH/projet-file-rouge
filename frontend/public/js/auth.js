@@ -127,6 +127,10 @@ async function apiRequest(endpoint, options) {
 
 // ====== 5. LOGOUT ======
 
+function goToDashboard() {
+    window.location.href = 'dashboard.html';
+}
+
 function logout() {
     removeToken();
     window.location.href = '/';
@@ -146,13 +150,13 @@ function updateAuthUI() {
     }
 
     if (userBtn) {
-        userBtn.onclick = authed ? logout : openLoginModal;
-        userBtn.setAttribute('aria-label', authed ? 'Se déconnecter (' + (user && user.username || '') + ')' : 'Se connecter');
+        userBtn.onclick = authed ? goToDashboard : openLoginModal;
+        userBtn.setAttribute('aria-label', authed ? 'Mon compte (' + (user && user.username || '') + ')' : 'Se connecter');
     }
 
     if (mobileUserBtn) {
-        mobileUserBtn.textContent = authed ? 'Se déconnecter' : 'Se connecter';
-        mobileUserBtn.onclick = authed ? logout : openLoginModal;
+        mobileUserBtn.textContent = authed ? 'Mon compte' : 'Se connecter';
+        mobileUserBtn.onclick = authed ? goToDashboard : openLoginModal;
     }
 
     // Show/hide dashboard links based on auth state
@@ -161,44 +165,7 @@ function updateAuthUI() {
         link.style.display = authed ? '' : 'none';
     });
 
-    // Admin link – injected dynamically if user has admin role
-    var isAdmin = authed && user && user.role === 'admin';
 
-    var existingAdminLink = document.querySelector('.header-nav .admin-link');
-    if (existingAdminLink) existingAdminLink.remove();
-
-    var existingMobileAdminLink = document.querySelector('.mobile-nav .admin-link');
-    if (existingMobileAdminLink) existingMobileAdminLink.remove();
-
-    if (isAdmin) {
-        var nav = document.querySelector('.header-nav');
-        if (nav) {
-            var link = document.createElement('a');
-            link.href = 'moderation-panel.html';
-            link.className = 'header-link admin-link';
-            link.textContent = 'Admin';
-            var userBtn = document.getElementById('user-btn');
-            if (userBtn) {
-                nav.insertBefore(link, userBtn);
-            } else {
-                nav.appendChild(link);
-            }
-        }
-
-        var mobileNav = document.getElementById('mobile-nav');
-        if (mobileNav) {
-            var mlink = document.createElement('a');
-            mlink.href = 'moderation-panel.html';
-            mlink.className = 'admin-link';
-            mlink.textContent = 'Admin';
-            var mobileUserBtn = document.getElementById('mobile-user-btn');
-            if (mobileUserBtn) {
-                mobileNav.insertBefore(mlink, mobileUserBtn);
-            } else {
-                mobileNav.appendChild(mlink);
-            }
-        }
-    }
 }
 
 // ====== 7. ROUTE PROTECTION ======

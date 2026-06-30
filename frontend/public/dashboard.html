@@ -81,22 +81,27 @@
             </header>
 
             <div style="max-width:var(--max-width);margin:0 auto;padding:2rem 1.5rem;">
-                <!-- Profile Card -->
-                <section class="reviews-section" aria-labelledby="profile-title" style="margin-bottom:2rem;">
-                    <h2 id="profile-title" style="font-style:italic;margin-bottom:1.5rem;">Mon profil</h2>
-                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;">
+                <!-- Welcome Card -->
+                <section class="reviews-section" aria-labelledby="welcome-title" style="margin-bottom:2rem;">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;">
                         <div>
-                            <p style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-muted);margin-bottom:0.25rem;">Pseudo</p>
-                            <p style="font-family:var(--font-heading);font-size:1.2rem;font-style:italic;" id="profile-username">—</p>
+                            <h2 id="welcome-title" style="font-style:italic;margin-bottom:0.5rem;">
+                                <span id="profile-username">—</span>
+                            </h2>
+                            <p style="font-size:0.9rem;color:var(--ink-muted);" id="profile-email">—</p>
+                            <p style="font-size:0.8rem;color:var(--ink-muted);">
+                                Membre depuis <span id="profile-created">—</span>
+                            </p>
                         </div>
-                        <div>
-                            <p style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-muted);margin-bottom:0.25rem;">Email</p>
-                            <p style="font-family:var(--font-heading);font-size:1.2rem;font-style:italic;" id="profile-email">—</p>
-                        </div>
-                        <div>
-                            <p style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-muted);margin-bottom:0.25rem;">Membre depuis</p>
-                            <p style="font-family:var(--font-heading);font-size:1.2rem;font-style:italic;" id="profile-created">—</p>
-                        </div>
+                        <button type="button" class="btn-secondary" id="logout-btn" aria-label="Se déconnecter" style="display:inline-flex;align-items:center;gap:0.5rem;">
+                            <span aria-hidden="true">&times;</span> Se déconnecter
+                        </button>
+                    </div>
+                    <div style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-top:1.5rem;padding-top:1.5rem;border-top:2px solid var(--ink);">
+                        <a href="submit.html" class="btn-cta" style="text-decoration:none;">Poster une recette</a>
+                        <a href="favorites.html" class="btn-cta" style="text-decoration:none;">Mes favoris</a>
+                        <a href="index.html" class="btn-secondary" style="text-decoration:none;display:inline-flex;align-items:center;">Accueil</a>
+                        <a href="moderation-panel.html" class="btn-secondary" id="admin-btn" style="display:none;text-decoration:none;">Modération</a>
                     </div>
                 </section>
 
