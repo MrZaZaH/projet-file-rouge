@@ -1,3 +1,5 @@
+# Synthèse Jour 29 bis 4 — Illustrations des personnages et swap visuel
+
 ## Synthèse – Jour 5 : Illustrations des personnages et swap visuel
 
 ### Ce qu'on a fait

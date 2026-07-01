@@ -1,3 +1,5 @@
+# Synthèse Jour 28 — Dashboard Utilisateur
+
 ## Synthèse – Jour 28 : Dashboard Utilisateur
 
 ### Ce qu'on a fait

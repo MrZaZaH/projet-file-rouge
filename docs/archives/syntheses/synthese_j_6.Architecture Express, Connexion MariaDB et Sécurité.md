@@ -1,3 +1,5 @@
+# Synthèse Jour 6 — Architecture Express, Connexion MariaDB, Sécurité de base
+
 __Synthèse – Jour 6 : Architecture Express \+ Connexion MariaDB \+ Sécurité de base__
 
 __Ce qu'on a fait__

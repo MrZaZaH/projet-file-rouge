@@ -1,3 +1,5 @@
+# Synthèse Jour 4 — Création des tables (DDL complet)
+
 __Synthèse – Jour 4 : Création des tables (DDL complet)__
 
 __Ce qu'on a fait__

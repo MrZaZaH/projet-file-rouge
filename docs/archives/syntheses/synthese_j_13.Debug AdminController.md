@@ -1,4 +1,6 @@
-Synthese de correction 
+Synthese de correction
+
+# Synthèse Jour 13 — Debug AdminController
 
 __Synthèse – Debug AdminController (DB \+ Logger)__
 

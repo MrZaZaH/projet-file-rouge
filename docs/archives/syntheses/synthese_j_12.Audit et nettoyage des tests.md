@@ -1,3 +1,5 @@
+# Synthèse Jour 12 — Audit et nettoyage de la suite de tests
+
 ## Synthèse – Audit et nettoyage de la suite de tests
 
 ### Ce qu'on a fait

@@ -1,3 +1,5 @@
+# Synthèse Jour 12 — Optimisation des tests d'intégration
+
 ## Synthèse — Optimisation des tests d'intégration (suppression bcrypt des beforeEach)
 
 ### Ce qu'on a fait

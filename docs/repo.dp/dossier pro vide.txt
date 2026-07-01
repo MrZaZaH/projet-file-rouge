@@ -1,0 +1,355 @@
+
+		
+Nom de naissance	►	Entrez votre nom de naissance ici.
+Nom d’usage	►	Entrez votre nom d’usage ici.
+Prénom	►	Entrez votre prénom ici.
+Adresse	►	Entrez votre adresse ici.
+		
+
+
+Titre professionnel visé
+
+Développeur Web et Web Mobile
+
+MODALITÉ D’ACCÈS :
+
+●	☐	Parcours de formation
+●	☐	Validation des Acquis de l’Expérience (VAE)
+
+
+
+ 
+ 
+Présentation du dossier
+
+
+
+ 	Le dossier professionnel (DP) constitue un élément du système de validation du titre professionnel. Ce titre est délivré par le Ministère chargé de l’emploi.
+Le DP appartient au candidat. Il le conserve, l’actualise durant son parcours et le présente obligatoirement à chaque session d’examen.
+Pour rédiger le DP, le candidat peut être aidé par un formateur ou par un accompagnateur VAE. 
+Il est consulté par le jury au moment de la session d’examen.	
+
+Pour prendre sa décision, le jury dispose : 
+1.	des résultats de la mise en situation professionnelle complétés, éventuellement, du questionnaire professionnel ou de l’entretien professionnel ou de l’entretien technique ou du questionnement à partir de productions.
+2.	du Dossier Professionnel (DP) dans lequel le candidat a consigné les preuves de sa pratique professionnelle
+3.	des résultats des évaluations passées en cours de formation lorsque le candidat évalué est issu d’un parcours de formation
+4.	de l’entretien final (dans le cadre de la session titre).
+
+		[Arrêté du 22 décembre 2015, relatif aux conditions de délivrance des titres professionnels
+du ministère chargé de l’Emploi]
+
+Ce dossier comporte :
+►	pour chaque activité-type du titre visé, un à trois exemples de pratique professionnelle ; 
+►	un tableau à renseigner si le candidat souhaite porter à la connaissance du jury la détention d’un titre, d’un diplôme, d’un certificat de qualification professionnelle (CQP) ou des attestations de formation ;
+►	une déclaration sur l’honneur à compléter et à signer ;
+►	des documents illustrant la pratique professionnelle du candidat (facultatif)
+►	des annexes, si nécessaire.
+Pour compléter ce dossier, le candidat dispose d’un site web en accès libre sur le site.
+◢	http://travail-emploi.gouv.fr/titres-professionnels
+ 
+
+Sommaire
+
+Exemples de pratique professionnelle
+
+Activité-type 1 : Développer la partie front-end d’une application web ou web mobile en intégrant les recommandations de sécurité. 	p.	
+	► CP 1 Maquetter une application. 	p.	p.	
+	► CP 2 Réaliser une interface statique et adaptable. 	p.	p.	
+	► CP 3 Développer une interface utilisateur web dynamique. 	p	p.	
+	► CP 4 Réaliser une interface utilisateur avec une solution de gestion de contenu ou e-commerce. 	p.	
+			
+Intitulé de l’activité-type n° 2 : Développer la partie back-end d’une application web ou web mobile en intégrant les recommandations de sécurité. 	p.	
+	► CP 5 Créer une base de données. 	p.	p.	
+	► CP 6 Développer les composants d’accès aux données. 	p.	p.	
+	► CP 7 Développer la partie back-end d’une application web ou web mobile. 	p	p.	
+	► CP 8 Élaborer et mettre en œuvre des composants dans une application de gestion de contenu ou e-commerce. 	p	p.	
+			
+Titres, diplômes, CQP, attestations de formation (facultatif)	p.	
+Déclaration sur l’honneur	p.	
+Documents illustrant la pratique professionnelle (facultatif)	p.	
+Annexes (Si le RC le prévoit)	p.	
+
+
+  
+
+
+
+EXEMPLES DE PRATIQUE
+PROFESSIONNELLE
+
+
+ 
+		
+Activité-type 	1	Développer la partie front-end d’une application web ou web mobile en intégrant les recommandations de sécurité. 
+CP 1  ►	Maquetter une application. 
+	
+1. Décrivez les tâches ou opérations que vous avez effectuées, et dans quelles conditions :
+Cliquez ici pour taper du texte.
+
+2. Précisez les moyens utilisés :
+Cliquez ici pour taper du texte.
+
+
+3. Avec qui avez-vous travaillé ?
+Cliquez ici pour taper du texte.
+
+4. Contexte
+	
+Nom de l’entreprise, organisme ou association  ►	Cliquez ici pour taper du texte.
+	
+Chantier, atelier, service	►	Cliquez ici pour taper du texte.
+Période d’exercice	►	Du	Cliquez ici	au	Cliquez ici 
+
+
+5. Informations complémentaires (facultatif)
+Cliquez ici pour taper du texte.
+ 
+
+Activité-type 	1	Développer la partie front-end d’une application web ou web mobile en intégrant les recommandations de sécurité. 
+CP 2 ►	Réaliser une interface statique et adaptable. 
+	
+1. Décrivez les tâches ou opérations que vous avez effectuées, et dans quelles conditions :
+Cliquez ici pour taper du texte.
+
+2. Précisez les moyens utilisés :
+Cliquez icpour taper du texte.
+
+
+3. Avec qui avez-vous travaillé ?
+Cliquez ici pour taper du texte.
+
+4. Contexte
+	
+Nom de l’entreprise, organisme ou association  ►	Cliquez ici pour taper du texte.
+	
+Chantier, atelier, service	►	Cliquez ici pour taper du texte.
+Période d’exercice	►	Du	Cliquez ici	au	Cliquez ici 
+
+
+5. Informations complémentaires (facultatif)
+Cliquez ici pour taper du texte.
+ 
+Activité-type 	1	Développer la partie front-end d’une application web ou web mobile en intégrant les recommandations de sécurité. 
+CP 3  ►	Développer une interface utilisateur web dynamique. 
+	
+1. Décrivez les tâches ou opérations que vous avez effectuées, et dans quelles conditions :
+Cliquez ici pour taper du texte.
+
+2. Précisez les moyens utilisés :
+Cliquez ici pour taper du texte.
+
+
+3. Avec qui avez-vous travaillé ?
+Cliquez ici pour taper du texte.
+
+4. Contexte
+	
+Nom de l’entreprise, organisme ou association  ►	Cliquez ici pour taper du texte.
+	
+Chantier, atelier, service	►	Cliquez ici pour taper du texte.
+Période d’exercice	►	Du	Cliquez ici	au	Cliquez ici 
+
+
+5. Informations complémentaires (facultatif)
+Cliquez ici pour taper du texte.
+ 
+Activité-type 	1	Développer la partie front-end d’une application web ou web mobile en intégrant les recommandations de sécurité. 
+CP 4  ►	Réaliser une interface utilisateur avec une solution de gestion de contenu ou e-commerce. 
+	
+1. Décrivez les tâches ou opérations que vous avez effectuées, et dans quelles conditions :
+Cliquez ici pour taper du texte.
+
+2. Précisez les moyens utilisés :
+Cliquez ici pour taper du texte.
+
+
+3. Avec qui avez-vous travaillé ?
+Cliquez ici pour taper du texte.
+
+4. Contexte
+	
+Nom de l’entreprise, organisme ou association  ►	Cliquez ici pour taper du texte.
+	
+Chantier, atelier, service	►	Cliquez ici pour taper du texte.
+Période d’exercice	►	Du	Cliquez ici	au	Cliquez ici 
+
+
+5. Informations complémentaires (facultatif)
+Cliquez ici pour taper du texte.
+ 
+Activité-type 	2	Développer la partie back-end d’une application web ou web mobile en intégrant les recommandations de sécurité. 
+CP 5  ►	Créer une base de données. 
+	
+1. Décrivez les tâches ou opérations que vous avez effectuées, et dans quelles conditions :
+Cliquez ici pour taper du texte.
+
+2. Précisez les moyens utilisés :
+Cliquez ici pour taper du texte.
+
+
+3. Avec qui avez-vous travaillé ?
+Cliquez ici pour taper du texte.
+
+4. Contexte
+	
+Nom de l’entreprise, organisme ou association  ►	Cliquez ici pour taper du texte.
+	
+Chantier, atelier, service	►	Cliquez ici pour taper du texte.
+Période d’exercice	►	Du	Cliquez ici	au	Cliquez ici 
+
+
+5. Informations complémentaires (facultatif)
+Cliquez ici pour taper du texte.
+ 
+Activité-type 	2	Développer la partie back-end d’une application web ou web mobile en intégrant les recommandations de sécurité. 
+CP 6  ►	Développer les composants d’accès aux données. 
+	
+1. Décrivez les tâches ou opérations que vous avez effectuées, et dans quelles conditions :
+Cliquez ici pour taper du texte.
+
+2. Précisez les moyens utilisés :
+Cliquez ici pour taper du texte.
+
+
+3. Avec qui avez-vous travaillé ?
+Cliquez ici pour taper du texte.
+
+4. Contexte
+	
+Nom de l’entreprise, organisme ou association  ►	Cliquez ici pour taper du texte.
+	
+Chantier, atelier, service	►	Cliquez ici pour taper du texte.
+Période d’exercice	►	Du	Cliquez ici	au	Cliquez ici 
+
+
+5. Informations complémentaires (facultatif)
+Cliquez ici pour taper du texte.
+ 
+Activité-type 	2	Développer la partie back-end d’une application web ou web mobile en intégrant les recommandations de sécurité. 
+CP 7  ►	Développer la partie back-end d’une application web ou web mobile. 
+	
+1. Décrivez les tâches ou opérations que vous avez effectuées, et dans quelles conditions :
+Cliquez ici pour taper du texte.
+
+2. Précisez les moyens utilisés :
+Cliquez ici pour taper du texte.
+
+
+3. Avec qui avez-vous travaillé ?
+Cliquez ici pour taper du texte.
+
+4. Contexte
+	
+Nom de l’entreprise, organisme ou association  ►	Cliquez ici pour taper du texte.
+	
+Chantier, atelier, service	►	Cliquez ici pour taper du texte.
+Période d’exercice	►	Du	Cliquez ici	au	Cliquez ici 
+
+
+5. Informations complémentaires (facultatif)
+Cliquez ici pour taper du texte.
+ 
+Activité-type 	2	Développer la partie back-end d’une application web ou web mobile en intégrant les recommandations de sécurité.
+CP 8 ►	Élaborer et mettre en œuvre des composants dans une application de gestion de contenu ou e-commerce. 
+	
+1. Décrivez les tâches ou opérations que vous avez effectuées, et dans quelles conditions :
+Cliquez ici pour taper du texte.
+
+2. Précisez les moyens utilisés :
+Cliquez ici pour taper du texte.
+
+
+3. Avec qui avez-vous travaillé ?
+Cliquez ici pour taper du texte.
+
+4. Contexte
+	
+Nom de l’entreprise, organisme ou association  ►	Cliquez ici pour taper du texte.
+	
+Chantier, atelier, service	►	Cliquez ici pour taper du texte.
+Période d’exercice	►	Du	Cliquez ici	au	Cliquez ici 
+
+
+5. Informations complémentaires (facultatif)
+Cliquez ici pour taper du texte.
+ 
+
+
+Titres, diplômes, CQP, attestations de formation 
+
+(facultatif)
+
+
+Intitulé	Autorité ou organisme	Date
+Cliquez ici.	Cliquez ici pour taper du texte.	Cliquez ici pour sélectionner une date.
+Cliquez ici.	Cliquez ici pour taper du texte.	Cliquez ici pour sélectionner une date.
+Cliquez ici.	Cliquez ici pour taper du texte.	Cliquez ici pour sélectionner une date.
+Cliquez ici.	Cliquez ici pour taper du texte.	Cliquez ici pour sélectionner une date.
+Cliquez ici.	Cliquez ici pour taper du texte.	Cliquez ici pour sélectionner une date.
+Cliquez ici.	Cliquez ici pour taper du texte.	Cliquez ici pour sélectionner une date.
+Cliquez ici.	Cliquez ici pour taper du texte.	Cliquez ici pour sélectionner une date.
+Cliquez ici.	Cliquez ici pour taper du texte.	Cliquez ici pour sélectionner une date.
+Cliquez ici.	Cliquez ici pour taper du texte.	Cliquez ici pour sélectionner une date.
+Cliquez ici.	Cliquez ici pour taper du texte.	Cliquez ici pour sélectionner une date.
+
+
+
+
+
+
+ 
+
+
+
+Déclaration sur l’honneur
+
+
+
+
+
+
+Je soussigné(e) [prénom et nom] 	,
+déclare sur l’honneur que les renseignements fournis dans ce dossier sont exacts et que je suis l’auteur(e) des réalisations jointes.
+
+
+Fait à 	 le 	
+pour faire valoir ce que de droit.
+
+Signature :
+
+
+
+ 
+
+
+
+Documents illustrant la pratique professionnelle 
+
+(facultatif)
+
+
+Intitulé
+Cliquez ici pour taper du texte.
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+ANNEXES
+
+(Si le RC le prévoit)
+
+ 
+
