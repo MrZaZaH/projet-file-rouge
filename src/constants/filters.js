@@ -25,7 +25,7 @@ const FILTERS = {
     QUICK_PREP_MAX: 15,   // minutes — US-01
     BUDGET_LOW_MAX: 3,    // euros  — US-03
     BUDGET_MID_MAX: 5,    // euros  — US-03
-    DEFAULT_LIMIT: 50,    // rows per page
+    DEFAULT_LIMIT: 12,    // rows per page — grille de 3-4 colonnes, 3-4 lignes
     MAX_LIMIT: 100,       // hard cap — prevents client requesting 10000 rows
 };
 

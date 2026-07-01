@@ -73,23 +73,23 @@
             <p class="section-title">Choisir son profil de misère</p>
             <div class="persona-grid">
                 <article class="persona-card" data-persona="salarie-creve" role="button" tabindex="0"
-                    aria-pressed="false" aria-label="Filtrer pour Salarié Crevé – Temps ≤ 15 min">
+                    aria-pressed="false" aria-label="Filtrer pour Le maître des deadlines – Temps ≤ 15 min">
                     <img class="persona-card-image" src="/assets/illustrations/salarie-creve-default.png" alt="Le maître des deadlines">
-                    <h3>Salarié Crevé</h3>
+                    <h3>Le maître des deadlines</h3>
                     <p>Recettes prêtes en 15 minutes chrono</p>
                 </article>
 
                 <article class="persona-card" data-persona="etudiant-fauche" role="button" tabindex="0"
-                    aria-pressed="false" aria-label="Filtrer pour Étudiant Fauché – Budget ≤ 5€">
+                    aria-pressed="false" aria-label="Filtrer pour Le virtuose du repas à 2€ – Budget ≤ 5€">
                     <img class="persona-card-image" src="/assets/illustrations/etudiant-fauche-default.png" alt="Le virtuose du repas à 2€">
-                    <h3>Étudiant Fauché</h3>
+                    <h3>Le virtuose du repas à 2€</h3>
                     <p>Manger bon sans ruiner son compte</p>
                 </article>
 
                 <article class="persona-card" data-persona="parent-epuise" role="button" tabindex="0"
-                    aria-pressed="false" aria-label="Filtrer pour Parent Épuisé – Rapide et bien noté">
+                    aria-pressed="false" aria-label="Filtrer pour La chef d'orchestre familial – Rapide et bien noté">
                     <img class="persona-card-image" src="/assets/illustrations/parent-epuise-default.png" alt="La chef d'orchestre familial">
-                    <h3>Parent Épuisé</h3>
+                    <h3>La chef d'orchestre familial</h3>
                     <p>Repas express notés par d'autres parents</p>
                 </article>
             </div>
@@ -120,25 +120,16 @@
             <div id="no-recipes" class="text-center" style="display:none;">
                 <p>Aucune recette ne correspond à ce filtre pour le moment.</p>
             </div>
+
+            <nav class="pagination" id="pagination" aria-label="Navigation des pages" style="display:none;">
+                <button type="button" id="pagination-prev" aria-label="Page précédente">← Précédent</button>
+                <div id="pagination-pages"></div>
+                <span class="page-info" id="pagination-info"></span>
+                <button type="button" id="pagination-next" aria-label="Page suivante">Suivant →</button>
+            </nav>
         </section>
 
-        <div class="separator">~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~</div>
 
-        <!-- Anecdote Block -->
-        <section style="padding: 0 1.5rem; position: relative;" aria-labelledby="story-title">
-            <p class="section-title">L'histoire derrière</p>
-            <div class="anecdote-block">
-                <p id="featured-story">
-                    C'était un mercredi soir de novembre. Le frigo contenait
-                    exactement deux œufs, un fond de crème fraîche douteuse,
-                    et des lardons périmés depuis hier. J'avais 12 euros
-                    jusqu'au vendredi. J'ai improvisé. Ma fille a demandé
-                    si on pouvait avoir ça tous les soirs.
-                </p>
-                <cite id="featured-author">Marie D., maman de 3 enfants, Lyon</cite>
-                <span class="stamp">Approuvé<br>par la<br>communauté</span>
-            </div>
-        </section>
     </main>
 
     <!-- ========== FOOTER ========== -->

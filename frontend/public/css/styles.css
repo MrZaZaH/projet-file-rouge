@@ -1320,3 +1320,52 @@ textarea {
         display: flex;
     }
 }
+
+/* ================================================
+   14. PAGINATION
+   ================================================ */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 2rem 0;
+    flex-wrap: wrap;
+}
+
+.pagination button {
+    background: var(--surface);
+    border: var(--border-thin);
+    padding: 0.5rem 0.9rem;
+    font-family: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s, border-color 0.2s;
+    min-width: 2.5rem;
+    text-align: center;
+}
+
+.pagination button:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: #fff;
+}
+
+.pagination button:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.pagination button.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    font-weight: 700;
+}
+
+.pagination .page-info {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    padding: 0 0.5rem;
+}

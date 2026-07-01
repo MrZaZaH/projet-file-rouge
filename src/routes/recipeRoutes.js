@@ -64,8 +64,38 @@ const recipeBodyRules = [
 
 // ─── Routes ───────────────────────────────────────────────────────────────────
 
-// Public
-router.get('/', RecipeController.getAllRecipes);
+// Public — with pagination validation
+router.get(
+    '/',
+    [
+        query('limit')
+            .optional()
+            .isInt({ min: 1, max: 100 })
+            .withMessage('Limit must be between 1 and 100'),
+        query('offset')
+            .optional()
+            .isInt({ min: 0 })
+            .withMessage('Offset must be a positive integer'),
+        query('category_id')
+            .optional()
+            .isInt({ min: 1 })
+            .withMessage('category_id must be a positive integer'),
+        query('max_prep_time')
+            .optional()
+            .isInt({ min: 1 })
+            .withMessage('max_prep_time must be a positive integer'),
+        query('max_cost')
+            .optional()
+            .isFloat({ min: 0 })
+            .withMessage('max_cost must be a positive number'),
+        query('min_rating')
+            .optional()
+            .isFloat({ min: 0, max: 5 })
+            .withMessage('min_rating must be between 0 and 5'),
+    ],
+    validate,
+    RecipeController.getAllRecipes
+);
 router.get('/random', RecipeController.getRandomRecipe);
 // /random MUST be declared before /:id — otherwise Express matches "random" as an id.
 router.get('/:id', attachUser, RecipeController.getRecipeById);

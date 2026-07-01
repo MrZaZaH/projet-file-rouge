@@ -13,19 +13,16 @@
 
 const Recipe = require('../models/Recipe');
 const Favorite = require('../models/Favorite');
-const { sendSuccess, sendError } = require('../utils/apiResponse');
+const { sendSuccess, sendError, sendPaginated } = require('../utils/apiResponse');
 const { pool } = require('../database/connection');
 const { logger } = require('../middlewares/logger');
 
 
-// GET all recipes with filters
+// GET all recipes with filters + pagination
 async function getAllRecipes(req, res, next) {
     try {
-        const isAdmin = req.user?.role === 'admin'; // Check if user is admin
+        const isAdmin = req.user?.role === 'admin';
 
-        // Build filters object
-        // Only include keys that findAllWithFilters() explicitly supports.
-        // search is excluded — text search is not part of the MVP (filter-based navigation only).
         const filters = {
             status: isAdmin ? req.query.status : 'published',
             category_id: req.query.category_id ? Number(req.query.category_id) : null,
@@ -36,18 +33,21 @@ async function getAllRecipes(req, res, next) {
             offset: req.query.offset ? Number(req.query.offset) : null,
         };
 
-
-        // Remove null values from filters
         const cleanFilters = Object.fromEntries(
             Object.entries(filters).filter(([, v]) => v !== null)
         );
 
-        const recipes = await Recipe.findAllWithFilters(cleanFilters); // Fetch recipes
+        const { recipes, total, limit } = await Recipe.findAllWithFilters(cleanFilters);
 
-        return sendSuccess(res, recipes); // Return standardized response
+        const offset = parseInt(req.query.offset, 10) || 0;
+        const page = Math.floor(offset / limit) + 1;
+        const totalPages = Math.ceil(total / limit);
+        const hasMore = offset + limit < total;
+
+        return sendPaginated(res, recipes, { total, page, limit, totalPages, hasMore });
 
     } catch (err) {
-        next(err); // Pass error to global handler
+        next(err);
     }
 }
 

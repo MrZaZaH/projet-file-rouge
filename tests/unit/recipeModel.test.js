@@ -363,55 +363,67 @@ describe('Recipe Model', () => {
         });
 
         test('should return all recipes when no filters', async () => {
-            const recipes = await Recipe.findAllWithFilters({});
+            const { recipes, total, limit } = await Recipe.findAllWithFilters({});
             expect(recipes.length).toBe(3);
+            expect(total).toBe(3);
+            expect(limit).toBe(12); // DEFAULT_LIMIT
         });
 
         test('should filter by max_prep_time', async () => {
-            const recipes = await Recipe.findAllWithFilters({ max_prep_time: 15 });
+            const { recipes, total } = await Recipe.findAllWithFilters({ max_prep_time: 15 });
             expect(recipes.length).toBe(1);
+            expect(total).toBe(1);
             expect(recipes[0].title).toBe('Recette Rapide');
         });
 
         test('should filter by max_cost', async () => {
-            const recipes = await Recipe.findAllWithFilters({ max_cost: 3.00 });
+            const { recipes, total } = await Recipe.findAllWithFilters({ max_cost: 3.00 });
             expect(recipes.length).toBe(1);
+            expect(total).toBe(1);
             expect(recipes[0].title).toBe('Recette Rapide');
         });
 
         test('should filter by max_cost_per_portion alias', async () => {
-            const recipes = await Recipe.findAllWithFilters({ max_cost_per_portion: 3.00 });
+            const { recipes, total } = await Recipe.findAllWithFilters({ max_cost_per_portion: 3.00 });
             expect(recipes.length).toBe(1);
+            expect(total).toBe(1);
         });
 
         test('should combine multiple filters', async () => {
-            const recipes = await Recipe.findAllWithFilters({
+            const { recipes, total } = await Recipe.findAllWithFilters({
                 max_prep_time: 35,
                 max_cost: 10.00,
             });
             expect(recipes.length).toBe(2);
+            expect(total).toBe(2);
         });
 
         test('should respect limit parameter', async () => {
-            const recipes = await Recipe.findAllWithFilters({ limit: 2 });
+            const { recipes, total, limit } = await Recipe.findAllWithFilters({ limit: 2 });
             expect(recipes.length).toBeLessThanOrEqual(2);
+            expect(total).toBe(3); // total ignores limit
+            expect(limit).toBe(2);
         });
 
         test('should respect offset parameter', async () => {
             const first = await Recipe.findAllWithFilters({ limit: 1, offset: 0 });
             const second = await Recipe.findAllWithFilters({ limit: 1, offset: 1 });
 
-            expect(first.length).toBe(1);
-            expect(second.length).toBe(1);
-            expect(first[0].id).not.toBe(second[0].id);
+            expect(first.recipes.length).toBe(1);
+            expect(second.recipes.length).toBe(1);
+            expect(first.total).toBe(3);
+            expect(second.total).toBe(3);
+            expect(first.recipes[0].id).not.toBe(second.recipes[0].id);
         });
 
         test('should filter by status', async () => {
             const pending = await Recipe.findAllWithFilters({ status: 'pending' });
-            expect(pending.length).toBe(3);
+            expect(pending.recipes.length).toBe(3);
+            expect(pending.total).toBe(3);
 
             const published = await Recipe.findAllWithFilters({ status: 'published' });
-            expect(published.length).toBe(0);
+            expect(published.recipes.length).toBe(0);
+            expect(published.total).toBe(0);
         });
     });
 

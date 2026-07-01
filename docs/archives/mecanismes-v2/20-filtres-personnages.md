@@ -2,7 +2,7 @@
 
 ## 1. CE QUE ÇA FAIT (vue d'ensemble)
 
-La page d'accueil propose 3 filtres sous forme de cartes personnages (personas) : "Salarié crevé", "Étudiant fauché", "Parent épuisé". Chaque personnage correspond à un jeu de filtres prédéfini qui reflète ses contraintes de vie. C'est l'UNIQUE système de filtre de la homepage — pas de sliders, de dropdowns, de champs de recherche avancée. Cliquer sur un personnage : (1) le met en surbrillance, (2) construit l'URL avec les bons paramètres de filtre via URLSearchParams, (3) appelle l'API avec ces paramètres, (4) réaffiche les recettes. Re-cliquer = désactive le filtre. Les 3 personnages sont les seuls filtres documentés par les specs.
+La page d'accueil propose 3 filtres sous forme de cartes personnages (personas) : "Le maître des deadlines" (ex-Salarié crevé), "Le virtuose du repas à 2€" (ex-Étudiant fauché), "La chef d'orchestre familial" (ex-Parent épuisé). Chaque personnage correspond à un jeu de filtres prédéfini qui reflète ses contraintes de vie. C'est l'UNIQUE système de filtre de la homepage — pas de sliders, de dropdowns, de champs de recherche avancée. Cliquer sur un personnage : (1) le met en surbrillance, (2) construit l'URL avec les bons paramètres de filtre via URLSearchParams, (3) appelle l'API avec ces paramètres, (4) réaffiche les recettes. Re-cliquer = désactive le filtre. Les 3 personnages sont les seuls filtres documentés par les specs.
 
 ## 2. SCHÉMA DE LA TABLE
 
@@ -315,7 +315,7 @@ Pas de `background-image` CSS, pas de `content` — le swap se fait uniquement e
 Utilisateur arrive sur la page d'accueil :
 
 1. home.js init() → fetchRecipes() → GET /api/v1/recipes
-   → Aucun filtre → affiche les 50 recettes les plus récentes
+   → Aucun filtre → affiche les 12 recettes les plus récentes (page 1)
 
 Utilisateur clique sur "Salarié crevé" :
 

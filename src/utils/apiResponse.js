@@ -53,4 +53,17 @@ const sendError = (res, message, statusCode = 500, details = null) => {
     return res.status(statusCode).json(response);
 };
 
-module.exports = { sendSuccess, sendError };
+/**
+ * Send a paginated success response.
+ * pagination must contain { total, page, limit, totalPages, hasMore }.
+ * The controller is responsible for computing these values.
+ */
+const sendPaginated = (res, data, pagination, statusCode = 200) => {
+    return res.status(statusCode).json({
+        success: true,
+        data,
+        pagination
+    });
+};
+
+module.exports = { sendSuccess, sendError, sendPaginated };

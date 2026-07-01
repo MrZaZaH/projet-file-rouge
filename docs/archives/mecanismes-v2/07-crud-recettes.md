@@ -2,7 +2,7 @@
 
 ## 1. CE QUE ÇA FAIT (vue d'ensemble)
 
-Ce mécanisme gère la création, lecture, mise à jour et suppression (soft delete) des recettes. Le cœur du métier : `findAllWithFilters()` construit une requête SQL **dynamiquement** en fonction des filtres passés (catégorie, temps max, coût max, note minimum). Les ingrédients et étapes sont stockés en JSON dans MariaDB, normalisés automatiquement par le modèle. La pagination est intégrée avec un limit par défaut de 50 et un cap à 100.
+Ce mécanisme gère la création, lecture, mise à jour et suppression (soft delete) des recettes. Le cœur du métier : `findAllWithFilters()` construit une requête SQL **dynamiquement** en fonction des filtres passés (catégorie, temps max, coût max, note minimum). Les ingrédients et étapes sont stockés en JSON dans MariaDB, normalisés automatiquement par le modèle. La pagination est intégrée avec un limit par défaut de 12 et un cap à 100. La méthode exécute deux requêtes : un `COUNT(*)` pour le total, puis le `SELECT` paginé, et retourne `{ recipes, total, limit }`.
 
 ## 2. SCHÉMA DE LA TABLE
 
@@ -146,49 +146,41 @@ static async create(data) {
 ```javascript
 static async findAllWithFilters(filters = {}) {
     try {
-        // Requête de base : seulement les recettes non-supprimées
-        let query = `
-            SELECT r.*
-            FROM recipes r
-            WHERE r.deleted_at IS NULL
-        `;
+        // === CONSTRUCTION DES CONDITIONS WHERE ===
+        // Partagées entre la requête de comptage et la requête de données
+        let whereClause = 'WHERE r.deleted_at IS NULL';
         const params = [];
 
-        // === AJOUT DYNAMIQUE DES CLAUSES WHERE ===
-        // Chaque bloc n'est ajouté QUE si le filtre correspondant est présent
-
         if (filters.category_id) {
-            query += ' AND r.category_id = ?';
+            whereClause += ' AND r.category_id = ?';
             params.push(filters.category_id);
         }
-
         if (filters.max_prep_time) {
-            query += ' AND r.prep_time <= ?';
+            whereClause += ' AND r.prep_time <= ?';
             params.push(filters.max_prep_time);
         }
-
-        // max_cost ET max_cost_per_portion sont acceptés (alias)
         const maxCost = filters.max_cost !== undefined
             ? filters.max_cost
             : filters.max_cost_per_portion;
-
         if (maxCost !== undefined) {
-            query += ' AND r.cost_per_portion <= ?';
+            whereClause += ' AND r.cost_per_portion <= ?';
             params.push(maxCost);
         }
-
         if (filters.min_rating) {
-            query += ' AND r.average_rating >= ?';
+            whereClause += ' AND r.average_rating >= ?';
             params.push(filters.min_rating);
         }
-
         if (filters.status) {
-            query += ' AND r.status = ?';
+            whereClause += ' AND r.status = ?';
             params.push(filters.status);
         }
 
+        // === REQUÊTE DE COMPTAGE ===
+        // Mêmes WHERE, mêmes paramètres — pas de ORDER BY/LIMIT/OFFSET
+        const countQuery = `SELECT COUNT(*) as total FROM recipes r ${whereClause}`;
+        const [[{ total }]] = await pool.query(countQuery, params);
+
         // === TRI CONDITIONNEL ===
-        // Le tri change selon le filtre actif (premier match gagne)
         let sortClause;
         if (filters.max_prep_time) {
             sortClause = SORT.BY_TIME;      // prep_time ASC → plus rapide d'abord
@@ -199,24 +191,27 @@ static async findAllWithFilters(filters = {}) {
         } else {
             sortClause = SORT.BY_DATE;      // created_at DESC → plus récent d'abord
         }
-        query += ` ORDER BY r.${sortClause}`;
 
-        // === PAGINATION ===
+        // === PAGINATION AVEC CAP ===
         const rawLimit = parseInt(filters.limit, 10);
         const limit = (!isNaN(rawLimit) && rawLimit > 0)
             ? Math.min(rawLimit, FILTERS.MAX_LIMIT)   // cap à 100 max
-            : FILTERS.DEFAULT_LIMIT;                  // défaut 50
+            : FILTERS.DEFAULT_LIMIT;                  // défaut 12
 
         const offset = parseInt(filters.offset, 10) || 0;
 
-        query += ' LIMIT ? OFFSET ?';
-        params.push(limit, offset);
-
-        const [rows] = await pool.query(query, params);
+        // === REQUÊTE DE DONNÉES ===
+        const dataQuery = `
+            SELECT r.*
+            FROM recipes r
+            ${whereClause}
+            ORDER BY r.${sortClause}
+            LIMIT ? OFFSET ?
+        `;
+        const [rows] = await pool.query(dataQuery, [...params, limit, offset]);
 
         // === MAPPING ===
-        // Chaque ligne JSON est parsée (ingredients, steps) et convertie
-        return rows.map((row) => {
+        const recipes = rows.map((row) => {
             let ingredients = [];
             let steps = [];
             try {
@@ -237,6 +232,12 @@ static async findAllWithFilters(filters = {}) {
                 // ... autres champs
             };
         });
+
+        return { recipes, total, limit };
+        // recipes = tableau des recettes de la page courante
+        // total   = nombre TOTAL de résultats (pour le calcul de pagination)
+        // limit   = valeur réellement appliquée (après cap)
+
     } catch (error) {
         logger.error(`Recipe.findAllWithFilters() failed: ${error.message}`);
         throw error;
@@ -416,7 +417,7 @@ Utilise des requêtes brutes (`pool.query`) plutôt que le modèle `Recipe.softD
 ### 3.7 — RecipeController.getAllRecipes (`src/controllers/RecipeController.js`)
 
 ```javascript
-// GET /api/v1/recipes — avec filtres
+// GET /api/v1/recipes — avec filtres + pagination
 async function getAllRecipes(req, res, next) {
     try {
         const isAdmin = req.user?.role === 'admin';
@@ -432,8 +433,14 @@ async function getAllRecipes(req, res, next) {
         const cleanFilters = Object.fromEntries(
             Object.entries(filters).filter(([, v]) => v !== null)
         );
-        const recipes = await Recipe.findAllWithFilters(cleanFilters);
-        return sendSuccess(res, recipes);
+        const { recipes, total, limit } = await Recipe.findAllWithFilters(cleanFilters);
+
+        const offset = parseInt(req.query.offset, 10) || 0;
+        const page = Math.floor(offset / limit) + 1;
+        const totalPages = Math.ceil(total / limit);
+        const hasMore = offset + limit < total;
+
+        return sendPaginated(res, recipes, { total, page, limit, totalPages, hasMore });
     } catch (err) {
         next(err);
     }
@@ -447,7 +454,7 @@ const FILTERS = {
     QUICK_PREP_MAX: 15,   // minutes — US-01 : prêt en moins de 15 min
     BUDGET_LOW_MAX: 3,    // euros  — US-03 : moins de 3€
     BUDGET_MID_MAX: 5,    // euros  — US-03 : moins de 5€
-    DEFAULT_LIMIT: 50,    // lignes par page
+    DEFAULT_LIMIT: 12,    // lignes par page — grille 3-4 colonnes
     MAX_LIMIT: 100,       // hard cap anti-abuse
 };
 

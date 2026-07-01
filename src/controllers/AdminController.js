@@ -10,7 +10,8 @@
  */
 
 const { logger } = require('../middlewares/logger');
-const { pool } = require('../database/connection'); // 
+const { pool } = require('../database/connection');
+const { sendPaginated } = require('../utils/apiResponse');
 
 class AdminController {
 
@@ -114,7 +115,22 @@ class AdminController {
         try {
             const { status, sort_by, limit = 20, offset = 0 } = req.query;
 
-            let query = `
+            let whereClause = 'WHERE r.deleted_at IS NULL';
+            const params = [];
+
+            if (status && ['pending', 'published', 'rejected'].includes(status)) {
+                whereClause += ` AND r.status = ?`;
+                params.push(status);
+            }
+
+            // Total count
+            const countQuery = `SELECT COUNT(*) as total FROM recipes r ${whereClause}`;
+            const [[{ total }]] = await pool.query(countQuery, params);
+
+            const allowedSort = ['created_at', 'average_rating', 'rating_count'];
+            const sortBy = allowedSort.includes(sort_by) ? sort_by : 'created_at';
+
+            const dataQuery = `
                 SELECT 
                     r.id, 
                     r.title, 
@@ -128,24 +144,18 @@ class AdminController {
                     r.updated_at
                 FROM recipes r
                 LEFT JOIN users u ON r.user_id = u.id
-                WHERE r.deleted_at IS NULL
+                ${whereClause}
+                ORDER BY r.${sortBy} DESC
+                LIMIT ? OFFSET ?
             `;
 
-            const params = [];
+            const parsedLimit = parseInt(limit);
+            const parsedOffset = parseInt(offset);
+            const [recipes] = await pool.query(dataQuery, [...params, parsedLimit, parsedOffset]);
 
-            if (status && ['pending', 'published', 'rejected'].includes(status)) {
-                query += ` AND r.status = ?`;
-                params.push(status);
-            }
-
-            const allowedSort = ['created_at', 'average_rating', 'rating_count'];
-            const sortBy = allowedSort.includes(sort_by) ? sort_by : 'created_at';
-            query += ` ORDER BY r.${sortBy} DESC`;
-
-            query += ` LIMIT ? OFFSET ?`;
-            params.push(parseInt(limit), parseInt(offset));
-
-            const [recipes] = await pool.query(query, params);
+            const page = Math.floor(parsedOffset / parsedLimit) + 1;
+            const totalPages = Math.ceil(total / parsedLimit);
+            const hasMore = parsedOffset + parsedLimit < total;
 
             logger.info(`Admin retrieved recipes`, {
                 admin_id: req.user.id,
@@ -153,11 +163,7 @@ class AdminController {
                 count: recipes.length
             });
 
-            res.json({
-                success: true,
-                count: recipes.length,
-                data: recipes
-            });
+            return sendPaginated(res, recipes, { total, page, limit: parsedLimit, totalPages, hasMore });
 
         } catch (error) {
             logger.error('Failed to retrieve recipes for admin', {
@@ -308,7 +314,26 @@ class AdminController {
         try {
             const { limit = 50, offset = 0, action } = req.query;
 
-            let query = `
+            let whereClause = 'WHERE 1=1';
+            const params = [];
+
+            if (action) {
+                whereClause += ` AND al.action = ?`;
+                params.push(action);
+            }
+
+            // Total count
+            const countQuery = `
+                SELECT COUNT(*) as total
+                FROM admin_logs al
+                ${whereClause}
+            `;
+            const [[{ total }]] = await pool.query(countQuery, params);
+
+            const parsedLimit = parseInt(limit);
+            const parsedOffset = parseInt(offset);
+
+            const dataQuery = `
                 SELECT 
                     al.id,
                     al.admin_id,
@@ -320,26 +345,18 @@ class AdminController {
                     al.created_at
                 FROM admin_logs al
                 LEFT JOIN users u ON al.admin_id = u.id
-                WHERE 1=1
+                ${whereClause}
+                ORDER BY al.created_at DESC
+                LIMIT ? OFFSET ?
             `;
 
-            const params = [];
+            const [logs] = await pool.query(dataQuery, [...params, parsedLimit, parsedOffset]);
 
-            if (action) {
-                query += ` AND al.action = ?`;
-                params.push(action);
-            }
+            const page = Math.floor(parsedOffset / parsedLimit) + 1;
+            const totalPages = Math.ceil(total / parsedLimit);
+            const hasMore = parsedOffset + parsedLimit < total;
 
-            query += ` ORDER BY al.created_at DESC LIMIT ? OFFSET ?`;
-            params.push(parseInt(limit), parseInt(offset));
-
-            const [logs] = await pool.query(query, params);
-
-            res.json({
-                success: true,
-                count: logs.length,
-                data: logs
-            });
+            return sendPaginated(res, logs, { total, page, limit: parsedLimit, totalPages, hasMore });
 
         } catch (error) {
             logger.error('Failed to retrieve admin logs', {

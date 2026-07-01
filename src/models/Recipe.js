@@ -450,126 +450,100 @@ class Recipe {
         try {
 
             // ====================================================
-            // BASE QUERY
+            // BUILD WHERE CONDITIONS (shared between COUNT + SELECT)
             // ====================================================
-            // Start with all non-deleted recipes
-            // We build the rest of the WHERE clause dynamically below
 
-            let query = `
-                SELECT r.*
-                FROM recipes r
-                WHERE r.deleted_at IS NULL
-            `;
-
-            // params array: values injected in the same order as ? placeholders
+            let whereClause = 'WHERE r.deleted_at IS NULL';
             const params = [];
-
-            // ====================================================
-            // DYNAMIC WHERE CLAUSES
-            // ====================================================
 
             // Filter by category (exact match)
             if (filters.category_id) {
-                query += ' AND r.category_id = ?';
+                whereClause += ' AND r.category_id = ?';
                 params.push(filters.category_id);
             }
 
             // Filter by maximum prep time
-            // Supports US-01: "Prêt en moins de 15 minutes"
             if (filters.max_prep_time) {
-                query += ' AND r.prep_time <= ?';
+                whereClause += ' AND r.prep_time <= ?';
                 params.push(filters.max_prep_time);
             }
 
             // Filter by maximum cost per portion
-            // Accepts both "max_cost" (short, used in tests) and
-            // "max_cost_per_portion" (long, used in API docs)
-            // max_cost takes priority when both are provided
             const maxCost = filters.max_cost !== undefined
                 ? filters.max_cost
                 : filters.max_cost_per_portion;
 
             if (maxCost !== undefined) {
-                query += ' AND r.cost_per_portion <= ?';
+                whereClause += ' AND r.cost_per_portion <= ?';
                 params.push(maxCost);
             }
 
             // Filter by minimum average rating
             if (filters.min_rating) {
-                query += ' AND r.average_rating >= ?';
+                whereClause += ' AND r.average_rating >= ?';
                 params.push(filters.min_rating);
             }
 
-            // Filter by moderation status (pending / published / rejected)
+            // Filter by moderation status
             if (filters.status) {
-                query += ' AND r.status = ?';
+                whereClause += ' AND r.status = ?';
                 params.push(filters.status);
             }
 
             // ====================================================
-            // ORDER & PAGINATION
-            // // ====================================================
-            // CONDITIONAL ORDER BY
+            // TOTAL COUNT (separate query, same WHERE conditions)
             // ====================================================
-            // Sort strategy depends on which filter is active.
-            // Goal: surface the most relevant results first for each persona.
-            //
-            // Priority order (first match wins):
-            // 1. max_prep_time active → fastest recipes first (persona: salarié crevé)
-            // 2. max_cost active      → cheapest recipes first (persona: étudiant fauché)
-            // 3. min_rating active    → best rated first (persona: parent épuisé)
-            // 4. default              → newest first (homepage, no filter)
-            //
-            // Why first-match-wins?
-            // A user filtering by prep time cares about speed above all else.
-            // Mixing sort criteria would require a weighted ranking — out of scope for MVP.
+
+            const countQuery = `SELECT COUNT(*) as total FROM recipes r ${whereClause}`;
+            const [[{ total }]] = await pool.query(countQuery, params);
+
+            // ====================================================
+            // ORDER BY
+            // ====================================================
 
             let sortClause;
 
             if (filters.max_prep_time) {
-                sortClause = SORT.BY_TIME;      // prep_time ASC — fastest first
+                sortClause = SORT.BY_TIME;
             } else if (maxCost !== undefined) {
-                sortClause = SORT.BY_COST;      // cost_per_portion ASC — cheapest first
+                sortClause = SORT.BY_COST;
             } else if (filters.min_rating) {
-                sortClause = SORT.BY_RATING;    // average_rating DESC — best rated first
+                sortClause = SORT.BY_RATING;
             } else {
-                sortClause = SORT.BY_DATE;      // created_at DESC — newest first (default)
+                sortClause = SORT.BY_DATE;
             }
 
-            query += ` ORDER BY r.${sortClause}`;
-
             // ====================================================
-            // PAGINATION
+            // PAGINATION (limit / offset)
             // ====================================================
-            // limit: number of rows per page — capped at MAX_LIMIT to prevent abuse
-            // offset: number of rows to skip — for page navigation
-            // Both are injected as parameters (never interpolated) — SQL injection safe
 
             const rawLimit = parseInt(filters.limit, 10);
             const limit = (!isNaN(rawLimit) && rawLimit > 0)
-                ? Math.min(rawLimit, FILTERS.MAX_LIMIT)   // cap at 100
-                : FILTERS.DEFAULT_LIMIT;                  // default 50
+                ? Math.min(rawLimit, FILTERS.MAX_LIMIT)
+                : FILTERS.DEFAULT_LIMIT;
 
             const offset = parseInt(filters.offset, 10) || 0;
 
-            query += ' LIMIT ? OFFSET ?';
-            params.push(limit, offset);
-
-
             // ====================================================
-            // EXECUTE
+            // DATA QUERY
             // ====================================================
 
-            const [rows] = await pool.query(query, params);
+            const dataQuery = `
+                SELECT r.*
+                FROM recipes r
+                ${whereClause}
+                ORDER BY r.${sortClause}
+                LIMIT ? OFFSET ?
+            `;
+
+            const [rows] = await pool.query(dataQuery, [...params, limit, offset]);
 
             // ====================================================
             // MAP ROWS TO OBJECTS
             // ====================================================
-            // Same parsing logic as findById() but applied to each row
 
             const recipes = rows.map((row) => {
 
-                // Parse JSON fields stored as strings
                 let ingredients = [];
                 let steps = [];
                 try {
@@ -579,7 +553,6 @@ class Recipe {
                     logger.warn(`Failed to parse JSON for recipe ${row.id}: ${parseError.message}`);
                 }
 
-                // Parse DECIMAL columns to JS floats
                 const costPerPortion = parseFloat(row.cost_per_portion);
                 const averageRating = parseFloat(row.average_rating);
 
@@ -589,12 +562,12 @@ class Recipe {
                     category_id: row.category_id,
                     title: row.title,
                     anecdote: row.anecdote,
-                    ingredients,                          // parsed array
-                    steps,                                // parsed array
+                    ingredients,
+                    steps,
                     prep_time: row.prep_time,
-                    cost_per_portion: costPerPortion,     // parsed float
+                    cost_per_portion: costPerPortion,
                     status: row.status,
-                    average_rating: averageRating,      // parsed float
+                    average_rating: averageRating,
                     rating_count: row.rating_count,
                     image_url: row.image_url,
                     created_at: row.created_at,
@@ -603,7 +576,7 @@ class Recipe {
                 };
             });
 
-            return recipes;
+            return { recipes, total, limit };
 
         } catch (error) {
             logger.error(`Recipe.findAllWithFilters() failed: ${error.message}`);
