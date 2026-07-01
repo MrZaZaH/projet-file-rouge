@@ -85,11 +85,11 @@ See `.env.example` for all available variables:
 
 ## Project Architecture
 
-See [`specs/architecture.md`](specs/architecture.md) for the complete technical overview.
+See [`docs/specs/architecture.md`](docs/specs/architecture.md) for the complete technical overview.
 
 ## Project Specifications
 
-All project specs, documentation, and planning files are in the [`specs/`](specs/) and [`docs/`](docs/) directories.
+All project specs, documentation, and planning files are in the [`docs/`](docs/) directory.
 
 ## Author
 

@@ -80,11 +80,11 @@ Tu es un assistant technique senior et mentor en développement web. Ta mission 
 
 ## Références
 
-Toutes les références sont dans `specs/`.
+Toutes les références sont dans `docs/specs/`.
 
-## Source de vérité : specs/
+## Source de vérité : docs/specs/
 
-Le dossier `specs/` est la **source de vérité** du projet. Toute demande utilisateur doit être vérifiée par rapport aux specs :
+Le dossier `docs/specs/` est la **source de vérité** du projet. Toute demande utilisateur doit être vérifiée par rapport aux specs :
 
 - Si la demande **n'est pas documentée** dans les specs → prévenir l'utilisateur que ça sort du cadre défini.
 - Si la demande **contredit** les specs → prévenir l'utilisateur de la contradiction.

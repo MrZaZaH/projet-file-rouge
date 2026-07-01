@@ -240,12 +240,34 @@ function setupExport() {
     var btn = document.getElementById('export-csv-btn');
     if (!btn) return;
     btn.addEventListener('click', function() {
-        window.open('/api/v1/admin/export/recipes', '_blank');
+        var token = getToken();
+        fetch('/api/v1/admin/export/recipes', {
+            headers: { 'Authorization': 'Bearer ' + token }
+        })
+        .then(function(res) {
+            if (!res.ok) throw new Error('Export failed');
+            return res.blob();
+        })
+        .then(function(blob) {
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'recettes.csv';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        })
+        .catch(function(err) {
+            console.error('CSV export error:', err);
+        });
     });
 }
 ```
 
-Au clic, ouvre une nouvelle fenêtre/onglet vers l'URL d'export CSV. Le token JWT n'est pas envoyé automatiquement dans une `window.open()` — le serveur doit gérer l'authentification via une autre méthode (cookie de session ou paramètre d'URL). C'est une limitation de cette approche.
+Le clic déclenche une requête `fetch` avec le token JWT dans le header `Authorization` (récupéré via `getToken()` depuis le localStorage). Le serveur renvoie un blob CSV. Ce blob est converti en URL objet DOM, un lien `<a>` programmatique est cliqué, et le navigateur déclenche le téléchargement. `URL.revokeObjectURL()` nettoie la mémoire allouée.
+
+**Pourquoi pas `window.open()` ?** Un nouvel onglet est un contexte de navigation vierge — il n'a pas accès au token stocké dans le localStorage de la page mère, donc le middleware `authenticate` rejette la requête avec 401 `MISSING_TOKEN`.
 
 ---
 
@@ -328,7 +350,7 @@ btn.setAttribute('data-id', escapeAttr(r.id)); // escapeAttr pour les attributs
 
 `window.open('/api/v1/admin/export/recipes')` ouvre une nouvelle fenêtre. Cette fenêtre n'a pas le token JWT dans ses headers (puisque c'est une navigation, pas un fetch). Si le backend attend un token Bearer, l'export échoue avec 401.
 
-**Solution possible** : utiliser un cookie de session pour l'export, ou passer le token en paramètre d'URL (moins sécurisé mais fonctionnel pour un MVP).
+**Correction appliquée** : on utilise `fetch` + `Blob` + lien `<a>` programmatique. Le token est passé dans le header `Authorization` comme pour tous les autres appels API admin.
 
 ### Piège #4 : Oublier de vérifier le rôle admin côté serveur
 
@@ -363,6 +385,6 @@ La vérification `user.role !== 'admin'` est faite côté client. Mais un utilis
 - [ ] `confirm()` avant publication, `prompt()` optionnel avant rejet
 - [ ] `removePendingRow()` anime la suppression et met à jour les stats
 - [ ] Les logs affichent admin, action, cible, date de manière lisible
-- [ ] Le bouton d'export CSV ouvre une nouvelle fenêtre vers `/api/v1/admin/export/recipes`
+- [ ] Le bouton d'export CSV déclenche un `fetch` avec le token dans le header `Authorization` et télécharge via `Blob`
 - [ ] Les messages d'erreur sont affichés via `alert()` ou dans `#moderation-feedback`
 - [ ] Les tableaux vides affichent un message approprié (via `toggleDisplay`)

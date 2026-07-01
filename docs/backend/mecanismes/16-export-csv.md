@@ -98,30 +98,49 @@ function setupExport() {
     var btn = document.getElementById('export-csv-btn');
     if (!btn) return;
     btn.addEventListener('click', function() {
-        // window.open() ouvre l'URL dans un nouvel onglet
-        // Le navigateur voit les en-têtes Content-Disposition
-        // et affiche "Enregistrer sous" au lieu de naviguer
-        window.open('/api/v1/admin/export/recipes', '_blank');
-        // _blank : nouvel onglet (ne quitte pas la page courante)
+        var token = getToken();
+        fetch('/api/v1/admin/export/recipes', {
+            headers: { 'Authorization': 'Bearer ' + token }
+        })
+        .then(function(res) {
+            if (!res.ok) throw new Error('Export failed');
+            return res.blob();
+        })
+        .then(function(blob) {
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'recettes.csv';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        })
+        .catch(function(err) {
+            console.error('CSV export error:', err);
+        });
     });
 }
 ```
+
+Pourquoi `fetch` + `Blob` au lieu de `window.open()` ?
+- `window.open()` crée un **nouveau contexte de navigation** qui n'a pas accès au token JWT du localStorage
+- `fetch()` s'exécute dans le contexte JS de la page courante → on injecte `Authorization: Bearer <token>` dans les headers
+- Le `Blob` reçu est transformé en URL objet, un lien `<a>` cliquable est créé programmatiquement, puis le clic est simulé → le navigateur déclenche le téléchargement
+- `URL.revokeObjectURL()` nettoie la mémoire allouée pour éviter les fuites
 
 ## 4. CE QUI SE PASSE ÉTAPE PAR ÉTAPE
 
 ```
 Admin clique sur "Exporter CSV"
 
-1. window.open('/api/v1/admin/export/recipes', '_blank')
-   → Nouvel onglet (ou téléchargement direct selon le navigateur)
+1. fetch('/api/v1/admin/export/recipes', { headers: { Authorization: 'Bearer <token>' } })
+   → Requête AJAX avec le token JWT dans les headers (pas de nouvel onglet)
 
-2. Requête GET vers le serveur :
-   → Headers: Authorization: Bearer <token>
+2. Middleware authenticate → valide le JWT
+3. Middleware requireAdmin → vérifie le rôle admin
 
-3. Middleware authenticate → valide le JWT
-4. Middleware requireAdmin → vérifie le rôle admin
-
-5. AdminController.exportCSV() :
+4. AdminController.exportCSV() :
    a. pool.query('SELECT id, title, status, created_at FROM recipes
                   WHERE status = 'published' AND deleted_at IS NULL')
    b. Construction de la chaîne CSV :
@@ -131,12 +150,11 @@ Admin clique sur "Exporter CSV"
    d. res.attachment('recipes.csv')
    e. res.send(csv)
 
-6. Navigateur reçoit la réponse :
-   - Content-Type: text/csv
-   - Content-Disposition: attachment; filename="recipes.csv"
-   → Boîte de dialogue "Enregistrer sous" → fichier .csv
+5. Le fetch reçoit le blob → création d'un URL objet → lien <a> programmatique
+   → clic simulé → le navigateur déclenche "Enregistrer sous"
+   → URL.revokeObjectURL() libère la mémoire
 
-7. L'utilisateur ouvre le fichier dans Excel :
+6. L'utilisateur ouvre le fichier dans Excel :
    - 4 colonnes : id, title, status, created_at
    - Chaque titre est correctement échappé (guillemets)
 ```
@@ -230,4 +248,4 @@ recipes.forEach(r => {
 - [ ] Les titres avec des virgules sont entourés de guillemets
 - [ ] Seules les recettes `published` et non soft-deletées sont exportées
 - [ ] La route est protégée (authenticate + requireAdmin)
-- [ ] Le frontend ouvre le téléchargement dans un nouvel onglet via `window.open()`
+- [ ] Le frontend télécharge via `fetch` + `Blob` avec le token JWT dans le header `Authorization`

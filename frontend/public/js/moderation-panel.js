@@ -267,7 +267,27 @@ function setupExport() {
     var btn = document.getElementById('export-csv-btn');
     if (!btn) return;
     btn.addEventListener('click', function() {
-        window.open('/api/v1/admin/export/recipes', '_blank');
+        var token = getToken();
+        fetch('/api/v1/admin/export/recipes', {
+            headers: { 'Authorization': 'Bearer ' + token }
+        })
+        .then(function(res) {
+            if (!res.ok) throw new Error('Export failed');
+            return res.blob();
+        })
+        .then(function(blob) {
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'recettes.csv';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        })
+        .catch(function(err) {
+            console.error('CSV export error:', err);
+        });
     });
 }
 

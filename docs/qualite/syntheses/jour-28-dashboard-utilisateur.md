@@ -74,7 +74,7 @@
 - `.status-rejected` : `background:#4a1c1c; color:#f5a5a5;`
 
 #### Documentation API
-- `specs/technique/api.md` mis à jour avec les 2 nouveaux endpoints, leurs réponses JSON, et les codes d'erreur
+- `docs/specs/technique/api.md` mis à jour avec les 2 nouveaux endpoints, leurs réponses JSON, et les codes d'erreur
 
 ### Problèmes rencontrés
 
@@ -125,8 +125,8 @@
 - `frontend/public/recipe.html` — lien dashboard dans le header
 - `frontend/public/submit.html` — lien dashboard dans le header
 - `frontend/public/styleguide.html` — lien dashboard dans le header
-- `specs/technique/api.md` — documentation des 2 nouveaux endpoints
-- `specs/technique/backend-report.md` (cette session)
+- `docs/specs/technique/api.md` — documentation des 2 nouveaux endpoints
+- `docs/specs/technique/backend-report.md` (cette session)
 - `docs/qualite/test-cases.md` (cette session)
 
 ### Tests exécutés et résultats

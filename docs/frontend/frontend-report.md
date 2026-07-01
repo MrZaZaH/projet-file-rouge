@@ -265,10 +265,10 @@ User recipe favorites system with header shortcut and dedicated page.
 
 **Specs updated:**
 
-- `specs/technique/api.md` — Favorites endpoints documented
-- `specs/technique/database-design.md` — favorites table, relationships, indexes
-- `specs/gestion-projet/persona-user-stories.md` — US-16 added
-- `specs/technique/structure.md` — new files listed
+- `docs/specs/technique/api.md` — Favorites endpoints documented
+- `docs/specs/technique/database-design.md` — favorites table, relationships, indexes
+- `docs/specs/gestion-projet/persona-user-stories.md` — US-16 added
+- `docs/specs/technique/structure.md` — new files listed
 
 ## Self-Assessment (Competences 1.2 & 1.3)
 

@@ -118,7 +118,7 @@ projet-file-rouge/
 ├── logs/                              # Winston log files (gitignored, auto-rotated)
 │   ├── combined.log
 │   └── error.log
-├── specs/
+├── docs/specs/
 │   ├── architecture.md
 │   ├── gestion-projet/
 │   │   ├── persona-user-stories.md

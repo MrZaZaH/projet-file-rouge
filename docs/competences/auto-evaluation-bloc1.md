@@ -18,4 +18,4 @@
 | Éco-conception | CSS minifié, pas de framework JS, loading="lazy", Google Fonts preconnect | Tous les fichiers |
 | Design System | Variables CSS, composants documentés dans styleguide | frontend/public/styleguide.html |
 | SEO technique | Meta tags, Open Graph, titres uniques, lang="fr" | Tous les HTML |
-| Contraste validé | Ratios WCAG AA vérifiés pour toutes les paires de couleurs | Voir frontend/docs/frontend-report.md |
+| Contraste validé | Ratios WCAG AA vérifiés pour toutes les paires de couleurs | Voir docs/frontend/frontend-report.md |
