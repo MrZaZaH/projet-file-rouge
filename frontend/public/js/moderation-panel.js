@@ -76,6 +76,7 @@ function renderTopRated(recipes) {
 }
 
 function renderTopContent(data) {
+    toggleDisplay(document.getElementById('top-loading'), false);
     renderTopViewed(data.top_viewed);
     renderTopRated(data.top_rated);
 }
