@@ -329,12 +329,11 @@
 }
 
 .persona-card-image {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
+    display: block;
+    width: 85%;
+    height: auto;
+    border-radius: 8px;
     margin: 0 auto 1rem;
-    background: var(--bg);
-    border: var(--border);
 }
 
 .persona-card h3 {

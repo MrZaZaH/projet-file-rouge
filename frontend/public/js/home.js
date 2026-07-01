@@ -106,6 +106,7 @@ function updateActiveFilter(persona) {
         personaCards.forEach(function(c) {
             c.classList.remove('persona-card--active');
             c.setAttribute('aria-pressed', 'false');
+            setPersonaImage(c, c.dataset.persona, 'default');
         });
         currentPersona = null;
         toggleDisplay(recipesLoading, true);
@@ -113,6 +114,14 @@ function updateActiveFilter(persona) {
         renderRecipes(recipes);
         updateActiveFilter(null);
     });
+}
+
+// ====== PERSONA IMAGE SWAP ======
+function setPersonaImage(card, persona, state) {
+    var img = card.querySelector('.persona-card-image');
+    if (img) {
+        img.src = '/assets/illustrations/' + persona + '-' + state + '.png';
+    }
 }
 
 // ====== EVENT HANDLERS ======
@@ -124,6 +133,7 @@ personaCards.forEach(function(card) {
         if (currentPersona === persona && card.classList.contains('persona-card--active')) {
             card.classList.remove('persona-card--active');
             card.setAttribute('aria-pressed', 'false');
+            setPersonaImage(card, persona, 'default');
             currentPersona = null;
             toggleDisplay(recipesLoading, true);
             const recipes = await fetchRecipes('/api/v1/recipes');
@@ -135,9 +145,11 @@ personaCards.forEach(function(card) {
         personaCards.forEach(function(c) {
             c.classList.remove('persona-card--active');
             c.setAttribute('aria-pressed', 'false');
+            setPersonaImage(c, c.dataset.persona, 'default');
         });
         card.classList.add('persona-card--active');
         card.setAttribute('aria-pressed', 'true');
+        setPersonaImage(card, persona, 'active');
 
         toggleDisplay(recipesLoading, true);
         toggleDisplay(noRecipes, false);

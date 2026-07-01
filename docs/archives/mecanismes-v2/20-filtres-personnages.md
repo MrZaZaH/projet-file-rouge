@@ -62,6 +62,24 @@ function getPersonaFilter(persona) {
 }
 ```
 
+### 3.1b — Swap d'image actif/défaut : setPersonaImage() (home.js:119)
+
+```javascript
+// Bascule l'illustration du personnage entre version "défaut" et "active"
+// card : l'élément .persona-card
+// persona : "salarie-creve", "etudiant-fauche" ou "parent-epuise"
+// state : "default" ou "active"
+
+function setPersonaImage(card, persona, state) {
+    var img = card.querySelector('.persona-card-image');
+    if (img) {
+        img.src = '/assets/illustrations/' + persona + '-' + state + '.png';
+    }
+}
+```
+
+La convention de nommage est `{persona}-{state}.png`, stockée dans `frontend/public/assets/illustrations/`. Le dossier est servi statiquement par Express, accessible via `/assets/illustrations/`.
+
 ### 3.2 — Construction de l'URL avec URLSearchParams (home.js:145)
 
 ```javascript
@@ -86,7 +104,7 @@ const recipes = await fetchRecipes(url);
 // Le serveur reçoit les paramètres et les passe à findAllWithFilters()
 ```
 
-### 3.3 — Gestion de l'état "actif" (home.js:120)
+### 3.3 — Gestion de l'état "actif" avec swap d'illustration (home.js:129)
 
 ```javascript
 // Chaque carte personnage a :
@@ -103,6 +121,7 @@ personaCards.forEach(function(card) {
         if (currentPersona === persona && card.classList.contains('persona-card--active')) {
             card.classList.remove('persona-card--active');
             card.setAttribute('aria-pressed', 'false');
+            setPersonaImage(card, persona, 'default'); // ← illustration retour en version défaut
             currentPersona = null;
             // On recharge TOUTES les recettes (sans filtre)
             const recipes = await fetchRecipes('/api/v1/recipes');
@@ -115,9 +134,11 @@ personaCards.forEach(function(card) {
         personaCards.forEach(function(c) {
             c.classList.remove('persona-card--active');
             c.setAttribute('aria-pressed', 'false');
+            setPersonaImage(c, c.dataset.persona, 'default'); // ← tous en version défaut
         });
         card.classList.add('persona-card--active');
         card.setAttribute('aria-pressed', 'true');
+        setPersonaImage(card, persona, 'active'); // ← illustration en version active
 
         // Nouveau filtre → appel API avec paramètres
         const filter = getPersonaFilter(persona);
@@ -172,6 +193,7 @@ function updateActiveFilter(persona) {
         personaCards.forEach(function(c) {
             c.classList.remove('persona-card--active');
             c.setAttribute('aria-pressed', 'false');
+            setPersonaImage(c, c.dataset.persona, 'default'); // ← retour à la version défaut
         });
         currentPersona = null;
         const recipes = await fetchRecipes('/api/v1/recipes');
@@ -194,33 +216,98 @@ card.addEventListener('keydown', function(e) {
 });
 ```
 
-### 3.6 — HTML des personnages (extrait du HTML de la homepage)
+### 3.6 — HTML des personnages avec illustrations (index.html:74)
 
 ```html
-<div class="persona-card" data-persona="salarie-creve"
-     role="button" tabindex="0" aria-pressed="false">
-    <div class="persona-card-icon">💼</div>
-    <h3>Salarié crevé</h3>
-    <p>Je veux manger en moins de 15 min</p>
-    <span class="persona-card-badge">⏱ ≤ 15 min</span>
-</div>
+<article class="persona-card" data-persona="salarie-creve" role="button" tabindex="0"
+    aria-pressed="false" aria-label="Filtrer pour Salarié Crevé – Temps ≤ 15 min">
+    <img class="persona-card-image" src="/assets/illustrations/salarie-creve-default.png"
+         alt="Le maître des deadlines">
+    <h3>Salarié Crevé</h3>
+    <p>Recettes prêtes en 15 minutes chrono</p>
+</article>
 
-<div class="persona-card" data-persona="etudiant-fauche"
-     role="button" tabindex="0" aria-pressed="false">
-    <div class="persona-card-icon">🎓</div>
-    <h3>Étudiant fauché</h3>
-    <p>Je veux un repas à moins de 5€</p>
-    <span class="persona-card-badge">💰 ≤ 5 €</span>
-</div>
+<article class="persona-card" data-persona="etudiant-fauche" role="button" tabindex="0"
+    aria-pressed="false" aria-label="Filtrer pour Étudiant Fauché – Budget ≤ 5€">
+    <img class="persona-card-image" src="/assets/illustrations/etudiant-fauche-default.png"
+         alt="Le virtuose du repas à 2€">
+    <h3>Étudiant Fauché</h3>
+    <p>Manger bon sans ruiner son compte</p>
+</article>
 
-<div class="persona-card" data-persona="parent-epuise"
-     role="button" tabindex="0" aria-pressed="false">
-    <div class="persona-card-icon">👨‍👩‍👧‍👦</div>
-    <h3>Parent épuisé</h3>
-    <p>Je veux un bon repas rapide</p>
-    <span class="persona-card-badge">⏱ ≤ 20 min & ⭐ ≥ 4</span>
-</div>
+<article class="persona-card" data-persona="parent-epuise" role="button" tabindex="0"
+    aria-pressed="false" aria-label="Filtrer pour Parent Épuisé – Rapide et bien noté">
+    <img class="persona-card-image" src="/assets/illustrations/parent-epuise-default.png"
+         alt="La chef d'orchestre familial">
+    <h3>Parent Épuisé</h3>
+    <p>Repas express notés par d'autres parents</p>
+</article>
 ```
+
+### 3.7 — Illustrations : dossier, CSS et swap visuel
+
+#### Dossier de stockage
+
+```
+frontend/public/assets/illustrations/
+├── salarie-creve-default.png     ← 344 Ko, affiché par défaut
+├── salarie-creve-active.png      ← 327 Ko, affiché quand le filtre est actif
+├── etudiant-fauche-default.png   ← 419 Ko
+├── etudiant-fauche-active.png    ← 419 Ko
+├── parent-epuise-default.png     ← 364 Ko
+└── parent-epuise-active.png      ← 364 Ko
+```
+
+Le dossier `frontend/public/` est servi statiquement par Express (`app.js`), donc les images sont accessibles via l'URL `/assets/illustrations/{persona}-{state}.png`.
+
+#### CSS — de la pastille au rectangle illustré (styles.css:331)
+
+```css
+.persona-card-image {
+    display: block;
+    width: 85%;
+    height: auto;
+    border-radius: 8px;
+    margin: 0 auto 1rem;
+}
+```
+
+| Propriété | Rôle |
+|---|---|
+| `display: block; margin: 0 auto` | Centre l'image horizontalement dans la carte |
+| `width: 85%` | L'image prend 85% de la largeur de son conteneur (la carte avec son padding) |
+| `height: auto` | Maintient le ratio hauteur/largeur naturel de l'image |
+| `border-radius: 8px` | Coins légèrement arrondis pour un rendu plus doux |
+
+Avant l'implémentation, le placeholder était un cercle gris (`border-radius: 50%; width: 100px; height: 100px; background: var(--bg)`). Les illustrations en format portrait (rectangulaires debout) ont imposé le passage en `width: 85%; height: auto` pour respecter leurs proportions.
+
+#### Alt texts — un parti pris éditorial
+
+Les attributs `alt` des illustrations ne décrivent pas le contenu visuel (un dessin) mais l'esprit du personnage :
+
+| Personnage | Texte alternatif |
+|---|---|
+| Salarié Crevé | `"Le maître des deadlines"` |
+| Étudiant Fauché | `"Le virtuose du repas à 2€"` |
+| Parent Épuisé | `"La chef d'orchestre familial"` |
+
+Ce choix éditorial remplace des `alt` techniques (comme `"Icône Salarié Crevé"`) par des textes à l'humour positif, aligné avec la tonalité du projet.
+
+#### Swap d'image : le mécanisme
+
+Appelée à 3 moments différents dans `home.js` :
+
+1. **Désactivation** (re-clic ou clic sur un autre personnage) → `setPersonaImage(card, persona, 'default')`
+2. **Activation** (clic sur un personnage inactif) → `setPersonaImage(card, persona, 'active')`
+3. **Bouton "×"** du tag de filtre actif → `setPersonaImage(card, persona, 'default')` sur toutes les cartes
+
+Pas de `background-image` CSS, pas de `content` — le swap se fait uniquement en modifiant la propriété `src` de l'élément `<img>`. C'est volontairement simple, facile à déboguer (l'inspecteur réseau montre le changement de fichier) et accessible (l'attribut `alt` reste inchangé).
+
+#### Performance
+
+6 fichiers PNG, chacun entre 320 et 420 Ko. Pas de lazy loading (les 3 images sont dans le viewport initial). Si le poids devient un problème, on pourra :
+- Convertir en WebP (meilleure compression sans perte visible)
+- Redimensionner les PNG à 2× leur taille d'affichage max plutôt que de garder des fichiers à pleine résolution
 
 ## 4. CE QUI SE PASSE ÉTAPE PAR ÉTAPE
 
@@ -394,3 +481,10 @@ if (recipes) {
 - [ ] `URLSearchParams` est utilisé pour construire la query string
 - [ ] Le filtre "Parent épuisé" trie par note (pas par temps) — logique conditionnelle
 - [ ] Le "Surprends-moi" appelle `GET /api/v1/recipes/random` sans aucun paramètre
+- [ ] Chaque personnage a une illustration dans `frontend/public/assets/illustrations/`
+- [ ] Deux versions par illustration : `{persona}-default.png` et `{persona}-active.png`
+- [ ] Les images sont servies statiquement par Express via `/assets/illustrations/`
+- [ ] Le clic active le personnage ET change l'image vers la version `-active`
+- [ ] La désactivation (re-clic, autre personnage, bouton ×) remet en version `-default`
+- [ ] Les `alt` texts sont humoristiques et positifs (ex: "Le maître des deadlines")
+- [ ] CSS : `display: block; width: 85%; height: auto; border-radius: 8px; margin: 0 auto`
