@@ -285,6 +285,24 @@
     margin-bottom: 2rem;
 }
 
+/* ---------- 3b. A-BAR (fork & spoon desperately hiding the a) ---------- */
+.a-bar {
+    position: relative;
+    display: inline-block;
+}
+.a-letter {
+    color: var(--accent);
+}
+.a-bar svg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 1.6em;
+    height: 1.6em;
+    z-index: 1;
+}
+
 /* ---------- 4. PERSONA CARDS ---------- */
 .persona-section {
     padding: 2rem 1.5rem 3rem;
