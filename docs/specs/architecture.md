@@ -66,12 +66,6 @@ with the story behind each one.
 
 ```
 projet-file-rouge/
-├── Admin/                             # Admin frontend pages (HTML/CSS/JS)
-│   ├── export/
-│   │   └── recipesCSV.js              # CSV export utility
-│   ├── recipes/
-│   │   └── top.js                     # Top recipes admin page
-│   └── stats.js                       # Admin dashboard stats
 ├── database/
 │   └── scripts/
 │       ├── 01_create_database.sql     # DB creation (recettes_humaines + test)
@@ -80,55 +74,65 @@ projet-file-rouge/
 │       ├── 04_seed_data.sql           # Seed: 3 categories, 5 users, 8 recipes, 30 comments, 28 ratings
 │       ├── 05_add_image_url.sql       # Migration: add image_url column to recipes
 │       └── 06_indexes.sql            # Performance indexes, views counter column
-├── docs/                              # Documentation
+├── docs/                              # Documentation (hub unique)
 │   ├── accessibility.md
-│   ├── mvp-decisions.md
-│   ├── memos/
-│   │   ├── memo-pour-concept-flou.md
-│   │   └── memo-session.md
-│   ├── prompts/
-│   │   ├── commande-memo-revision-session.md
-│   │   ├── commande-synthese.md
-│   │   ├── prompt-instruction-ia.md
-│   │   ├── prompt-instruction-ia-2.md
-│   │   └── prompt-instruction-ia-3-reformuler.md
+│   ├── mvp-decisions.md              # Décisions MVP / V2
+│   ├── archives/
+│   │   ├── mecanismes-v1/            # Anciennes fiches techniques (v1)
+│   │   ├── mecanismes-v2/            # Fiches techniques détaillées (45 mécanismes)
+│   │   ├── syntheses/                # Synthèses de session
+│   │   └── prompts/                  # Prompts IA historiques
+│   ├── backend/
+│   │   └── backend-report.md         # Rapport technique backend (MVC, endpoints, sécurité)
+│   ├── competences/
+│   │   └── auto-evaluation-bloc1.md
+│   ├── frontend/
+│   │   ├── architecture-frontend.md  # Architecture frontend
+│   │   └── frontend-report.md        # Rapport technique frontend
+│   ├── memos/                        # Fiches de révision
 │   ├── qualite/
 │   │   ├── bonnes-pratiques.md
+│   │   ├── syntheses/
 │   │   └── test-cases.md
 │   ├── recettes/
 │   │   ├── recettes.md
 │   │   └── selection-des-8-recettes-tests.md
-│   └── syntheses/                     # Session syntheses (jour 2 — 23)
+│   └── specs/                        # Source de vérité
+│       ├── architecture.md           # (ce fichier)
+│       ├── gestion-projet/
+│       │   ├── persona-user-stories.md
+│       │   └── planning-travail-detaille.md
+│       └── technique/
+│           ├── api.md
+│           ├── brief.md
+│           ├── database-design.md
+│           └── structure.md
 ├── frontend/                          # Frontend app (vanilla HTML/CSS/JS)
-│   ├── docs/
-│   │   ├── architecture-frontend.md
-│   │   └── frontend-report.md
 │   └── public/
-│       ├── assets/
 │       ├── css/
 │       │   ├── styles.css
 │       │   └── variables.css
 │       ├── js/
-│       │   └── app.js
-│       ├── demo.html
+│       │   ├── app.js
+│       │   ├── auth.js
+│       │   ├── dashboard.js
+│       │   ├── detail.js
+│       │   ├── favorites.js
+│       │   ├── home.js
+│       │   ├── login.js
+│       │   ├── moderation-panel.js
+│       │   ├── register.js
+│       │   └── submit.js
+│       ├── dashboard.html
+│       ├── favorites.html
 │       ├── index.html
+│       ├── login.html
+│       ├── moderation-panel.html
 │       ├── recipe.html
+│       ├── register.html
 │       ├── styleguide.html
 │       └── submit.html
 ├── logs/                              # Winston log files (gitignored, auto-rotated)
-│   ├── combined.log
-│   └── error.log
-├── docs/specs/
-│   ├── architecture.md
-│   ├── gestion-projet/
-│   │   ├── persona-user-stories.md
-│   │   └── planning-travail-detaille.md
-│   └── technique/
-│       ├── api.md
-│       ├── backend-report.md
-│       ├── brief.md
-│       ├── database-design.md
-│       └── structure.md
 ├── src/
 │   ├── config/
 │   │   └── database.js                # DB connection config from env vars, validates required fields
@@ -138,37 +142,33 @@ projet-file-rouge/
 │   │   ├── AdminController.js         # Dashboard, moderation, stats, logs, CSV export
 │   │   ├── AuthController.js          # register, login, getMe
 │   │   ├── CommentController.js       # List, create (guest or auth), delete (author/admin)
+│   │   ├── FavoriteController.js      # Toggle favorite, list user favorites
 │   │   ├── RatingController.js        # Create/update rating (auth only, self-rating blocked)
 │   │   ├── RecipeController.js        # CRUD, filtered listing, random recipe, view counter
-│   │   ├── AdminController1.js        # Legacy / backup
-│   │   ├── AuthController1.js         # Legacy / backup
-│   │   ├── CommentController1.js      # Legacy / backup
-│   │   ├── RatingController1.js       # Legacy / backup
-│   │   └── RecipeController1.js       # Legacy / backup
+│   │   └── UserController.js          # Profile, my recipes
 │   ├── database/
 │   │   └── connection.js              # mysql2/promise pool, testConnection() on startup
 │   ├── middlewares/
 │   │   ├── errorHandler.js            # 4-param error middleware, standardised JSON errors
-│   │   ├── jwtAuth.js                 # authenticate (JWT verify), requireAdmin (role guard)
+│   │   ├── jwtAuth.js                 # authenticate (JWT verify), requireAdmin (role guard, duplicat)
 │   │   ├── logger.js                  # Winston (file rotation + console), HTTP request logger
 │   │   ├── requireAdmin.js            # Standalone admin check (403 if not admin)
-│   │   ├── security.js                # helmet headers, CORS whitelist, rate limiters (global + auth)
-│   │   ├── errorHandler1.js           # Legacy / backup
-│   │   └── jwtAuth2.js                # Legacy / backup
+│   │   └── security.js                # helmet headers, CORS whitelist, rate limiters (global + auth)
 │   ├── models/
-│   │   ├── Category.js                # CRUD, slug auto-generation, softDelete
+│   │   ├── Category.js                # CRUD complet (non utilisé par le frontend MVP)
 │   │   ├── comment.js                 # findByRecipeId (with author info), create, softDelete
+│   │   ├── Favorite.js                # Toggle, list user favorites, check status
 │   │   ├── Rating.js                  # rate() with upsert, average recalculation, points system
 │   │   ├── Recipe.js                  # CRUD, findAllWithFilters (dynamic WHERE + smart ORDER BY)
-│   │   ├── User.js                    # CRUD, findByEmail, addPoints, softDelete, findAll (admin)
-│   │   ├── comment1.js                # Legacy / backup
-│   │   └── Recipe1.js                 # Legacy / backup
+│   │   └── User.js                    # CRUD, findByEmail, addPoints, softDelete, findAll (admin)
 │   ├── routes/
 │   │   ├── adminRoutes.js             # All protected (authenticate + requireAdmin on every route)
 │   │   ├── authRoutes.js              # POST /register, POST /login, GET /me (protected)
 │   │   ├── commentRoutes.js           # GET /, POST / (guest|auth), DELETE /:id (protected)
+│   │   ├── favoriteRoutes.js          # GET / (list), POST /:recipeId (toggle)
 │   │   ├── ratingRoutes.js            # POST / (protected, score 1-5)
-│   │   └── recipeRoutes.js            # GET /, /random, /:id — POST/PUT/DELETE (protected)
+│   │   ├── recipeRoutes.js            # GET /, /random, /:id — POST/PUT/DELETE (protected)
+│   │   └── userRoutes.js              # GET /me/profile, GET /me/recipes
 │   └── utils/
 │       └── apiResponse.js             # sendSuccess / sendError — enforces standard JSON contract
 ├── tests/

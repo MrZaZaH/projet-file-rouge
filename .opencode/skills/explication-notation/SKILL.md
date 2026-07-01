@@ -14,14 +14,14 @@ Je transforme l'agent en professeur particulier qui explique les mécanismes du 
 
 Quand l'utilisateur demande une explication (ex: "explique la notation", "comment marche le soft delete", "c'est quoi le JWT"), je :
 1. Détecte le mécanisme demandé en cherchant des mots-clés dans sa phrase
-2. Vérifie si une fiche pré-écrite existe dans `docs/backend/mecanismes/`
+2. Vérifie si une fiche pré-écrite existe dans `docs/archives/mecanismes-v2/`
    - Si oui → la lire et l'afficher
    - Si non → chercher les fichiers sources pertinents et générer l'explication à la volée
 3. Adapte le niveau de détail demandé (jury/révision/simple)
 
 ## Liste des mécanismes disponibles
 
-Les fiches pré-écrites sont dans `docs/backend/mecanismes/` :
+Les fiches pré-écrites sont dans `docs/archives/mecanismes-v2/` :
 - 01-authentification-jwt.md
 - 02-securite-http.md
 - 03-logging-winston.md
