@@ -251,7 +251,7 @@ class AdminController {
     static async deleteRecipe(req, res) {
         try {
             const { id } = req.params;
-            const { reason } = req.body;
+            const { reason } = req.body || {};
 
             const [recipe] = await pool.query(
                 'SELECT id, user_id, title FROM recipes WHERE id = ? AND deleted_at IS NULL',

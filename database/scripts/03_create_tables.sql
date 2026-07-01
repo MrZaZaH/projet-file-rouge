@@ -175,6 +175,27 @@ CREATE TABLE IF NOT EXISTS admin_logs (
 
 
 -- ============================================================
+-- TABLE: user_notifications
+-- Notifications sent to users (recipe deleted, status change, etc.).
+-- read_at = NULL means unread; a DATETIME means the user saw it.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS user_notifications (
+    id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id         INT UNSIGNED NOT NULL,
+    type            VARCHAR(50) NOT NULL DEFAULT 'info',
+    message         TEXT NOT NULL,
+    recipe_id       INT UNSIGNED NULL DEFAULT NULL,
+    read_at         DATETIME NULL DEFAULT NULL,
+    created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_user_notifications_user
+        FOREIGN KEY (user_id) REFERENCES users(id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ============================================================
 -- INDEXES
 -- Created separately for clarity.
 -- Only on columns actually used in WHERE clauses or JOINs.

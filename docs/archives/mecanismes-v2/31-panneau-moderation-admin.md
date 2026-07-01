@@ -5,7 +5,7 @@
 Le panneau de modération est une page réservée aux administrateurs. Elle permet de :
 
 - **Afficher les statistiques** : nombre total de recettes, en attente, publiées, utilisateurs
-- **Lister les recettes en attente** avec titre, auteur, date, coût, temps
+- **Lister toutes les recettes** avec titre, auteur, statut, date, coût, temps
 - **Publier ou rejeter** une recette en attente (avec option de motif de rejet)
 - **Voir le top viewed et top rated** des recettes
 - **Consulter les logs de modération** (qui a fait quoi, quand)
@@ -34,7 +34,7 @@ async function fetchDashboard() {
 }
 
 async function fetchPendingRecipes() {
-    return apiRequest('/admin/recipes?status=pending&sort_by=created_at&limit=50');
+    return apiRequest('/admin/recipes?sort_by=created_at&limit=50');
 }
 
 async function fetchLogs() {
@@ -45,7 +45,7 @@ async function fetchLogs() {
 Trois appels API via `apiRequest()` qui injecte automatiquement le token JWT de l'admin. Si l'utilisateur n'est pas admin, le serveur retourne 403 et `apiRequest()` lance une erreur.
 
 - `/admin/dashboard` → stats globales + top viewed + top rated
-- `/admin/recipes` filtré par `status=pending` → recettes en attente de modération, limit 50
+- `/admin/recipes` sans filtre → toutes les recettes (publiées, en attente, rejetées), limit 50
 - `/admin/logs` → historique des actions de modération, limit 50
 
 ### 3.2 — renderStats et renderTopContent (`frontend/public/js/moderation-panel.js:23`)
@@ -88,8 +88,23 @@ function renderPendingTable(recipes) {
     recipes.forEach(function(r) {
         var tr = document.createElement('tr');
         tr.id = 'pending-row-' + r.id;
-        // ... lignes avec escapeHtml et escapeAttr ...
-        tr.innerHTML = '...';
+
+        var statusLabel = '';
+        if (r.status === 'published') statusLabel = 'Publiée';
+        else if (r.status === 'pending') statusLabel = 'En attente';
+        else if (r.status === 'rejected') statusLabel = 'Non retenue';
+        else statusLabel = r.status;
+
+        var actionsHtml = '';
+        if (r.status === 'pending') {
+            actionsHtml +=
+                '<button ... data-action="publish">Publier</button>' +
+                '<button ... data-action="reject">Rejeter</button>';
+        }
+        actionsHtml +=
+            '<button ... data-action="delete">Supprimer</button>';
+
+        tr.innerHTML = '... statut, date, coût, temps, actions ...';
         tbody.appendChild(tr);
     });
 
@@ -100,6 +115,7 @@ function renderPendingTable(recipes) {
             var id = btn.getAttribute('data-id');
             if (action === 'publish') publishRecipe(id, btn);
             else if (action === 'reject') rejectRecipe(id, btn);
+            else if (action === 'delete') deleteRecipe(id, btn);
         });
     });
 }
@@ -108,12 +124,17 @@ function renderPendingTable(recipes) {
 La fonction :
 
 1. Cache le loader (`toggleDisplay(loadingEl, false)`)
-2. Si aucune recette en attente → affiche le message "vide"
+2. Si aucune recette → affiche le message "vide"
 3. Sinon → vide le tbody, itère sur les recettes, crée des `<tr>` avec `innerHTML`
-4. Utilise `escapeHtml()` et `escapeAttr()` pour protéger contre le XSS
-5. Attache les event listeners sur les boutons "Publier" et "Rejeter"
+4. Ajoute une colonne **Statut** avec le libellé en français (Publiée / En attente / Non retenue)
+5. Les boutons Publier et Rejeter n'apparaissent que pour les recettes `pending`
+6. Le bouton Supprimer est présent sur **toutes les lignes**, quel que soit le statut
+7. Utilise `escapeHtml()` et `escapeAttr()` pour protéger contre le XSS
+8. Attache les event listeners sur les boutons via l'attribut `data-action`
 
 Les boutons utilisent `data-action` et `data-id` pour identifier l'action et la recette cible. Les attributs `aria-label` incluent le titre de la recette (via `escapeAttr`) pour l'accessibilité.
+
+La colonne Actions est construite dynamiquement : Publier + Rejeter (uniquement pour les recettes en attente) + Supprimer (toujours visible).
 
 ### 3.4 — publishRecipe / rejectRecipe (`frontend/public/js/moderation-panel.js:151`)
 
@@ -177,7 +198,41 @@ Les deux fonctions suivent le même pattern :
 
 `prompt()` retourne `null` si l'utilisateur clique "Annuler" → on sort de la fonction. Si l'utilisateur clique "OK" sans rien écrire, `reason` est une string vide → pas de `rejection_reason` dans le body.
 
-### 3.5 — removePendingRow (`frontend/public/js/moderation-panel.js:199`)
+### 3.5 — deleteRecipe (`frontend/public/js/moderation-panel.js`)
+
+```js
+async function deleteRecipe(id, btn) {
+    if (!confirm('Supprimer définitivement cette recette ?')) return;
+
+    btn.disabled = true;
+    btn.textContent = 'Suppression...';
+
+    try {
+        await apiRequest('/admin/recipes/' + id, {
+            method: 'DELETE'
+        });
+
+        announceFeedback('Recette supprimée');
+        removePendingRow(id);
+    } catch (error) {
+        alert(error.message || 'Erreur lors de la suppression');
+        btn.disabled = false;
+        btn.textContent = 'Supprimer';
+    }
+}
+```
+
+La fonction suit le même pattern que publishRecipe/rejectRecipe :
+
+1. **Confirmation** : `confirm()` simple (pas de prompt pour la raison — l'admin peut fournir une raison via un update de statut ultérieur si nécessaire)
+2. **Loading state** : bouton désactivé + texte "Suppression..."
+3. **Appel API** : `DELETE /admin/recipes/:id` (route admin protégée)
+4. **Succès** : message de feedback + `removePendingRow()` (animation de disparition)
+5. **Erreur** : `alert()` + restauration du bouton
+
+La route `DELETE /api/v1/admin/recipes/:id` est protégée par `authenticate` + `requireAdmin`. Elle effectue un soft delete (`UPDATE deleted_at = NOW()`), crée une notification pour l'auteur et logue l'action dans `admin_logs`.
+
+### 3.6 — removePendingRow (`frontend/public/js/moderation-panel.js:199`)
 
 ```js
 function removePendingRow(id) {
@@ -193,11 +248,6 @@ function removePendingRow(id) {
                 toggleDisplay(document.getElementById('moderation-table-wrapper'), false);
                 toggleDisplay(document.getElementById('moderation-empty'), true);
             }
-            var pendingEl = document.getElementById('stat-pending');
-            if (pendingEl) {
-                var current = parseInt(pendingEl.textContent, 10);
-                if (current > 0) pendingEl.textContent = current - 1;
-            }
         }, 400);
     }
 }
@@ -208,8 +258,7 @@ Animation simple :
 1. Change le fond en vert (via la variable CSS `--success`)
 2. Réduit l'opacité à 40% avec une transition CSS de 0.3s
 3. Après 400ms (le temps que l'animation se termine), supprime la ligne du DOM
-4. Si le tableau devient vide, affiche le message "Aucune recette en attente"
-5. Décrémente le compteur "En attente" dans les stats
+4. Si le tableau devient vide, affiche le message "Aucune recette"
 
 ### 3.6 — escapeHtml et escapeAttr (`frontend/public/js/moderation-panel.js:276`)
 
@@ -280,12 +329,12 @@ Le clic déclenche une requête `fetch` avec le token JWT dans le header `Author
 4. getCurrentUser() vérifie le rôle → si pas admin, affiche "unauthorized-state"
 5. 3 appels API parallèles :
    a. fetchDashboard() → GET /api/v1/admin/dashboard
-   b. fetchPendingRecipes() → GET /api/v1/admin/recipes?status=pending&limit=50
+   b. fetchPendingRecipes() → GET /api/v1/admin/recipes?sort_by=created_at&limit=50
    c. fetchLogs() → GET /api/v1/admin/logs?limit=50
 6. Rendu :
    a. renderStats() → les 4 chiffres des stats
    b. renderTopContent() → top viewed + top rated
-   c. renderPendingTable() → tableau des recettes en attente
+   c. renderPendingTable() → tableau de toutes les recettes (avec colonne Statut et boutons conditionnels)
    d. renderLogs() → tableau des logs
    e. setupExport() → attache le listener sur le bouton CSV
 7. L'admin clique "Publier" sur une recette :
@@ -297,8 +346,14 @@ Le clic déclenche une requête `fetch` avec le token JWT dans le header `Author
 8. L'admin clique "Rejeter" :
    a. prompt() → "Motif du rejet (optionnel)"
    b. Si annulé → rien ne se passe
-   c. PATCH avec { status: 'rejected', rejection_reason: '...' }
-   d. removePendingRow()
+    c. PATCH avec { status: 'rejected', rejection_reason: '...' }
+    d. removePendingRow()
+9. L'admin clique "Supprimer" sur une recette (peut importe le statut) :
+   a. confirm() → "Supprimer définitivement cette recette ?"
+   b. Désactivation du bouton + "Suppression..."
+   c. DELETE /admin/recipes/:id (soft delete + notification auteur + log admin)
+   d. removePendingRow() → animation + disparition
+   e. "Recette supprimée" dans le feedback
 ```
 
 ---
@@ -383,8 +438,15 @@ La vérification `user.role !== 'admin'` est faite côté client. Mais un utilis
 - [ ] Tous les contenus utilisateur sont échappés via `escapeHtml()` ou `escapeAttr()` avant insertion dans le DOM
 - [ ] L'état des boutons change pendant les appels API (disabled + texte)
 - [ ] `confirm()` avant publication, `prompt()` optionnel avant rejet
-- [ ] `removePendingRow()` anime la suppression et met à jour les stats
+- [ ] `removePendingRow()` anime la suppression et affiche un message si le tableau devient vide
 - [ ] Les logs affichent admin, action, cible, date de manière lisible
 - [ ] Le bouton d'export CSV déclenche un `fetch` avec le token dans le header `Authorization` et télécharge via `Blob`
 - [ ] Les messages d'erreur sont affichés via `alert()` ou dans `#moderation-feedback`
+- [ ] Le tableau affiche **toutes** les recettes (pas seulement en attente), avec colonne Statut (Publiée / En attente / Non retenue)
+- [ ] Les boutons Publier et Rejeter n'apparaissent que pour les recettes `pending` ; Supprimer apparaît sur toutes les lignes
 - [ ] Les tableaux vides affichent un message approprié (via `toggleDisplay`)
+- [ ] Un bouton "Supprimer" est présent dans la colonne Actions (rouge foncé #d32f2f)
+- [ ] `confirm()` avant suppression, pas de prompt pour la raison
+- [ ] L'appel `DELETE /admin/recipes/:id` est protégé par authenticate + requireAdmin
+- [ ] La suppression déclenche une notification utilisateur et un log admin côté serveur
+- [ ] La ligne disparaît avec animation après suppression réussie

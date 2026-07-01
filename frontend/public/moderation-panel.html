@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400;1,700&family=Special+Elite&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 </head>
 <body>
     <a href="#main-content" class="skip-link">Aller au contenu principal</a>
@@ -136,25 +137,26 @@
 
                 <!-- ====== MODERATION TABLE ====== -->
                 <section aria-labelledby="moderation-title" style="margin-bottom:2rem;">
-                    <h2 id="moderation-title" style="font-style:italic;margin-bottom:1.5rem;">Recettes en attente</h2>
+                    <h2 id="moderation-title" style="font-style:italic;margin-bottom:1.5rem;">Toutes les recettes</h2>
 
                     <div id="moderation-loading" class="text-center" style="padding:1rem;">
-                        <p>Chargement des recettes en attente...</p>
+                        <p>Chargement des recettes...</p>
                     </div>
 
                     <div id="moderation-empty" class="text-center" style="display:none;padding:2rem;">
-                        <p>Aucune recette en attente de modération.</p>
+                        <p>Aucune recette trouvée.</p>
                     </div>
 
                     <div id="moderation-feedback" role="status" aria-live="polite" class="sr-only"></div>
 
                     <div id="moderation-table-wrapper" style="display:none;overflow-x:auto;">
-                        <table id="moderation-table" class="admin-table" aria-label="Recettes en attente de modération">
-                            <caption class="sr-only">Liste des recettes soumises en attente de validation</caption>
+                        <table id="moderation-table" class="admin-table" aria-label="Toutes les recettes">
+                            <caption class="sr-only">Liste complète des recettes de la plateforme</caption>
                             <thead>
                                 <tr>
                                     <th scope="col">Titre</th>
                                     <th scope="col">Auteur</th>
+                                    <th scope="col">Statut</th>
                                     <th scope="col">Date</th>
                                     <th scope="col">Coût</th>
                                     <th scope="col">Temps</th>

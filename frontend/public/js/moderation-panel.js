@@ -11,7 +11,7 @@ async function fetchDashboard() {
 }
 
 async function fetchPendingRecipes() {
-    return apiRequest('/admin/recipes?status=pending&sort_by=created_at&limit=50');
+    return apiRequest('/admin/recipes?sort_by=created_at&limit=50');
 }
 
 async function fetchLogs() {
@@ -110,24 +110,40 @@ function renderPendingTable(recipes) {
         var costStr = r.cost_per_portion ? Number(r.cost_per_portion).toFixed(2).replace('.', ',') + ' €' : '—';
         var timeStr = r.prep_time ? formatTime(r.prep_time) : '—';
 
+        var statusLabel = '';
+        if (r.status === 'published') statusLabel = 'Publiée';
+        else if (r.status === 'pending') statusLabel = 'En attente';
+        else if (r.status === 'rejected') statusLabel = 'Non retenue';
+        else statusLabel = r.status;
+
+        var actionsHtml = '';
+        if (r.status === 'pending') {
+            actionsHtml +=
+                '<button type="button" class="btn-action" style="border-color:var(--success);color:var(--success);margin-right:0.5rem;" ' +
+                    'data-action="publish" data-id="' + r.id + '" aria-label="Publier ' + escapeAttr(r.title) + '">' +
+                    'Publier' +
+                '</button>' +
+                '<button type="button" class="btn-action" style="border-color:var(--error);color:var(--error);margin-right:0.5rem;" ' +
+                    'data-action="reject" data-id="' + r.id + '" aria-label="Rejeter ' + escapeAttr(r.title) + '">' +
+                    'Rejeter' +
+                '</button>';
+        }
+        actionsHtml +=
+            '<button type="button" class="btn-action" style="border-color:#d32f2f;color:#d32f2f;" ' +
+                'data-action="delete" data-id="' + r.id + '" aria-label="Supprimer ' + escapeAttr(r.title) + '">' +
+                'Supprimer' +
+            '</button>';
+
         tr.innerHTML =
             '<td style="padding:0.75rem 0.5rem;"><a href="recipe.html?id=' + r.id + '" style="font-weight:700;font-style:italic;">' +
                 escapeHtml(r.title) +
             '</a></td>' +
             '<td style="padding:0.75rem 0.5rem;">' + escapeHtml(r.author || '—') + '</td>' +
+            '<td style="padding:0.75rem 0.5rem;white-space:nowrap;">' + statusLabel + '</td>' +
             '<td style="padding:0.75rem 0.5rem;white-space:nowrap;">' + dateStr + '</td>' +
             '<td style="padding:0.75rem 0.5rem;white-space:nowrap;">' + costStr + '</td>' +
             '<td style="padding:0.75rem 0.5rem;white-space:nowrap;">' + timeStr + '</td>' +
-            '<td style="padding:0.75rem 0.5rem;white-space:nowrap;">' +
-                '<button type="button" class="btn-action" style="border-color:var(--success);color:var(--success);margin-right:0.5rem;" ' +
-                    'data-action="publish" data-id="' + r.id + '" aria-label="Publier ' + escapeAttr(r.title) + '">' +
-                    'Publier' +
-                '</button>' +
-                '<button type="button" class="btn-action" style="border-color:var(--error);color:var(--error);" ' +
-                    'data-action="reject" data-id="' + r.id + '" aria-label="Rejeter ' + escapeAttr(r.title) + '">' +
-                    'Rejeter' +
-                '</button>' +
-            '</td>';
+            '<td style="padding:0.75rem 0.5rem;white-space:nowrap;">' + actionsHtml + '</td>';
 
         tbody.appendChild(tr);
     });
@@ -141,6 +157,8 @@ function renderPendingTable(recipes) {
                 publishRecipe(id, btn);
             } else if (action === 'reject') {
                 rejectRecipe(id, btn);
+            } else if (action === 'delete') {
+                deleteRecipe(id, btn);
             }
         });
     });
@@ -196,6 +214,26 @@ async function rejectRecipe(id, btn) {
     }
 }
 
+async function deleteRecipe(id, btn) {
+    if (!confirm('Supprimer définitivement cette recette ?')) return;
+
+    btn.disabled = true;
+    btn.textContent = 'Suppression...';
+
+    try {
+        await apiRequest('/admin/recipes/' + id, {
+            method: 'DELETE'
+        });
+
+        announceFeedback('Recette supprimée');
+        removePendingRow(id);
+    } catch (error) {
+        alert(error.message || 'Erreur lors de la suppression');
+        btn.disabled = false;
+        btn.textContent = 'Supprimer';
+    }
+}
+
 function removePendingRow(id) {
     var row = document.getElementById('pending-row-' + id);
     if (row) {
@@ -209,12 +247,6 @@ function removePendingRow(id) {
             if (tbody && tbody.children.length === 0) {
                 toggleDisplay(document.getElementById('moderation-table-wrapper'), false);
                 toggleDisplay(document.getElementById('moderation-empty'), true);
-            }
-            // Update stats
-            var pendingEl = document.getElementById('stat-pending');
-            if (pendingEl) {
-                var current = parseInt(pendingEl.textContent, 10);
-                if (current > 0) pendingEl.textContent = current - 1;
             }
         }, 400);
     }

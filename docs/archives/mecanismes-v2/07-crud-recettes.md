@@ -318,7 +318,102 @@ static async softDelete(id) {
 }
 ```
 
-### 3.5 — RecipeController.js (`src/controllers/RecipeController.js`)
+### 3.5 — RecipeController.deleteRecipe (`src/controllers/RecipeController.js:182`)
+
+```javascript
+// DELETE /api/v1/recipes/:id
+// Autorisation : admin OU auteur de la recette
+async function deleteRecipe(req, res, next) {
+    try {
+        const recipe = await Recipe.findById(req.params.id);
+
+        if (!recipe) {
+            return sendError(res, 'Recipe not found.', 404);
+        }
+
+        const isAdmin = req.user.role === 'admin';
+        const isAuthor = recipe.user_id === req.user.id;
+
+        if (!isAdmin && !isAuthor) {
+            return sendError(res, 'Forbidden.', 403);
+        }
+
+        await Recipe.softDelete(req.params.id);
+
+        // Si admin, notifie l'auteur et log
+        if (isAdmin) {
+            const message = \`Votre recette "\${recipe.title}" a été supprimée par un administrateur.\`;
+            await pool.query(
+                'INSERT INTO user_notifications (user_id, type, message, recipe_id, created_at)
+                 VALUES (?, ?, ?, ?, NOW())',
+                [recipe.user_id, 'recipe_deleted', message, Number(req.params.id)]
+            );
+            await pool.query(
+                'INSERT INTO admin_logs (admin_id, action, recipe_id, target_type, target_id, created_at)
+                 VALUES (?, ?, ?, ?, ?, NOW())',
+                [req.user.id, 'recipe_deleted', Number(req.params.id), 'recipe', Number(req.params.id)]
+            );
+        }
+
+        return sendSuccess(res, null, 'Recipe deleted.', 200);
+    } catch (err) {
+        next(err);
+    }
+}
+```
+
+L'auteur peut supprimer ses propres recettes sans notification. L'admin déclenche une notification utilisateur et une trace dans `admin_logs`.
+
+### 3.6 — AdminController.deleteRecipe (`src/controllers/AdminController.js:251`)
+
+```javascript
+// DELETE /api/v1/admin/recipes/:id — admin seulement
+static async deleteRecipe(req, res) {
+    try {
+        const { id } = req.params;
+        const { reason } = req.body;
+
+        const [recipe] = await pool.query(
+            'SELECT id, user_id, title FROM recipes WHERE id = ? AND deleted_at IS NULL',
+            [id]
+        );
+
+        if (!recipe.length) {
+            return res.status(404).json({
+                success: false, message: 'Recipe not found'
+            });
+        }
+
+        await pool.query(
+            'UPDATE recipes SET deleted_at = NOW(), updated_at = NOW() WHERE id = ?',
+            [id]
+        );
+
+        const message = \`Votre recette "\${recipe[0].title}" a été supprimée.\${reason ? ' Raison : ' + reason : ''}\`;
+
+        await pool.query(
+            'INSERT INTO user_notifications (user_id, type, message, recipe_id, created_at)
+             VALUES (?, ?, ?, ?, NOW())',
+            [recipe[0].user_id, 'recipe_deleted', message, id]
+        );
+
+        await pool.query(
+            'INSERT INTO admin_logs (admin_id, action, recipe_id, target_type, target_id, created_at)
+             VALUES (?, ?, ?, ?, ?, NOW())',
+            [req.user.id, 'recipe_deleted', id, 'recipe', id]
+        );
+
+        res.json({ success: true, message: 'Recipe deleted' });
+    } catch (error) {
+        logger.error('Failed to delete recipe', { error: error.message });
+        res.status(500).json({ success: false, message: error.message });
+    }
+}
+```
+
+Utilise des requêtes brutes (`pool.query`) plutôt que le modèle `Recipe.softDelete()`. Accepte un `reason` optionnel dans le body. La notification inclut la raison si fournie.
+
+### 3.7 — RecipeController.getAllRecipes (`src/controllers/RecipeController.js`)
 
 ```javascript
 // GET /api/v1/recipes — avec filtres
@@ -334,7 +429,6 @@ async function getAllRecipes(req, res, next) {
             limit: req.query.limit ? Number(req.query.limit) : null,
             offset: req.query.offset ? Number(req.query.offset) : null,
         };
-        // Supprime les null pour ne passer que les filtres actifs
         const cleanFilters = Object.fromEntries(
             Object.entries(filters).filter(([, v]) => v !== null)
         );
@@ -346,7 +440,7 @@ async function getAllRecipes(req, res, next) {
 }
 ```
 
-### 3.6 — Constantes de filtres (`src/constants/filters.js`)
+### 3.8 — Constantes de filtres (`src/constants/filters.js`)
 
 ```javascript
 const FILTERS = {
@@ -395,6 +489,40 @@ GET /api/v1/recipes?max_prep_time=15&category_id=2
         → ORDER BY r.prep_time ASC  (car max_prep_time est présent)
         → LIMIT 50 OFFSET 0
     → Retourne tableau de recettes
+```
+
+**Soft delete par l'auteur :**
+```
+DELETE /api/v1/recipes/:id + JWT (auteur)
+    → authenticate vérifie le token → req.user
+    → RecipeController.deleteRecipe()
+        → Recipe.findById(id) → vérifie que la recette existe
+        → Vérifie isAdmin || isAuthor (sinon 403)
+        → Recipe.softDelete(id) → UPDATE deleted_at = NOW()
+    → sendSuccess(res, null, 'Recipe deleted.', 200)
+```
+
+**Soft delete par l'admin (route publique) :**
+```
+DELETE /api/v1/recipes/:id + JWT (admin)
+    → Même route, même contrôleur
+    → isAdmin = true → passe la vérification d'autorisation
+    → Recipe.softDelete(id)
+    → INSERT INTO user_notifications (prévient l'auteur)
+    → INSERT INTO admin_logs (trace l'action d'audit)
+    → sendSuccess(res, null, 'Recipe deleted.', 200)
+```
+
+**Soft delete par l'admin (route admin dédiée) :**
+```
+DELETE /api/v1/admin/recipes/:id + JWT (admin)
+    → authenticate + requireAdmin (double vérification)
+    → AdminController.deleteRecipe()
+    → SELECT vérifie que la recette existe
+    → UPDATE recipes SET deleted_at = NOW()
+    → INSERT INTO user_notifications (message avec raison optionnelle)
+    → INSERT INTO admin_logs (trace l'action)
+    → res.json({ success: true, message: 'Recipe deleted' })
 ```
 
 ## 5. ANALOGIE
@@ -456,3 +584,7 @@ else if (typeof data.ingredients === 'string') { /* split */ }
 - [ ] `softDelete()` ne supprime pas la ligne, met `deleted_at = NOW()` — l'UPDATE a `WHERE deleted_at IS NULL` pour l'idempotence
 - [ ] `update()` construit le SET dynamiquement et retourne `findById()` pour un objet complet
 - [ ] Les requêtes utilisent exclusivement des placeholders `?` — zéro concaténation SQL
+- [ ] `RecipeController.deleteRecipe()` vérifie que l'utilisateur est admin OU auteur (403 sinon)
+- [ ] Quand un admin supprime via la route publique, une `user_notifications` et un `admin_logs` sont créés
+- [ ] `AdminController.deleteRecipe()` a la même protection (authenticate + requireAdmin sur la route)
+- [ ] La route admin accepte un `reason` optionnel (max 255 chars, validé par express-validator)

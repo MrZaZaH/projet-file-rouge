@@ -219,9 +219,20 @@ Utilisateur connecté → dashboard.html
 6. Frontend :
    a. renderProfile() → remplit le header avec username, email, date
    b. renderStats() → injecte les 6 chiffres dans les <span> du HTML
-   c. renderRecipes() → génère les cartes avec statut, étoiles, anecdote
+    c. renderRecipes() → génère les `<div class="recipe-card">` avec :
+       - Lien vers recipe.html?id= (titre cliquable)
+       - Méta-infos (temps, coût), étoiles, anecdote
+       - Badge de statut (publiée/en attente/rejetée)
+       - **Bouton "Supprimer"** pour chaque recette
 
-7. Si admin → bouton "Panneau d'administration" visible
+7. Suppression d'une recette par son auteur :
+   - Clic sur "Supprimer" → `confirm('Supprimer votre recette ?')`
+   - Appel `DELETE /api/v1/recipes/:id` avec le token JWT
+   - `RecipeController.deleteRecipe()` vérifie que l'utilisateur est l'auteur (ou admin)
+   - `Recipe.softDelete(id)` → UPDATE deleted_at = NOW()
+   - La carte disparaît du dashboard avec animation (opacity 0.4 → remove après 400ms)
+
+8. Si admin → bouton "Panneau d'administration" visible
 ```
 
 ## 5. ANALOGIE
@@ -307,3 +318,8 @@ published_recipes: Number(stats.published_recipes ?? 0) // null → 0
 - [ ] Le bouton admin n'apparaît que si `role === 'admin'`
 - [ ] Le frontend affiche un message d'erreur si un des deux appels API échoue
 - [ ] La redirection vers login fonctionne si l'utilisateur n'est pas connecté
+- [ ] Chaque carte recette dans le dashboard a un bouton "Supprimer"
+- [ ] `confirm()` avant suppression d'une recette
+- [ ] L'appel `DELETE /api/v1/recipes/:id` est protégé par le token JWT
+- [ ] Seul l'auteur ou un admin peut supprimer une recette (vérifié côté serveur)
+- [ ] La carte disparaît avec animation après suppression réussie

@@ -93,27 +93,34 @@ function renderRecipes(recipes) {
     listEl.innerHTML = '';
 
     recipes.forEach(function(recipe) {
-        var card = document.createElement('a');
-        card.href = 'recipe.html?id=' + recipe.id;
+        var card = document.createElement('div');
         card.className = 'recipe-card';
-        card.setAttribute('aria-label', recipe.title + ' – ' + getStatusLabel(recipe.status));
+        card.setAttribute('data-id', recipe.id);
 
         var stars = '\u2605'.repeat(Math.round(recipe.average_rating || 0)) +
                     '\u2606'.repeat(5 - Math.round(recipe.average_rating || 0));
 
         card.innerHTML =
             '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;">' +
-                '<div>' +
-                    '<div class="recipe-card-meta">' +
-                        '<div class="recipe-time"><strong>' + formatTime(recipe.prep_time) + '</strong><span>pr\u00e9paration</span></div>' +
-                        '<div class="recipe-cost"><strong>' + formatCost(recipe.cost_per_portion) + '</strong><span>portion</span></div>' +
-                    '</div>' +
-                    '<h3 style="font-style:italic;margin-bottom:0.5rem;">' + recipe.title + '</h3>' +
-                    '<div class="recipe-card-rating">' + stars +
-                        ' <span>(' + (recipe.rating_count || 0) + ' avis)</span>' +
-                    '</div>' +
+                '<div style="flex:1;">' +
+                    '<a href="recipe.html?id=' + recipe.id + '" style="text-decoration:none;color:inherit;">' +
+                        '<div class="recipe-card-meta">' +
+                            '<div class="recipe-time"><strong>' + formatTime(recipe.prep_time) + '</strong><span>pr\u00e9paration</span></div>' +
+                            '<div class="recipe-cost"><strong>' + formatCost(recipe.cost_per_portion) + '</strong><span>portion</span></div>' +
+                        '</div>' +
+                        '<h3 style="font-style:italic;margin-bottom:0.5rem;">' + recipe.title + '</h3>' +
+                        '<div class="recipe-card-rating">' + stars +
+                            ' <span>(' + (recipe.rating_count || 0) + ' avis)</span>' +
+                        '</div>' +
+                    '</a>' +
                 '</div>' +
-                '<span class="status-badge ' + getStatusClass(recipe.status) + '">' + getStatusLabel(recipe.status) + '</span>' +
+                '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem;">' +
+                    '<span class="status-badge ' + getStatusClass(recipe.status) + '">' + getStatusLabel(recipe.status) + '</span>' +
+                    '<button type="button" class="btn-action delete-btn" style="border-color:var(--error);color:var(--error);font-size:0.75rem;padding:0.25rem 0.5rem;" ' +
+                        'data-action="delete" data-id="' + recipe.id + '">' +
+                        'Supprimer' +
+                    '</button>' +
+                '</div>' +
             '</div>';
 
         if (recipe.anecdote) {
@@ -123,8 +130,40 @@ function renderRecipes(recipes) {
             card.appendChild(p);
         }
 
+        var deleteBtn = card.querySelector('[data-action="delete"]');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                deleteRecipe(recipe.id, deleteBtn);
+            });
+        }
+
         listEl.appendChild(card);
     });
+}
+
+async function deleteRecipe(id, btn) {
+    if (!confirm('Supprimer votre recette ?')) return;
+
+    btn.disabled = true;
+    btn.textContent = 'Suppression...';
+
+    try {
+        await apiRequest('/recipes/' + id, {
+            method: 'DELETE'
+        });
+
+        var card = btn.closest('.recipe-card');
+        if (card) {
+            card.style.opacity = '0.4';
+            card.style.transition = 'opacity 0.3s';
+            setTimeout(function() { card.remove(); }, 400);
+        }
+    } catch (error) {
+        alert(error.message || 'Erreur lors de la suppression');
+        btn.disabled = false;
+        btn.textContent = 'Supprimer';
+    }
 }
 
 // ====== INIT ======

@@ -198,6 +198,21 @@ async function deleteRecipe(req, res, next) {
 
         await Recipe.softDelete(req.params.id); // Soft delete
 
+        // If admin deletes, notify author and log
+        if (isAdmin) {
+            const message = `Votre recette "${recipe.title}" a été supprimée par un administrateur.`;
+            await pool.query(
+                `INSERT INTO user_notifications (user_id, type, message, recipe_id, created_at)
+                 VALUES (?, ?, ?, ?, NOW())`,
+                [recipe.user_id, 'recipe_deleted', message, Number(req.params.id)]
+            );
+            await pool.query(
+                `INSERT INTO admin_logs (admin_id, action, recipe_id, target_type, target_id, created_at)
+                 VALUES (?, ?, ?, ?, ?, NOW())`,
+                [req.user.id, 'recipe_deleted', Number(req.params.id), 'recipe', Number(req.params.id)]
+            );
+        }
+
         return sendSuccess(res, null, 'Recipe deleted.', 200);
 
     } catch (err) {
