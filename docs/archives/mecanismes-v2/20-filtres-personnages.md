@@ -15,20 +15,20 @@ CREATE TABLE IF NOT EXISTS recipes (
     id                  INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     title               VARCHAR(255) NOT NULL,
     prep_time           SMALLINT UNSIGNED NOT NULL,
-    -- Filtré par Salarié crevé (max 15 min) et Parent épuisé (max 20 min)
+    -- Filtré par Le maître des deadlines (max 15 min) et La chef d'orchestre familial (max 20 min)
     cost_per_portion    DECIMAL(5,2) UNSIGNED NOT NULL,
-    -- Filtré par Étudiant fauché (max 5€)
+    -- Filtré par Le virtuose du repas à 2€ (max 5€)
     average_rating      DECIMAL(3,2) UNSIGNED NOT NULL DEFAULT 0.00,
-    -- Filtré par Parent épuisé (min 4 étoiles)
+    -- Filtré par La chef d'orchestre familial (min 4 étoiles)
     status              ENUM('pending', 'published', 'rejected') NOT NULL DEFAULT 'pending',
     deleted_at          DATETIME NULL DEFAULT NULL
     -- Tous les filtres incluent WHERE deleted_at IS NULL
 );
 
 -- Constantes de filtrage dans src/constants/filters.js:24
--- QUICK_PREP_MAX: 15   → Salarié crevé : ≤ 15 min
--- BUDGET_MID_MAX: 5    → Étudiant fauché : ≤ 5€
--- QUICK_PREP_MAX + min_rating: 4 → Parent épuisé : ≤ 20 min, ≥ 4★
+-- QUICK_PREP_MAX: 15   → Le maître des deadlines : ≤ 15 min
+-- BUDGET_MID_MAX: 5    → Le virtuose du repas à 2€ : ≤ 5€
+-- QUICK_PREP_MAX + min_rating: 4 → La chef d'orchestre familial : ≤ 20 min, ≥ 4★
 ```
 
 ## 3. LE CODE
@@ -150,7 +150,7 @@ personaCards.forEach(function(card) {
             currentPersona = persona;
             renderRecipes(recipes);
             updateActiveFilter(persona);
-            // Affiche le tag "Salarié crevé — ≤ 15 min" au-dessus des résultats
+            // Affiche le tag "Le maître des deadlines — ≤ 15 min" au-dessus des résultats
         } else {
             // Erreur : on affiche le message d'erreur
             toggleDisplay(recipesError, true);
@@ -174,9 +174,9 @@ function updateActiveFilter(persona) {
     }
 
     const labels = {
-        'salarie-creve': 'Salarié crevé — ≤ 15 min',
-        'etudiant-fauche': 'Étudiant fauché — ≤ 5 €',
-        'parent-epuise': 'Parent épuisé — ≤ 20 min, ≥ 4★'
+        'salarie-creve': 'Le maître des deadlines — ≤ 15 min',
+        'etudiant-fauche': 'Le virtuose du repas à 2€ — ≤ 5 €',
+        'parent-epuise': 'La chef d\'orchestre familial — ≤ 20 min, ≥ 4★'
     };
 
     // Affiche le tag avec la croix de suppression
@@ -220,26 +220,26 @@ card.addEventListener('keydown', function(e) {
 
 ```html
 <article class="persona-card" data-persona="salarie-creve" role="button" tabindex="0"
-    aria-pressed="false" aria-label="Filtrer pour Salarié Crevé – Temps ≤ 15 min">
+    aria-pressed="false" aria-label="Filtrer pour Le maître des deadlines – Temps ≤ 15 min">
     <img class="persona-card-image" src="/assets/illustrations/salarie-creve-default.png"
          alt="Le maître des deadlines">
-    <h3>Salarié Crevé</h3>
+    <h3>Le maître des deadlines</h3>
     <p>Recettes prêtes en 15 minutes chrono</p>
 </article>
 
 <article class="persona-card" data-persona="etudiant-fauche" role="button" tabindex="0"
-    aria-pressed="false" aria-label="Filtrer pour Étudiant Fauché – Budget ≤ 5€">
+    aria-pressed="false" aria-label="Filtrer pour Le virtuose du repas à 2€ – Budget ≤ 5€">
     <img class="persona-card-image" src="/assets/illustrations/etudiant-fauche-default.png"
          alt="Le virtuose du repas à 2€">
-    <h3>Étudiant Fauché</h3>
+    <h3>Le virtuose du repas à 2€</h3>
     <p>Manger bon sans ruiner son compte</p>
 </article>
 
 <article class="persona-card" data-persona="parent-epuise" role="button" tabindex="0"
-    aria-pressed="false" aria-label="Filtrer pour Parent Épuisé – Rapide et bien noté">
+    aria-pressed="false" aria-label="Filtrer pour La chef d'orchestre familial – Rapide et bien noté">
     <img class="persona-card-image" src="/assets/illustrations/parent-epuise-default.png"
          alt="La chef d'orchestre familial">
-    <h3>Parent Épuisé</h3>
+    <h3>La chef d'orchestre familial</h3>
     <p>Repas express notés par d'autres parents</p>
 </article>
 ```
@@ -281,17 +281,17 @@ Le dossier `frontend/public/` est servi statiquement par Express (`app.js`), don
 
 Avant l'implémentation, le placeholder était un cercle gris (`border-radius: 50%; width: 100px; height: 100px; background: var(--bg)`). Les illustrations en format portrait (rectangulaires debout) ont imposé le passage en `width: 85%; height: auto` pour respecter leurs proportions.
 
-#### Alt texts — un parti pris éditorial
+#### Noms affichés et alt texts — un parti pris éditorial
 
-Les attributs `alt` des illustrations ne décrivent pas le contenu visuel (un dessin) mais l'esprit du personnage :
+Les noms des personnages et leurs `alt` sont identiques : les illustrations ne sont pas décrites techniquement mais par l'esprit du personnage. Le nom d'affichage et l'attribut `alt` partagent le même texte.
 
-| Personnage | Texte alternatif |
+| Slug URL | Nom affiché |
 |---|---|
-| Salarié Crevé | `"Le maître des deadlines"` |
-| Étudiant Fauché | `"Le virtuose du repas à 2€"` |
-| Parent Épuisé | `"La chef d'orchestre familial"` |
+| `salarie-creve` | "Le maître des deadlines" |
+| `etudiant-fauche` | "Le virtuose du repas à 2€" |
+| `parent-epuise` | "La chef d'orchestre familial" |
 
-Ce choix éditorial remplace des `alt` techniques (comme `"Icône Salarié Crevé"`) par des textes à l'humour positif, aligné avec la tonalité du projet.
+Ce choix remplace les noms techniques d'origine ("Salarié Crevé", "Étudiant Fauché", "Parent Épuisé") par des textes à l'humour positif, aligné avec la tonalité du projet.
 
 #### Swap d'image : le mécanisme
 
@@ -317,7 +317,7 @@ Utilisateur arrive sur la page d'accueil :
 1. home.js init() → fetchRecipes() → GET /api/v1/recipes
    → Aucun filtre → affiche les 12 recettes les plus récentes (page 1)
 
-Utilisateur clique sur "Salarié crevé" :
+Utilisateur clique sur "Le maître des deadlines" :
 
 2. card.dataset.persona = "salarie-creve"
 3. getPersonaFilter("salarie-creve") → { max_prep_time: 15 }
@@ -330,15 +330,15 @@ Utilisateur clique sur "Salarié crevé" :
    ORDER BY r.prep_time ASC
    LIMIT 50 OFFSET 0
 8. Frontend reçoit les recettes rapides, les affiche
-9. Tag "Salarié crevé — ≤ 15 min" apparaît au-dessus des résultats
+9. Tag "Le maître des deadlines — ≤ 15 min" apparaît au-dessus des résultats
 
-Utilisateur reclique sur "Salarié crevé" :
+Utilisateur reclique sur "Le maître des deadlines" :
 
 10. currentPersona === "salarie-creve" ET classe 'persona-card--active'
     → Désactivation : on recharge /api/v1/recipes sans filtre
     → Tag disparaît
 
-Utilisateur clique sur "Parent épuisé" :
+Utilisateur clique sur "La chef d'orchestre familial" :
 
 11. getPersonaFilter("parent-epuise") → { max_prep_time: 20, min_rating: 4 }
 12. URL → "/api/v1/recipes?max_prep_time=20&min_rating=4"
@@ -356,11 +356,11 @@ Utilisateur clique sur "Parent épuisé" :
 
 Tu as trois amis qui veulent manger chez toi :
 
-**Salarié crevé** (💼) : "J'ai fini le boulot à 20h, j'ai la dalle, donne-moi n'importe quoi mais en moins de 15 minutes montre en main." → Tu filtres par temps de préparation ≤ 15 min.
+**Le maître des deadlines** (💼) : "J'ai fini le boulot à 20h, j'ai la dalle, donne-moi n'importe quoi mais en moins de 15 minutes montre en main." → Tu filtres par temps de préparation ≤ 15 min.
 
-**Étudiant fauché** (🎓) : "Mon budget courses c'est 20€ pour la semaine, je peux pas mettre 10€ par repas." → Tu filtres par coût ≤ 5€ par portion.
+**Le virtuose du repas à 2€** (🎓) : "Mon budget courses c'est 20€ pour la semaine, je peux pas mettre 10€ par repas." → Tu filtres par coût ≤ 5€ par portion.
 
-**Parent épuisé** (👨‍👩‍👧‍👦) : "Les gosses crient, j'ai pas fait les courses, et faut que ce soit bon sinon ils râlent." → Tu filtres par temps ≤ 20 min ET note ≥ 4★.
+**La chef d'orchestre familial** (👨‍👩‍👧‍👦) : "Les gosses crient, j'ai pas fait les courses, et faut que ce soit bon sinon ils râlent." → Tu filtres par temps ≤ 20 min ET note ≥ 4★.
 
 C'est comme si tu avais trois "profils" de recherche sur ton appli de livraison de repas : les filtres sont pré-choisis pour toi, tu cliques et tu obtiens ce qui correspond à TA situation. ZERO réglage manuel.
 
@@ -406,7 +406,7 @@ if (currentPersona === persona && card.classList.contains('persona-card--active'
 
 ### Piège #3 : Oublier la désactivation visuelle des autres cartes
 
-Quand on clique sur "Étudiant fauché", "Salarié crevé" ne doit plus être en surbrillance. Si on ne désactive pas les autres, l'utilisateur croit que deux filtres sont actifs en même temps.
+Quand on clique sur "Le virtuose du repas à 2€", "Le maître des deadlines" ne doit plus être en surbrillance. Si on ne désactive pas les autres, l'utilisateur croit que deux filtres sont actifs en même temps.
 
 **MAUVAIS :**
 ```javascript
@@ -448,14 +448,14 @@ if (recipes) {
 
 ### Option A : Combinaison de personnages (filtres multiples)
 
-- Comment ça marche : Possibilité d'activer "Salarié crevé" ET "Étudiant fauché" en même temps → `max_prep_time=15&max_cost=5`
+- Comment ça marche : Possibilité d'activer "Le maître des deadlines" ET "Le virtuose du repas à 2€" en même temps → `max_prep_time=15&max_cost=5`
 - Avantage : Plus flexible pour les utilisateurs qui sont dans plusieurs situations à la fois
-- Inconvénient : Plus complexe (gestion d'état, intersection de filtres, UI des badges multiples). Et si on active "Parent épuisé" + "Étudiant fauché" ? Ça fait beaucoup de conditions.
-- Notre cas : Un seul personnage à la fois. C'est plus simple, plus narratif, et ça évite les combinaisons absurdes (on ne peut pas être fauché ET salarié senior en même temps dans l'esprit du concept).
+- Inconvénient : Plus complexe (gestion d'état, intersection de filtres, UI des badges multiples). Et si on active "La chef d'orchestre familial" + "Le virtuose du repas à 2€" ? Ça fait beaucoup de conditions.
+- Notre cas : Un seul personnage à la fois. C'est plus simple, plus narratif, et ça évite les combinaisons absurdes (on ne peut pas être fauché ET cadre qui gère les deadlines en même temps dans l'esprit du concept).
 
 ### Option B : Stockage des préférences dans localStorage
 
-- Comment ça marche : Quand un utilisateur choisit "Étudiant fauché", on sauvegarde dans localStorage. À la prochaine visite, le filtre est automatiquement appliqué.
+- Comment ça marche : Quand un utilisateur choisit "Le virtuose du repas à 2€", on sauvegarde dans localStorage. À la prochaine visite, le filtre est automatiquement appliqué.
 - Avantage : Expérience personnalisée, l'utilisateur retrouve son contexte
 - Inconvénient : Un étudiant qui devient salarié (ou vice versa) doit penser à changer manuellement. Le "Surprends-moi" random devient moins aléatoire si un filtre persiste.
 - Notre cas : Pas de localStorage. Chaque visite commence sans filtre. Le personnage est un état temporaire, pas un profil utilisateur.
@@ -470,16 +470,16 @@ if (recipes) {
 ## 8. CHECKLIST POUR LE JURY
 
 - [ ] Les 3 personnages sont les SEULS filtres de la homepage (pas de sliders/dropdowns supplémentaires)
-- [ ] Salarié crevé → `max_prep_time=15` (≤ 15 min)
-- [ ] Étudiant fauché → `max_cost=5` (≤ 5€)
-- [ ] Parent épuisé → `max_prep_time=20&min_rating=4` (≤ 20 min, ≥ 4★)
+- [ ] Le maître des deadlines → `max_prep_time=15` (≤ 15 min)
+- [ ] Le virtuose du repas à 2€ → `max_cost=5` (≤ 5€)
+- [ ] La chef d'orchestre familial → `max_prep_time=20&min_rating=4` (≤ 20 min, ≥ 4★)
 - [ ] Cliquer sur un personnage l'active et désactive les autres
 - [ ] Re-cliquer sur le même personnage désactive le filtre
 - [ ] Un tag visuel indique quel filtre est actif avec une croix pour le retirer
 - [ ] `aria-pressed` est mis à jour pour l'accessibilité
 - [ ] Les cartes sont navigables au clavier (Enter/Espace)
 - [ ] `URLSearchParams` est utilisé pour construire la query string
-- [ ] Le filtre "Parent épuisé" trie par note (pas par temps) — logique conditionnelle
+- [ ] Le filtre "La chef d'orchestre familial" trie par note (pas par temps) — logique conditionnelle
 - [ ] Le "Surprends-moi" appelle `GET /api/v1/recipes/random` sans aucun paramètre
 - [ ] Chaque personnage a une illustration dans `frontend/public/assets/illustrations/`
 - [ ] Deux versions par illustration : `{persona}-default.png` et `{persona}-active.png`

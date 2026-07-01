@@ -476,7 +476,7 @@ GET /api/v1/recipes?limit=12&offset=24
 → 2. ORDER BY created_at DESC LIMIT 12 OFFSET 24
 → Réponse : pagination: { page: 3, totalPages: 20, hasMore: true }
 
-Requête avec filtre "rapide" (Salarié crevé) :
+Requête avec filtre "rapide" (Le maître des deadlines) :
 
 GET /api/v1/recipes?max_prep_time=15&limit=12&offset=0
 → WHERE deleted_at IS NULL AND prep_time <= 15
@@ -565,7 +565,7 @@ res.json({ success: true, count: recipes.length, data: recipes });
 
 ### Piège #4 : Oublier le reset de page au changement de filtre
 
-Si l'utilisateur est page 5, filtre "Salarié crevé", et que ce filtre ne retourne que 2 pages, la page 5 n'existe plus. Le frontend doit réinitialiser `currentPage = 1` à chaque changement de filtre.
+Si l'utilisateur est page 5, filtre "Le maître des deadlines", et que ce filtre ne retourne que 2 pages, la page 5 n'existe plus. Le frontend doit réinitialiser `currentPage = 1` à chaque changement de filtre.
 
 ### Piège #5 : OFFSET sans LIMIT
 

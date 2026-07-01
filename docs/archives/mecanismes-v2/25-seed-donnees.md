@@ -20,7 +20,7 @@ INSERT INTO categories (id, name, slug) VALUES
 (4, 'Autre',        'autre');
 ```
 
-4 catégories : Rapide (Salarié crevé), Petit budget (Étudiant fauché), Élaborée (Parent épuisé), Autre (au cas où).
+4 catégories : Rapide (Le maître des deadlines), Petit budget (Le virtuose du repas à 2€), Élaborée (La chef d'orchestre familial), Autre (au cas où).
 
 ### 3.2 — Users (`database/scripts/04_seed_data.sql:50-55`)
 
