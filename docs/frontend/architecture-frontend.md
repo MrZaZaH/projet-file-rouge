@@ -8,9 +8,9 @@ The three comic strip characters are the **only** filtering mechanism on the hom
 
 | Character | Filter logic | API query |
 |-----------|-------------|-----------|
-| Salarié crevé | Quick recipes | `?prep_time<=15` |
-| Étudiant fauché | Cheap meals | `?cost<=5` |
-| Parent épuisé | Fast & well rated | `?prep_time<=20&min_rating=4` |
+| Le maître des deadlines | Quick recipes | `?prep_time<=15` |
+| Le virtuose du repas à 2€ | Cheap meals | `?cost<=5` |
+| La chef d'orchestre familial | Fast & well rated | `?prep_time<=20&min_rating=4` |
 
 **Why this choice:** The project brief defines three personas. Instead of abstract controls (dropdowns, sliders), we personify each filter as a character the user identifies with. This is both more engaging and more accessible — one click, no learning curve. It also avoids cluttering the UI with redundant controls.
 

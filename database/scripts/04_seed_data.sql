@@ -27,9 +27,9 @@
 --
 -- Détail des personnages et leurs mots de passe :
 --   admin_ovni    | admin@example.com    | Admin123!    → admin
---   mickael_b     | mickael@example.com  | User1234!    → user  (Salarié crevé)
---   sofia_r       | sofia@example.com    | User1234!    → user  (Parent épuisé)
---   jerome_k      | jerome@example.com   | User1234!    → user  (Étudiant fauché)
+--   mickael_b     | mickael@example.com  | User1234!    → user  (Le maître des deadlines)
+--   sofia_r       | sofia@example.com    | User1234!    → user  (La chef d'orchestre familial)
+--   jerome_k      | jerome@example.com   | User1234!    → user  (Le virtuose du repas à 2€)
 --   anonyme_test  | anon@example.com     | User1234!    → user  (Test modération)
 -- ============================================================
 

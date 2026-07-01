@@ -340,7 +340,7 @@ __Détail concret__ :
 	- Temps de préparation (< 15 min) 
 	- Budget (< 3€, < 5€) 
 	- Catégorie, popularité (combinaison rapide \+ original \+ <3€)
-- Ajouter un tri intelligent (par pertinence pour le persona : d’abord les recettes <15 min pour le salarié crevé, etc.). 
+- Ajouter un tri intelligent (par pertinence pour le persona : d’abord les recettes <15 min pour le maître des deadlines, etc.). 
 - Créer des constantes dans src/constants/filters.js pour éviter la magie dans le code. 
 - Ajouter des tests unitaires spécifiques pour chaque combinaison de filtres (minimum 6 tests). 
 - Mettre à jour TEST_CASES.md avec un tableau complet de tous les filtres et scénarios attendus.
@@ -456,7 +456,7 @@ __Jour 21__
 __Tâche__ : Homepage – Mise en page \+ Bouton "Surprends-moi" (US-01)  
 __Détail concret__ : 
 
-- Réaliser la homepage en respectant le persona "Salarié crevé" (priorité au filtre <15 min et bouton Surprends-moi très visible). 
+- Réaliser la homepage en respectant le persona "Le maître des deadlines" (priorité au filtre <15 min et bouton Surprends-moi très visible). 
 - Intégrer le bouton "Surprends-moi" qui appellera plus tard l’API (pour l’instant il affiche une carte recette statique aléatoire parmi 3-4 exemples). 
 - Afficher clairement le temps de préparation en gros sur chaque carte. 
 - Filtre "Prêt en moins de 15 minutes" en évidence. 

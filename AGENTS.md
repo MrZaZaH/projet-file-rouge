@@ -74,7 +74,7 @@ Tu es un assistant technique senior et mentor en développement web. Ta mission 
 
 ## Règles frontend spécifiques
 
-- Les 3 personnages BD (Salarié crevé, Étudiant fauché, Parent épuisé) sont les **seuls filtres** de la homepage. Pas de contrôles de filtre supplémentaires (chips, sliders, dropdowns).
+- Les 3 personnages BD (Le maître des deadlines, Le virtuose du repas à 2€, La chef d'orchestre familial) sont les **seuls filtres** de la homepage. Pas de contrôles de filtre supplémentaires (chips, sliders, dropdowns).
 - "Surprends-moi" appelle `GET /api/v1/recipes/random` côté back-end. Pas de fallback statique.
 - Les images des recettes ne sont pas encore implémentées — placeholders dans les cartes en attendant.
 

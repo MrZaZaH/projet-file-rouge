@@ -8,7 +8,7 @@ This document tracks frontend development progress, architectural choices, and a
 
 ### Completed
 
-- **Homepage** (`index.html`): Hero section, character-based filters (Salarié crevé, Étudiant fauché, Parent épuisé), recipe grid with cards (time, cost, rating, anecdote), "Surprends-moi" button wired to backend API
+- **Homepage** (`index.html`): Hero section, character-based filters (Le maître des deadlines, Le virtuose du repas à 2€, La chef d'orchestre familial), recipe grid with cards (time, cost, rating, anecdote), "Surprends-moi" button wired to backend API
 - **Design System** (`css/variables.css`, `css/styles.css`): CSS custom properties, typography, responsive grid, recipe cards, form components, modal, mobile navigation
 - **Recipe detail page** (`recipe.html`): Structure for ingredients, steps, anecdote block, comments, rating
 - **Submit page** (`submit.html`): Recipe submission form
@@ -36,9 +36,9 @@ This document tracks frontend development progress, architectural choices, and a
 
 Filtering is based on three comic strip characters, each representing a specific user persona and filter preset:
 
-- **Salarié crevé**: `prep_time <= 15 min` (time-pressed worker)
-- **Étudiant fauché**: `cost <= 5€` (budget-conscious student)
-- **Parent épuisé**: `prep_time <= 20 min + rating >= 4` (exhausted parent)
+- **Le maître des deadlines**: `prep_time <= 15 min` (time-pressed worker)
+- **Le virtuose du repas à 2€**: `cost <= 5€` (budget-conscious student)
+- **La chef d'orchestre familial**: `prep_time <= 20 min + rating >= 4` (exhausted parent)
 
 No additional filter controls exist — no dropdowns, sliders, or standalone filter chips. This keeps the UI simple, accessible, and aligned with the project's narrative identity.
 

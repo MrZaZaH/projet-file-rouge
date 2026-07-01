@@ -103,7 +103,7 @@ This document outlines the 15 RGAA (Référentiel Général d'Amélioration de l
 - No `<img src="#">` placeholder patterns used
 - Colored div placeholders use `role="img"` and `aria-label`:
 ```html
-<div class="persona-card-image" role="img" aria-label="Icône Salarié Crevé"></div>
+<div class="persona-card-image" role="img" aria-label="Icône Le maître des deadlines"></div>
 ```
 - All `<svg>` icons have `aria-hidden="true"` and `focusable="false"`
 - SVG icons include meaningful aria-label on parent button if needed
