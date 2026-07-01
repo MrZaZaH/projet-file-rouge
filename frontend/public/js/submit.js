@@ -66,16 +66,14 @@ recipeForm.addEventListener('submit', async function(e) {
         return;
     }
 
-    var currentUser = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
     var payload = {
         title: data.title,
-        ingredients: JSON.stringify(parseListInput(data.ingredients)),
-        steps: JSON.stringify(parseListInput(data.steps)),
+        ingredients: parseListInput(data.ingredients),
+        steps: parseListInput(data.steps),
         anecdote: data.anecdote,
-        category: data.category,
+        category_id: parseInt(data.category, 10),
         cost_per_portion: parseFloat(data.cost),
-        prep_time: parseInt(data.prep_time, 10),
-        author_pseudo: currentUser ? currentUser.username : (localStorage.getItem('ovni_pseudo') || 'Anonyme')
+        prep_time: parseInt(data.prep_time, 10)
     };
 
     try {

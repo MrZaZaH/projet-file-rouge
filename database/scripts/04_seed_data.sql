@@ -20,7 +20,7 @@
 --
 -- Contenu du jeu de données :
 --   - 5  utilisateurs  (dont 1 admin) — hash bcrypt cost 12
---   - 3  catégories    (filtres métier du projet)
+--   - 4  catégories    (filtres métier du projet)
 --   - 8  recettes      (couvrent tous les cas de filtrage : temps, budget, statut)
 --   - 30 commentaires  (dont certains invités sans compte)
 --   - 29 notations     (moyennes pré-calculées dans average_rating)
@@ -34,12 +34,13 @@
 -- ============================================================
 
 -- ============================================================
--- CATEGORIES (3)
+-- CATEGORIES (4)
 -- ============================================================
 INSERT INTO categories (id, name, slug) VALUES
-(1, 'Plats rapides',    'plats-rapides'),
-(2, 'Budget étudiant', 'budget-etudiant'),
-(3, 'Accident heureux','accident-heureux');
+(1, 'Rapide',       'rapide'),
+(2, 'Petit budget', 'petit-budget'),
+(3, 'Élaborée',     'elaboree'),
+(4, 'Autre',        'autre');
 
 -- ============================================================
 -- USERS (5)
@@ -74,7 +75,7 @@ INSERT INTO recipes (
 ) VALUES
 
 -- A — prep_time < 15, cost < 3.00, published
-(1, 1, 3,
+(1, 1, 1,
  'Raisin au miel',
  'Un soir de fridge-raid total. Plus rien dans le placard, une grappe de raisin qui traîne et un pot de miel. Résultat : le snack le plus simple et le plus efficace de ma vie. Surtout quand les raisins sont aigres — le miel balance tout.',
  '["raisin", "miel"]',
@@ -122,7 +123,7 @@ INSERT INTO recipes (
  35, 2.60, 'published', 4.20, 5),
 
 -- G — pending (not visible to public, tests moderation pipeline)
-(7, 4, 3,
+(7, 4, 1,
  'Poires en conserve façon comme les pro',
  'Recette de Mickaël. Un soir de date un peu désespéré, plus rien dans le frigo sauf des poires en conserve et une demi plaquette de chocolat. Ça a marché. Elle est revenue.',
  '["poires en conserve", "1/2 plaquette de chocolat", "10cl de lait"]',
@@ -130,7 +131,7 @@ INSERT INTO recipes (
  5, 2.00, 'pending', 4.00, 3),
 
 -- H — rejected (tests rejection pipeline and admin moderation)
-(8, 4, 3,
+(8, 4, 1,
  'Quesadilla dessert Nutella, fraise et marshmallow',
  'Recette rejetée pour doublon — présente dans deux sources différentes sous des noms légèrement différents. Cas réaliste de rejet éditorial.',
  '["tortillas", "nutella", "fraises", "marshmallows miniatures"]',
