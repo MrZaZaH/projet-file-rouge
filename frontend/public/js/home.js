@@ -26,11 +26,11 @@ const RECIPES_PER_PAGE = 12;
 // ====== PERSONA FILTER ======
 function getPersonaFilter(persona) {
     switch (persona) {
-        case 'salarie-creve':
+        case 'maitre-deadlines':
             return { max_prep_time: 15 };
-        case 'etudiant-fauche':
+        case 'virtuose-budget':
             return { max_cost: 5 };
-        case 'parent-epuise':
+        case 'chef-famille':
             return { max_prep_time: 20, min_rating: 4 };
         default:
             return null;
@@ -186,9 +186,9 @@ function updateActiveFilter(persona) {
     }
 
     var labels = {
-        'salarie-creve': 'Le ma\u00eetre des deadlines \u2014 \u2264 15 min',
-        'etudiant-fauche': 'Le virtuose du repas \u00e0 2\u20ac \u2014 \u2264 5 \u20ac',
-        'parent-epuise': 'La chef d\u2019orchestre familial \u2014 \u2264 20 min, \u2265 4\u2605'
+        'maitre-deadlines': 'Le ma\u00eetre des deadlines \u2014 \u2264 15 min',
+        'virtuose-budget': 'Le virtuose du repas \u00e0 2\u20ac \u2014 \u2264 5 \u20ac',
+        'chef-famille': 'La chef d\u2019orchestre familial \u2014 \u2264 20 min, \u2265 4\u2605'
     };
 
     container.style.display = 'flex';

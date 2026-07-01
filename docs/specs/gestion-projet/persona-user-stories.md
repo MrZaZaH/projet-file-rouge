@@ -6,13 +6,13 @@ Projet : Plateforme de recettes collaboratives
 
 (US-01 à US-06)
 
-### __🧑‍💼 PERSONA 1 – Le Salarié Crevé (critère : RAPIDITE)__
+### __🧑‍💼 PERSONA 1 – Le maître des deadlines (critère : RAPIDITÉ)__
 
 "Je rentre du boulot, j'ai faim, je ne veux pas commander une pizza et je veux pas non plus passer une heure en cuisine"
 
 #### __🔹 US-01 – Accès ultra-rapide à une recette__
 
-__En tant que__ salarié crevé, __Je veux__ accéder à une recette originale en moins de 2 minutes de navigation, __Afin de__ manger quelque chose de bien sans effort de recherche.
+__En tant que__ maître des deadlines, __Je veux__ accéder à une recette originale en moins de 2 minutes de navigation, __Afin de__ manger quelque chose de bien sans effort de recherche.
 
 ✅ __Critères d'acceptation :__
 
@@ -22,7 +22,7 @@ __En tant que__ salarié crevé, __Je veux__ accéder à une recette originale e
 
 #### __🔹 US-02 – Recettes avec une touche humaine__
 
-__En tant que__ salarié crevé, __Je veux__ sentir que la recette vient d'un vrai humain dans ma situation, \*\*Afin d'\*\*avoir envie de la tenter ce soir.
+__En tant que__ maître des deadlines, __Je veux__ sentir que la recette vient d'un vrai humain dans ma situation, \*\*Afin d'\*\*avoir envie de la tenter ce soir.
 
 ✅ __Critères d'acceptation :__
 
@@ -30,13 +30,13 @@ __En tant que__ salarié crevé, __Je veux__ sentir que la recette vient d'un vr
 - __Contexte de l'auteur__ mentionné (ex : "Posté et vécu par Karim, un dimanche pluvieux à Lyon")
 - __Ton narratif et humoristique__, jamais froid ni générique
 
-### __🧑‍🎓 PERSONA 2 – L'Étudiant Fauché (critère : PAS CHERE)__
+### __🧑‍🎓 PERSONA 2 – Le virtuose du repas à 2€ (critère : PETIT BUDGET)__
 
 "5€ en poche, frigo presque vide, mais pas envie de manger triste"
 
 #### __🔹 US-03 – Filtres budget serré__
 
-\*\*En tant qu'\*\*étudiant fauché, __Je veux__ filtrer les recettes par budget très serré, __Afin de__ manger bien sans me ruiner.
+\*\*En tant qu'\*\*virtuose du budget, __Je veux__ filtrer les recettes par budget très serré, __Afin de__ manger bien sans me ruiner.
 
 ✅ __Critères d'acceptation :__
 
@@ -47,13 +47,13 @@ __En tant que__ salarié crevé, __Je veux__ sentir que la recette vient d'un vr
 
 ~~Supprimée — filtre ingrédients jugé non pertinent.~~
 
-### __👩‍👧 PERSONA 3 – Le Parent Épuisé (critère : CONFIANCE)__
+### __👩‍👧 PERSONA 3 – La chef d'orchestre familial (critère : CONFIANCE)__
 
 "Il est 19h, les enfants ont faim, je ne veux pas commander une pizza (encore)"
 
 #### __🔹 US-05 – Confiance via retours utilisateurs__
 
-__En tant que__ parent épuisé, __Je veux__ savoir si la recette a été testée par d'autres personnes réelles, \*\*Afin d'\*\*avoir confiance avant de me lancer.
+__En tant que__ chef d'orchestre familial, __Je veux__ savoir si la recette a été testée par d'autres personnes réelles, \*\*Afin d'\*\*avoir confiance avant de me lancer.
 
 ✅ __Critères d'acceptation :__
 
@@ -63,7 +63,7 @@ __En tant que__ parent épuisé, __Je veux__ savoir si la recette a été testé
 
 #### __🔹 US-06 – Navigation sans friction__
 
-__En tant que__ parent épuisé, __Je veux__ trouver une recette originale en moins de 2 minutes de navigation, __Afin de__ ne pas perdre le peu d'énergie qu'il me reste.
+__En tant que__ chef d'orchestre familial, __Je veux__ trouver une recette originale en moins de 2 minutes de navigation, __Afin de__ ne pas perdre le peu d'énergie qu'il me reste.
 
 ✅ __Critères d'acceptation :__
 

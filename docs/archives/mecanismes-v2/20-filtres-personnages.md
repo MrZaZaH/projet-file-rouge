@@ -41,17 +41,17 @@ CREATE TABLE IF NOT EXISTS recipes (
 
 function getPersonaFilter(persona) {
     switch (persona) {
-        case 'salarie-creve':
+        case 'maitre-deadlines':
             return { max_prep_time: 15 };
             // "Je veux manger rapidement → max 15 minutes de préparation"
             // Cette constante (15) est définie dans filters.js: QUICK_PREP_MAX
 
-        case 'etudiant-fauche':
+        case 'virtuose-budget':
             return { max_cost: 5 };
             // "J'ai un petit budget → max 5€ par portion"
             // Cette constante (5) est définie dans filters.js: BUDGET_MID_MAX
 
-        case 'parent-epuise':
+        case 'chef-famille':
             return { max_prep_time: 20, min_rating: 4 };
             // "Je veux du bon et pas trop long → max 20 min, min 4 étoiles"
             // 20 n'est pas une constante (c'est un cas spécifique)
@@ -67,7 +67,7 @@ function getPersonaFilter(persona) {
 ```javascript
 // Bascule l'illustration du personnage entre version "défaut" et "active"
 // card : l'élément .persona-card
-// persona : "salarie-creve", "etudiant-fauche" ou "parent-epuise"
+// persona : "maitre-deadlines", "virtuose-budget" ou "chef-famille"
 // state : "default" ou "active"
 
 function setPersonaImage(card, persona, state) {
@@ -108,14 +108,14 @@ const recipes = await fetchRecipes(url);
 
 ```javascript
 // Chaque carte personnage a :
-// - data-persona="salarie-creve" (identifiant)
+// - data-persona="maitre-deadlines" (identifiant)
 // - classe CSS "persona-card" (style initial)
 // - aria-pressed="false" (accessibilité)
 
 personaCards.forEach(function(card) {
     card.addEventListener('click', async function() {
         const persona = card.dataset.persona;
-        // dataset.persona = "salarie-creve", "etudiant-fauche" ou "parent-epuise"
+        // dataset.persona = "maitre-deadlines", "virtuose-budget" ou "chef-famille"
 
         // Si on reclique sur le même personnage → désactivation
         if (currentPersona === persona && card.classList.contains('persona-card--active')) {
@@ -174,9 +174,9 @@ function updateActiveFilter(persona) {
     }
 
     const labels = {
-        'salarie-creve': 'Le maître des deadlines — ≤ 15 min',
-        'etudiant-fauche': 'Le virtuose du repas à 2€ — ≤ 5 €',
-        'parent-epuise': 'La chef d\'orchestre familial — ≤ 20 min, ≥ 4★'
+        'maitre-deadlines': 'Le maître des deadlines — ≤ 15 min',
+        'virtuose-budget': 'Le virtuose du repas à 2€ — ≤ 5 €',
+        'chef-famille': 'La chef d\'orchestre familial — ≤ 20 min, ≥ 4★'
     };
 
     // Affiche le tag avec la croix de suppression
@@ -219,25 +219,25 @@ card.addEventListener('keydown', function(e) {
 ### 3.6 — HTML des personnages avec illustrations (index.html:74)
 
 ```html
-<article class="persona-card" data-persona="salarie-creve" role="button" tabindex="0"
+<article class="persona-card" data-persona="maitre-deadlines" role="button" tabindex="0"
     aria-pressed="false" aria-label="Filtrer pour Le maître des deadlines – Temps ≤ 15 min">
-    <img class="persona-card-image" src="/assets/illustrations/salarie-creve-default.png"
+    <img class="persona-card-image" src="/assets/illustrations/maitre-deadlines-default.png"
          alt="Le maître des deadlines">
     <h3>Le maître des deadlines</h3>
     <p>Recettes prêtes en 15 minutes chrono</p>
 </article>
 
-<article class="persona-card" data-persona="etudiant-fauche" role="button" tabindex="0"
+<article class="persona-card" data-persona="virtuose-budget" role="button" tabindex="0"
     aria-pressed="false" aria-label="Filtrer pour Le virtuose du repas à 2€ – Budget ≤ 5€">
-    <img class="persona-card-image" src="/assets/illustrations/etudiant-fauche-default.png"
+    <img class="persona-card-image" src="/assets/illustrations/virtuose-budget-default.png"
          alt="Le virtuose du repas à 2€">
     <h3>Le virtuose du repas à 2€</h3>
     <p>Manger bon sans ruiner son compte</p>
 </article>
 
-<article class="persona-card" data-persona="parent-epuise" role="button" tabindex="0"
+<article class="persona-card" data-persona="chef-famille" role="button" tabindex="0"
     aria-pressed="false" aria-label="Filtrer pour La chef d'orchestre familial – Rapide et bien noté">
-    <img class="persona-card-image" src="/assets/illustrations/parent-epuise-default.png"
+    <img class="persona-card-image" src="/assets/illustrations/chef-famille-default.png"
          alt="La chef d'orchestre familial">
     <h3>La chef d'orchestre familial</h3>
     <p>Repas express notés par d'autres parents</p>
@@ -250,12 +250,12 @@ card.addEventListener('keydown', function(e) {
 
 ```
 frontend/public/assets/illustrations/
-├── salarie-creve-default.png     ← 344 Ko, affiché par défaut
-├── salarie-creve-active.png      ← 327 Ko, affiché quand le filtre est actif
-├── etudiant-fauche-default.png   ← 419 Ko
-├── etudiant-fauche-active.png    ← 419 Ko
-├── parent-epuise-default.png     ← 364 Ko
-└── parent-epuise-active.png      ← 364 Ko
+├── maitre-deadlines-default.png     ← 344 Ko, affiché par défaut
+├── maitre-deadlines-active.png      ← 327 Ko, affiché quand le filtre est actif
+├── virtuose-budget-default.png   ← 419 Ko
+├── virtuose-budget-active.png    ← 419 Ko
+├── chef-famille-default.png     ← 364 Ko
+└── chef-famille-active.png      ← 364 Ko
 ```
 
 Le dossier `frontend/public/` est servi statiquement par Express (`app.js`), donc les images sont accessibles via l'URL `/assets/illustrations/{persona}-{state}.png`.
@@ -287,9 +287,9 @@ Les noms des personnages et leurs `alt` sont identiques : les illustrations ne s
 
 | Slug URL | Nom affiché |
 |---|---|
-| `salarie-creve` | "Le maître des deadlines" |
-| `etudiant-fauche` | "Le virtuose du repas à 2€" |
-| `parent-epuise` | "La chef d'orchestre familial" |
+| `maitre-deadlines` | "Le maître des deadlines" |
+| `virtuose-budget` | "Le virtuose du repas à 2€" |
+| `chef-famille` | "La chef d'orchestre familial" |
 
 Ce choix remplace les noms techniques d'origine ("Salarié Crevé", "Étudiant Fauché", "Parent Épuisé") par des textes à l'humour positif, aligné avec la tonalité du projet.
 
@@ -319,8 +319,8 @@ Utilisateur arrive sur la page d'accueil :
 
 Utilisateur clique sur "Le maître des deadlines" :
 
-2. card.dataset.persona = "salarie-creve"
-3. getPersonaFilter("salarie-creve") → { max_prep_time: 15 }
+2. card.dataset.persona = "maitre-deadlines"
+3. getPersonaFilter("maitre-deadlines") → { max_prep_time: 15 }
 4. URLSearchParams({ max_prep_time: 15 }) → "max_prep_time=15"
 5. fetchRecipes("/api/v1/recipes?max_prep_time=15")
 6. Serveur reçoit req.query.max_prep_time = "15"
@@ -334,13 +334,13 @@ Utilisateur clique sur "Le maître des deadlines" :
 
 Utilisateur reclique sur "Le maître des deadlines" :
 
-10. currentPersona === "salarie-creve" ET classe 'persona-card--active'
+10. currentPersona === "maitre-deadlines" ET classe 'persona-card--active'
     → Désactivation : on recharge /api/v1/recipes sans filtre
     → Tag disparaît
 
 Utilisateur clique sur "La chef d'orchestre familial" :
 
-11. getPersonaFilter("parent-epuise") → { max_prep_time: 20, min_rating: 4 }
+11. getPersonaFilter("chef-famille") → { max_prep_time: 20, min_rating: 4 }
 12. URL → "/api/v1/recipes?max_prep_time=20&min_rating=4"
 13. findAllWithFilters({ max_prep_time: 20, min_rating: 4 }) exécute :
     SELECT r.* FROM recipes r

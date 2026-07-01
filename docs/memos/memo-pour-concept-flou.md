@@ -91,9 +91,9 @@ Exemple concret
     role="button"
     tabindex="0"
     aria-pressed="false"
-    data-persona="salarie-creve">
-    <div role="img" aria-label="Icône Salarié Crevé"></div>
-    <h3>Salarié Crevé</h3>
+    data-persona="maitre-deadlines">
+    <div role="img" aria-label="Icône Le maître des deadlines"></div>
+    <h3>Le maître des deadlines</h3>
     <p>Recettes prêtes en 15 minutes</p>
 </article>
 
