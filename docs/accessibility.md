@@ -253,20 +253,22 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 | Rule | Implemented | Files |
 |------|-------------|-------|
 | Contrast alternation | ✅ | styles.css |
-| Navigation structure | ✅ | All HTML |
+| Navigation structure | ✅ | All HTML (incl. dashboard, favorites, moderation-panel, login, register) |
 | Skip links | ✅ | All HTML |
-| Document language | ✅ | All HTML |
-| Page titles | ✅ | All HTML |
+| Document language | ✅ | All HTML (`lang="fr"`) |
+| Page titles | ✅ | All HTML (unique per page) |
 | Heading hierarchy | ✅ | All HTML |
-| Images and media | ✅ | index.html |
-| Forms and labels | ✅ | All HTML |
-| Form control | ✅ | recipe.html, submit.html |
+| Images and media | ✅ | Persona cards with `role="img"` and `aria-label` |
+| Forms and labels | ✅ | All HTML (explicit `<label for="...">`) |
+| Form control | ✅ | recipe.html, submit.html, login.html, register.html |
 | Keyboard navigation | ✅ | All HTML |
-| Focus management | ✅ | All HTML |
-| Modals and dialogs | ✅ | All HTML |
-| Link relevance | ✅ | All HTML |
-| Temporal content | ✅ | styles.css |
-| Navigation aids | ✅ | All HTML |
+| Focus management | ✅ | All HTML (modal focus trap, Escape key) |
+| Modals and dialogs | ✅ | Modal login on index/recipe/submit |
+| Link relevance | ✅ | All HTML (no generic "Cliquez ici") |
+| Temporal content | ✅ | styles.css (`prefers-reduced-motion`) |
+| Navigation aids | ✅ | All HTML (`role="banner"`, `role="contentinfo"`, `aria-live` on dynamic content) |
+
+**Validated on all 9 pages**: index, recipe, submit, login, register, dashboard, favorites, moderation-panel, styleguide.
 
 ---
 

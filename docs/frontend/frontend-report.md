@@ -270,6 +270,65 @@ User recipe favorites system with header shortcut and dedicated page.
 - `docs/specs/gestion-projet/persona-user-stories.md` — US-16 added
 - `docs/specs/technique/structure.md` — new files listed
 
+## Status — Day 30 : Final MVP
+
+### Completed
+
+- **Pagination** on homepage (`home.js`): 12 recipes per page, `renderPagination()` renders numbered page buttons (1 ... 3 4 5 ... N), `goToPage(page)` updates offset, `loadRecipes()` re-fetches with new offset. Two-query pattern: `COUNT(*)` for total + `SELECT ... LIMIT/OFFSET`. Active page highlighted, disabled state for first/last page.
+- **Persona illustrations**: Each persona card now has a `*-default.png` and `*-active.png` image. `setPersonaImage()` swaps between them on click. Images stored in `assets/illustrations/`.
+- **Persona rename (positive tone)**: All persona references renamed to positive framing — "Le virtuose du repas à 2€" → "Le virtuose du budget", display names updated everywhere (HTML, JS, constants).
+- **"A" barré hero**: SVG fork and spoon crossing out the 'a' in "anormales" in the hero section (`#a-bar`), reinforcing the project's anti-perfectionist identity.
+- **All pages functional**: `login.html`, `register.html`, `dashboard.html`, `favorites.html`, `moderation-panel.html` — all connected to backend API, all with proper auth checks, loading/error/empty states.
+- **Dynamic admin link**: `updateAuthUI()` injects an "Admin" link into both desktop and mobile navs only when `user.role === 'admin'`.
+- **Persistent comments**: `detail.js` `submitComment()` posts to `POST /api/v1/recipes/:id/comments` with guest_name fallback. Re-fetches recipe after submission to refresh the list.
+- **Interactive star rating**: Uses a `<select>` with descriptive options, fully keyboard accessible. Rating submitted with comment.
+- **Delete recipe from dashboard**: `dashboard.js` `deleteRecipe()` calls `DELETE /api/v1/recipes/:id` with row animation.
+- **Moderation actions**: `moderation-panel.js` has publish/reject/delete with confirmation dialogs and aria-live feedback.
+
+### Architecture (final)
+
+```
+frontend/public/
+├── assets/
+│   ├── favicon.svg
+│   └── illustrations/
+│       ├── maitre-deadlines-{default,active}.png
+│       ├── virtuose-budget-{default,active}.png
+│       └── chef-famille-{default,active}.png
+├── css/
+│   ├── styles.css         (1389 lines, 16 sections)
+│   └── variables.css      (105 lines, design tokens)
+├── js/
+│   ├── auth.js            (auth, apiRequest, updateAuthUI, requireAuth)
+│   ├── app.js             (utilities, initShared, surpriseMe)
+│   ├── home.js            (persona filters, pagination, recipe grid)
+│   ├── detail.js          (recipe detail, comments, rating, favorites)
+│   ├── submit.js          (recipe submission form)
+│   ├── login.js           (login page)
+│   ├── register.js        (registration page)
+│   ├── dashboard.js       (user profile, stats, my recipes)
+│   ├── favorites.js       (saved recipes list)
+│   └── moderation-panel.js (admin panel: stats, tables, CSV export)
+├── index.html
+├── recipe.html
+├── submit.html
+├── login.html
+├── register.html
+├── dashboard.html
+├── favorites.html
+├── moderation-panel.html
+└── styleguide.html
+```
+
+### Performance & Security
+
+- Lighthouse: all pages >90 Performance, >90 Accessibility, >90 SEO
+- `escapeHTML()` / `escapeAttr()` on all user-supplied content rendered in tables
+- JWT stored in `localStorage` as `ovni_token`, never in URLs or `innerHTML`
+- `apiRequest()` centralises credential transmission — single point to audit
+- No sensitive data leak in error messages
+- CSS minified via single stylesheet, no JS framework overhead
+
 ## Self-Assessment (Competences 1.2 & 1.3)
 
 See full evaluation in `docs/competences/auto-evaluation-bloc1.md`.

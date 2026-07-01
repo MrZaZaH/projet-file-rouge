@@ -34,14 +34,20 @@ Recipe images are **not yet implemented**. The recipe card includes a placeholde
 
 ## Page structure
 
-- `index.html` — Homepage with hero, character filters, recipe grid, anecdote block
-- `recipe.html` — Recipe detail page
-- `submit.html` — Recipe submission form
+- `index.html` — Homepage with hero, character filters, recipe grid, anecdote block, pagination, login modal
+- `recipe.html` — Recipe detail page with comments, rating, save/share
+- `submit.html` — Recipe submission form with anecdote presets
+- `login.html` — Dedicated login page
+- `register.html` — Registration page
+- `dashboard.html` — User profile, stats, my recipes, delete
+- `favorites.html` — Saved recipes list
+- `moderation-panel.html` — Admin dashboard with stats, moderation table, logs, CSV export
 - `styleguide.html` — Design system reference
 
 ## Routing
 
 Single-page navigation is handled via vanilla JavaScript:
-- URL parameters (`?id=xx`) for recipe detail
-- `localStorage` for auth token and pseudo
-- No client-side router — simple link navigation with dynamic content loading
+- URL parameters (`?id=xx`) for recipe detail, `?redirect=` for post-login redirect
+- `localStorage` for auth token (`ovni_token`) and user data (`ovni_user`)
+- No client-side router — each page is a standalone HTML file with its own JS module
+- Auth state is shared across pages via `localStorage`; `updateAuthUI()` re-syncs on every page load

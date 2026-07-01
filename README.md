@@ -41,6 +41,7 @@ mysql -u root -p < database/scripts/03_create_tables.sql
 mysql -u root -p < database/scripts/04_seed_data.sql
 mysql -u root -p < database/scripts/05_add_image_url.sql
 mysql -u root -p < database/scripts/06_indexes.sql
+mysql -u root -p < database/scripts/07_create_favorites_table.sql
 ```
 
 Or run them through your database client (DBeaver, MySQL Workbench, etc.).
@@ -79,7 +80,7 @@ See `.env.example` for all available variables:
 | `DB_ADMIN_PASSWORD` | Admin DB password | — |
 | `DB_TEST_NAME` | Test database name | `recettes_humaines_test` |
 | `JWT_SECRET` | JWT signing secret | — |
-| `JWT_EXPIRES_IN` | Token expiry duration | `7d` |
+| `JWT_EXPIRES_IN` | Token expiry duration | `24h` |
 | `LOG_LEVEL` | Winston log level | `debug` |
 | `ALLOWED_ORIGINS` | CORS allowed origins | `http://localhost:3000,http://localhost:5500` |
 
@@ -93,4 +94,4 @@ All project specs, documentation, and planning files are in the [`docs/`](docs/)
 
 ## Author
 
-trezaz — training project, 2025
+trezaz — training project, 2026

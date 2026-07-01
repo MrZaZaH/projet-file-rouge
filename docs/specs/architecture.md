@@ -76,7 +76,7 @@ projet-file-rouge/
 │       └── 06_indexes.sql            # Performance indexes, views counter column
 ├── docs/                              # Documentation (hub unique)
 │   ├── accessibility.md
-│   ├── mvp-decisions.md              # Décisions MVP / V2
+│   ├── mvp-decisions.md
 │   ├── archives/
 │   │   ├── mecanismes-v1/            # Anciennes fiches techniques (v1)
 │   │   ├── mecanismes-v2/            # Fiches techniques détaillées (45 mécanismes)
@@ -109,6 +109,15 @@ projet-file-rouge/
 │           └── structure.md
 ├── frontend/                          # Frontend app (vanilla HTML/CSS/JS)
 │   └── public/
+│       ├── assets/
+│       │   ├── favicon.svg
+│       │   └── illustrations/
+│       │       ├── maitre-deadlines-default.png
+│       │       ├── maitre-deadlines-active.png
+│       │       ├── virtuose-budget-default.png
+│       │       ├── virtuose-budget-active.png
+│       │       ├── chef-famille-default.png
+│       │       └── chef-famille-active.png
 │       ├── css/
 │       │   ├── styles.css
 │       │   └── variables.css
@@ -181,6 +190,7 @@ projet-file-rouge/
 │   │   ├── comments.test.js           # Comment creation, listing, deletion
 │   │   └── ratings.test.js            # Rating creation, update, self-rating block
 │   └── unit/
+│       ├── admin-utils.test.js        # Utility function tests (standalone runner)
 │       ├── categoryModel.test.js      # Category model behavior
 │       ├── ratingModel.test.js        # Rating model behavior
 │       ├── recipeModel.test.js        # Recipe model behavior

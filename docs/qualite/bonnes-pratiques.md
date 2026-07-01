@@ -71,14 +71,49 @@ Protège contre des attaques connues (clickjacking, sniffing MIME, etc.).
 À activer en tout premier dans `app.js`.
 
 ### CORS
+Cross-Origin Resource Sharing — contrôle quels domaines peuvent accéder à l'API.  
+Configuré via une whitelist dans `ALLOWED_ORIGINS` (env var).  
+Par défaut : `http://localhost:3000` (serveur dev) et `http://localhost:5500` (Live Server).  
+Méthodes autorisées : GET, POST, PUT, PATCH, DELETE.
 
 ### Rate limiting
+Deux niveaux de protection avec `express-rate-limit` :
+- **Global** : 100 requêtes/15 minutes sur toutes les routes `/api/v1/`
+- **Auth** : 10 requêtes/15 minutes sur `/api/v1/auth/` — protection brute force
+- Désactivé en environnement test
+- Dev : limite relevée à 500 requêtes/15 minutes pour le confort de développement
 
 ---
 
 ## Validation des entrées
 
+Toujours valider les entrées utilisateur côté serveur — le frontend n'est pas fiable.
+
+Avec express-validator, les règles de validation sont déclarées dans les routes :
+```javascript
+body('email').isEmail().normalizeEmail(),
+body('password').isLength({ min: 8 }).matches(/[A-Z]/).matches(/[0-9]/)
+```
+
+Points clés :
+- `normalizeEmail()` pour normaliser les emails avant stockage
+- Validation conditionnelle avec `.if()` (ex: `guest_name` requis seulement si l'utilisateur n'est pas connecté)
+- `escape()` pour nettoyer les chaînes (XSS côté serveur)
+- Messages d'erreur explicites : `withMessage('Title is required.')`
+
+Ne JAMAIS faire confiance aux données du frontend — valider TOUT ce qui arrive sur le serveur.
+
 ---
+
+### attachUser (auth optionnelle)
+Middleware qui vérifie un token JWT s'il est présent, sans bloquer les invités.  
+Utilisé sur `GET /api/v1/recipes/:id` pour attacher `is_favorited` et sur `POST /api/v1/recipes/:recipeId/comments`  
+pour les commentaires authentifiés.  
+Si le token est invalide ou absent → `req.user` reste `undefined`, la requête continue.
+
+---
+
+
 
 ## Mots de passe & bcrypt
 
@@ -92,6 +127,26 @@ Le hash est à sens unique : impossible de retrouver le mot de passe original.
 ---
 
 ## Front-end & XSS
+
+Ne jamais injecter du HTML utilisateur avec `innerHTML`. Utiliser `textContent` :
+
+```javascript
+element.textContent = userInput;     // ✅ sûr
+element.innerHTML = userInput;       // ❌ XSS
+```
+
+Pour les tableaux et listes où on doit construire du HTML, utiliser `escapeHtml()` :
+```javascript
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+```
+
+Présent dans `detail.js` et `moderation-panel.js`.  
+Le JWT est stocké dans `localStorage` (`ovni_token`), jamais dans les URLs.  
+`apiRequest()` centralise l'injection du Bearer token — un seul endroit à auditer.
 
 ---
 
@@ -162,6 +217,25 @@ Exemple :
 `feat: add Rating model with points attribution`  
 
 Pourquoi : historique lisible, facilite les revues de code et les changelogs.
+## Pagination
+
+Deux requêtes SQL sont nécessaires pour une pagination fiable :
+
+```sql
+-- 1) Compter le total (mêmes filtres que la requête principale)
+SELECT COUNT(*) AS total FROM recipes WHERE status = 'published' AND deleted_at IS NULL;
+
+-- 2) Récupérer la page
+SELECT ... FROM recipes WHERE status = 'published' AND deleted_at IS NULL
+ORDER BY created_at DESC LIMIT ? OFFSET ?;
+```
+
+Pourquoi deux requêtes ? `SQL_CALC_FOUND_ROWS` est déprécié depuis MySQL 8.0.17.  
+Le `COUNT(*)` séparé est la méthode recommandée pour connaître le nombre total de résultats.  
+Utiliser `COALESCE(COUNT(*), 0)` ou s'assurer que la requête retourne `0` quand il n'y a pas de résultats.
+
+---
+
 ## Performance – MariaDB Indexes (Jour 14)
 
 ### Pourquoi indexer

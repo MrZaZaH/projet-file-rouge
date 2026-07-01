@@ -1,7 +1,8 @@
 # Database Design – Ovni Culinaire
 
 ## Overview
-[2-3 phrases en anglais qui décrivent le projet et pourquoi ces choix de conception]
+
+Community recipe platform built on MariaDB. Schema designed for MVP scope: 5 core entity tables (users, categories, recipes, comments, ratings) plus 2 supporting tables (admin_logs, user_notifications) and 1 feature table (favorites). Choices prioritise simplicity, referential integrity, and soft-delete safety over normalisation where the MVP user stories don't require it (JSON columns for ingredients/steps, denormalised average_rating).
 
 ## Tables (MVP)
 
@@ -33,7 +34,7 @@ ingredients       TEXT            NOT NULL
 steps             TEXT            NOT NULL
 anecdote          TEXT            NOT NULL
 prep_time         SMALLINT UNSIGNED NOT NULL
-cost_per_serving  DECIMAL(5,2)    NOT NULL
+cost_per_portion  DECIMAL(5,2)    NOT NULL
 average_rating    DECIMAL(3,2)    NOT NULL DEFAULT 0.00
 views             INT UNSIGNED    NOT NULL DEFAULT 0
 status            ENUM('pending','published','rejected') NOT NULL DEFAULT 'pending'
@@ -48,7 +49,7 @@ FK: category_id → categories(id)
 id                INT UNSIGNED    NOT NULL AUTO_INCREMENT PRIMARY KEY
 recipe_id         INT UNSIGNED    NOT NULL
 user_id           INT UNSIGNED    NULL
-guest_username    VARCHAR(50)     NULL
+guest_name        VARCHAR(100)    NULL DEFAULT NULL
 content           TEXT            NOT NULL
 created_at        DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP
 deleted_at        DATETIME        NULL
@@ -88,6 +89,16 @@ created_at        DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP
 
 FK: admin_id → users(id)
 
+### user_notifications
+id                INT UNSIGNED    NOT NULL AUTO_INCREMENT PRIMARY KEY
+user_id           INT UNSIGNED    NOT NULL
+type              VARCHAR(50)     NOT NULL
+message           TEXT            NOT NULL
+read_at           DATETIME        NULL
+created_at        DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP
+
+FK: user_id → users(id) ON DELETE CASCADE
+
 ## Relationships
 - users (1) → recipes (N) : one user can publish many recipes
 - categories (1) → recipes (N) : one category can contain many recipes
@@ -119,39 +130,49 @@ FK: admin_id → users(id)
   in the DB for audit purposes.
 
 - `user_id NULL` on `comments` : allows guest comments (US-13) without 
-  compromising FK integrity. If null, `guest_username` must be provided — 
+  compromising FK integrity. If null, `guest_name` must be provided — 
   this constraint is enforced at application level via express-validator.
 
 - `admin_logs` has no `deleted_at` : audit logs are immutable by design.
+- `user_notifications` : stores moderation alerts (rejection reason, deletion notice). `read_at` tracks whether the user has seen it.
 
 ## Indexes
+
+### Single-column indexes
 - `recipes.user_id` : frequent JOIN with users table
 - `recipes.category_id` : frequent filter by category
 - `recipes.status` : recipes are almost always filtered by status='published'
 - `recipes.prep_time` : filter < 15 min (US-01)
-- `recipes.cost_per_serving` : filter by budget (US-03)
+- `recipes.cost_per_portion` : filter by budget (US-03)
 - `recipes.average_rating` : sort by popularity
 - `recipes.views` : sort by most viewed (admin dashboard US-15)
 - `comments.recipe_id` : frequent JOIN to load comments per recipe
 - `ratings.recipe_id` : needed to recalculate average_rating efficiently
 - `admin_logs.admin_id` : filter logs by admin
+- `favorites.user_id` : efficient lookup of user's saved recipes
+- `favorites.recipe_id` : efficient check if a recipe is favorited
 
-## Planned – not implemented in MVP
-### badges
-id                INT UNSIGNED    NOT NULL AUTO_INCREMENT PRIMARY KEY
-name              VARCHAR(100)    NOT NULL UNIQUE
-description       TEXT            NULL
-min_points        INT UNSIGNED    NOT NULL DEFAULT 0
-created_at        DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP
+### Composite indexes (from 06_indexes.sql)
+- `(recipes.status, recipes.deleted_at)` : covers the most common query pattern (`WHERE status = ? AND deleted_at IS NULL`)
+- `(recipes.category_id, recipes.deleted_at)` : covers category-filtered queries
+- `(comments.recipe_id, comments.deleted_at)` : loads non-deleted comments per recipe
+- `(admin_logs.admin_id, admin_logs.created_at)` : admin log queries sorted by date
+- `(user_notifications.user_id, user_notifications.read_at)` : unread notifications per user
 
-### user_badges
-id                INT UNSIGNED    NOT NULL AUTO_INCREMENT PRIMARY KEY
-user_id           INT UNSIGNED    NOT NULL
-badge_id          INT UNSIGNED    NOT NULL
-awarded_at        DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP
+## Planned — not implemented in MVP
+
+### Badges and gamification tables
+Tables `badges` and `user_badges` are intentionally excluded from the MVP.
+The `points` column in `users` is retained to avoid a future migration.
+
+Planned structure (for reference only):
+
+badges (id, name, slug, description, required_points, created_at)
+user_badges (id, user_id, badge_id, awarded_at)
 
 ### auth_logs
 Tracks login attempts for security auditing. Not implemented in MVP.
+The current rate limiting on auth routes (10 req/15min) is considered sufficient.
 
 id                INT UNSIGNED    NOT NULL AUTO_INCREMENT PRIMARY KEY
 user_id           INT UNSIGNED    NULL

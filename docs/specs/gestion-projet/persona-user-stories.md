@@ -18,7 +18,7 @@ __En tant que__ maître des deadlines, __Je veux__ accéder à une recette origi
 
 - Bouton __"Surprends-moi"__ en homepage → redirige vers une recette aléatoire sans friction
 - __Temps de préparation__ affiché en gros dès la carte recette
-- Filtre __"Prêt en moins de 15 minutes"__ accessible depuis la homepage
+- Persona __"Le maître des deadlines"__ filtre les recettes prêtes en moins de 15 minutes
 
 #### __🔹 US-02 – Recettes avec une touche humaine__
 
@@ -40,7 +40,7 @@ __En tant que__ maître des deadlines, __Je veux__ sentir que la recette vient d
 
 ✅ __Critères d'acceptation :__
 
-- Filtres budget : __< 3€__ / __< 5€__ / "Peu importe"
+- Persona __"Le virtuose du budget"__ filtre les recettes à moins de 5€ par portion
 - __Coût estimé par portion__ affiché sur chaque carte recette (renseigné par l'auteur)
 
 #### __🔹 US-04 – ~~Recettes minimalistes~~__
@@ -97,13 +97,12 @@ __En tant que__ visiteur, __Je veux__ naviguer par filtres __sans barre de reche
 
 ✅ __Critères d'acceptation :__
 
-- Filtres disponibles :
-	- Temps de préparation
-	- Budget
-	- Nombre d'ingrédients
-	- Catégorie
+- Filtres disponibles via les 3 personnages :
+	- __Le maître des deadlines__ : `prep_time <= 15`
+	- __Le virtuose du budget__ : `cost_per_portion <= 5`
+	- __La chef d'orchestre familial__ : `prep_time <= 20` + `min_rating = 4`
 - __Pas de barre de recherche textuelle__
-- __Combinaison de plusieurs filtres__ possible simultanément
+- __Filtres mutuellement exclusifs__ (un seul personnage actif à la fois)
 
 #### __🔹 US-08 – Découverte guidée en homepage__
 
@@ -114,9 +113,9 @@ __En tant que__ visiteur, __Je veux__ voir en homepage :
 
 ✅ __Critères d'acceptation :__
 
-- Bloc __"Top recettes du mois"__ en homepage
-- Bloc __"Catégories les plus visitées"__ en homepage
-- __Mise à jour dynamique__ selon les données réelles du site
+- Grille de recettes avec pagination (12 par page) affichant toutes les recettes publiées
+- Cartes recettes avec méta-infos (temps, coût, note, anecdote)
+- __Mise à jour dynamique__ via API sans rechargement de page (filtrée ou non)
 
 ### __✍️ Contribution & Modération__
 
@@ -126,9 +125,9 @@ __En tant que__ futur contributeur, __Je veux__ créer un compte avec __juste un
 
 ✅ __Critères d'acceptation :__
 
-- Création de compte : __pseudo \+ email \+ mot de passe__ (rien de plus)
+- Création de compte : __pseudo, email, mot de passe__ (validation : pseudo 2-50 chars, password min 8 avec majuscule + chiffre)
 - __Pas de vérification d'identité__ ni de profil obligatoire à remplir
-- Le compte est __actif immédiatement__
+- Le compte est __actif immédiatement__ (pas d'email de confirmation)
 
 #### __🔹 US-10 – Soumission de recettes enrichie__
 
@@ -163,13 +162,10 @@ __En tant que__ contributeur, __Je veux__ voir mes points augmenter quand :
 
 ✅ __Critères d'acceptation :__
 
-- Points attribués automatiquement à la publication
-- Points supplémentaires selon :
-	- La __note reçue__ par la communauté
-	- L'__assiduité__
-- Tableau de bord personnel avec :
-	- Total de points
-	- Badges obtenus
+- __5 points__ attribués quand une recette reçoit une note >= 4 (premier vote uniquement)
+- Points attribués dans `Rating.rate()` via `User.addPoints()` — pas sur la publication de la recette
+- Tableau de bord personnel avec stats (total, publiées, en attente, rejetées, commentaires reçus, favoris)
+- __Badges et niveaux__ : repoussés en V2 (tables non créées en BDD)
 
 #### __🔹 US-12 – Avantages concrets pour les contributeurs assidus__
 
@@ -177,9 +173,8 @@ __En tant que__ contributeur assidu, __Je veux__ débloquer des avantages concre
 
 ✅ __Critères d'acceptation :__
 
-- Système de niveaux de badges __clairement expliqué__ sur le site
-- __Tickets de réduction partenaires__ débloqués au niveau le plus élevé
-- Les recettes des contributeurs haut niveau bénéficient d'une __meilleure visibilité naturelle__
+> **Repoussé en V2.** Le système de badges et niveaux n'est pas implémenté dans le MVP.  
+> Le champ `points` est conservé dans la table `users` pour éviter une migration future, mais aucune UI de badges n'expose cette information.
 
 ### __🛡️ Administration & Modération__
 
@@ -199,9 +194,10 @@ __En tant que__ visiteur sans compte, __Je veux__ pouvoir commenter une recette 
 
 ✅ __Critères d'acceptation :__
 
-- Interface d'administration avec accès à __toutes les recettes publiées__
-- Bouton de suppression ou mise hors ligne __rapide__
-- L'auteur reçoit une notification simple : "Votre recette n'a pas été retenue" (sans détail fourni)
+- Interface d'administration avec tableau des __recettes en attente/publiées/rejetées__
+- Actions : __Publier__, __Rejeter__ (avec motif optionnel), __Supprimer__ (avec motif obligatoire)
+- Notifications utilisateur créées automatiquement pour les rejets et suppressions
+- Export CSV des recettes publiées via `GET /api/v1/admin/export/recipes`
 
 #### __🔹 US-15 – Tableau de bord analytique__
 
@@ -213,9 +209,10 @@ __En tant que__ visiteur sans compte, __Je veux__ pouvoir commenter une recette 
 
 ✅ __Critères d'acceptation :__
 
-- Dashboard admin avec __métriques de base__
-- Classement des recettes par :
-	- Popularité
-	- Catégorie
-- __Export possible__ des données si besoin
+- Dashboard admin avec statistiques globales (total recettes, en attente, publiées, utilisateurs, note moyenne)
+- Top __5 recettes les plus vues__
+- Top __5 recettes les mieux notées__ (minimum 3 notes)
+- __Top catégories__ les plus actives
+- Tableau des __logs d'administration__ (50 dernières actions, filtrable)
+- __Export CSV__ des recettes publiées
 

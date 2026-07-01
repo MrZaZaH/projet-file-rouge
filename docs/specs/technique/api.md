@@ -306,24 +306,46 @@ Response 422: Validation failed.
 Response 404: Recipe not found.
 
 ---
-## Admin Endpoints
+## Admin Endpoints (prefix `/api/v1/admin`)
 
-### 1. Get All Recipes (for moderation)
+All admin endpoints require `authenticate` + `requireAdmin` middlewares. Returns 401 if no valid token, 403 if user is not admin.
 
-**Endpoint:** `GET /api/admin/recipes`
+### `GET /api/v1/admin/dashboard`
+Return aggregated dashboard metrics for the admin panel.
 
-**Authentication:** Required (Admin role)
+Response 200:
+```json
+{
+  "success": true,
+  "data": {
+    "recipes": { "total": 8, "published": 6, "pending": 1, "rejected": 1 },
+    "users": 5,
+    "average_rating": 4.2,
+    "top_viewed": [],
+    "top_rated": [],
+    "top_categories": []
+  }
+}
+```
 
-**Query Parameters:**
-- `status` (optional): `pending`, `published`, `rejected`
-- `limit` (optional): Default 10, Max 100
-- `offset` (optional): Default 0
+### `GET /api/v1/admin/stats`
+Quick platform statistics.
 
-**Request:**
-```http
-GET /api/admin/recipes?status=pending&limit=20&offset=0
-Authorization: Bearer <admin_jwt_token>
-Response (200 OK):
+Response 200: `{ "success": true, "data": { "recipes": 8, "users": 5, "pending": 1 } }`
+
+### `GET /api/v1/admin/recipes`
+List recipes for moderation. Supports filtering and pagination.
+
+Query parameters:
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `status` | string | `pending`, `published`, `rejected` (optional) |
+| `sort_by` | string | `created_at` (default), `prep_time`, `cost` |
+| `limit` | integer | Default 10, Max 100 |
+| `offset` | integer | Default 0 |
+
+Response 200:
+```json
 {
   "success": true,
   "count": 3,
@@ -337,43 +359,23 @@ Response (200 OK):
       "average_rating": "4.00",
       "rating_count": 1,
       "author": "testuser",
-      "created_at": "2026-06-15T03:56:26.000Z",
-      "updated_at": "2026-06-15T03:56:26.000Z"
+      "created_at": "2026-06-15T03:56:26.000Z"
     }
   ]
 }
-Error Responses:
+```
 
-401 Unauthorized: Missing or invalid JWT token
-403 Forbidden: User is not admin
-400 Bad Request: Invalid query parameters
+### `PATCH /api/v1/admin/recipes/:id/status`
+Approve or reject a recipe.
 
+Request body:
+| Field | Type | Rules |
+|-------|------|-------|
+| `status` | string | Must be `published` or `rejected` |
+| `rejection_reason` | string | Optional, for rejected recipes |
 
-2. Update Recipe Status
-Endpoint: PATCH /api/admin/recipes/:id/status
-Authentication: Required (Admin role)
-URL Parameters:
-
-id (required): Recipe ID (integer)
-
-Request Body:
-{
-  "status": "published"
-}
-Valid Status Values:
-
-published — recipe becomes visible to all users
-rejected — recipe rejected, user notified, stays hidden
-
-Request:
-PATCH /api/admin/recipes/1/status
-Authorization: Bearer <admin_jwt_token>
-Content-Type: application/json
-
-{
-  "status": "published"
-}
-Response (200 OK):
+Response 200:
+```json
 {
   "success": true,
   "message": "Recipe published successfully",
@@ -383,44 +385,18 @@ Response (200 OK):
     "new_status": "published"
   }
 }
-Error Responses:
+```
 
-401 Unauthorized: Missing or invalid JWT token
-403 Forbidden: User is not admin
-404 Not Found: Recipe does not exist
-400 Bad Request: Invalid status or validation error{
-  "success": false,
-  "errors": [
-    {
-      "field": "status",
-      "message": "Status must be 'published' or 'rejected'"
-    }
-  ]
-}
+### `DELETE /api/v1/admin/recipes/:id`
+Soft-delete a recipe from the admin panel.
 
+Request body:
+| Field | Type | Rules |
+|-------|------|-------|
+| `reason` | string | Required, max 255 chars |
 
-
-3. Delete Recipe (Soft Delete)
-Endpoint: DELETE /api/admin/recipes/:id
-Authentication: Required (Admin role)
-URL Parameters:
-
-id (required): Recipe ID (integer)
-
-Request Body:
-{
-  "reason": "Inappropriate content"
-}
-Reason: Description of why the recipe was deleted (max 255 characters)
-Request:
-DELETE /api/admin/recipes/2
-Authorization: Bearer <admin_jwt_token>
-Content-Type: application/json
-
-{
-  "reason": "Contenu dupliqué avec recette #1"
-}
-Response (200 OK):
+Response 200:
+```json
 {
   "success": true,
   "message": "Recipe deleted successfully",
@@ -430,37 +406,21 @@ Response (200 OK):
     "reason": "Contenu dupliqué avec recette #1"
   }
 }
-Error Responses:
+```
 
-401 Unauthorized: Missing or invalid JWT token
-403 Forbidden: User is not admin
-404 Not Found: Recipe does not exist
-400 Bad Request: Missing reason or validation error{
-  "success": false,
-  "errors": [
-    {
-      "field": "reason",
-      "message": "Reason is required and must be max 255 characters"
-    }
-  ]
-}
+### `GET /api/v1/admin/logs`
+Retrieve admin action logs.
 
+Query parameters:
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `action` | string | `approve`, `reject`, `delete`, `restore` (optional) |
+| `target_type` | string | `recipe`, `user`, `comment` (optional) |
+| `limit` | integer | Default 50, Max 500 |
+| `offset` | integer | Default 0 |
 
-
-4. Get Admin Logs
-Endpoint: GET /api/admin/logs
-Authentication: Required (Admin role)
-Query Parameters:
-
-target_type (optional): recipe, user, comment
-action (optional): approve, reject, delete, restore
-limit (optional): Default 50, Max 500
-offset (optional): Default 0
-
-Request:
-GET /api/admin/logs?action=delete&limit=20
-Authorization: Bearer <admin_jwt_token>
-Response (200 OK):
+Response 200:
+```json
 {
   "success": true,
   "count": 15,
@@ -468,38 +428,35 @@ Response (200 OK):
     {
       "id": 5,
       "admin_id": 3,
+      "admin_name": "admin",
       "target_type": "recipe",
       "target_id": 2,
       "action": "delete",
-      "recipe_id": 2,
       "created_at": "2026-06-15T14:32:45.000Z"
     }
   ]
 }
-Error Responses:
+```
 
-401 Unauthorized: Missing or invalid JWT token
-403 Forbidden: User is not admin
-400 Bad Request: Invalid query parameters
+### `GET /api/v1/admin/recipes/top`
+Return top N recipes by average rating.
 
+Query parameters:
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `limit` | integer | Default 5 |
 
-Security Notes
-All admin endpoints require:
+Response 200: `{ "success": true, "data": [...] }`
 
-Valid JWT token in Authorization: Bearer <token> header
-Admin role (users.role = 'admin')
-Input validation via express-validator
-Rate limiting via helmet (5 requests per minute per IP)
+### `GET /api/v1/admin/export/recipes`
+Download published recipes as CSV.
 
-All actions are logged in admin_logs table with:
+Response 200: `Content-Type: text/csv` with BOM for Excel compatibility.
 
-Admin user ID
-Target type and ID
-Action performed
-Timestamp
-Deletion reason (if applicable)
-
-Rejected or deleted recipes trigger user_notifications entry to inform the author.
+### Security notes
+- All actions are logged in `admin_logs` table with admin ID, target, action, timestamp
+- Rejected/deleted recipes create a `user_notifications` entry for the author
+- Validation via express-validator on all endpoints
 
 ---
 

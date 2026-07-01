@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This report documents the backend development for the Ovni Culinaire project, a culinary recipe sharing platform. The backend was built over 12 initial days using Node.js, Express.js, MariaDB, and various security and testing libraries, then extended with additional features through Day 28.
+This report documents the backend development for the Ovni Culinaire project, a culinary recipe sharing platform. The backend was built using Node.js, Express.js, MariaDB, and various security and testing libraries. All MVP features are complete.
 
 ---
 
@@ -40,14 +40,17 @@ src/
 
 ### 1.3 Database Schema
 
-The database consists of 5 main tables:
-- **users**: User accounts with username, email, password hash, role, created_at
-- **recipes**: Recipe data with title, ingredients (JSON), steps (JSON), anecdote, prep_time, cost_per_portion, status, average_rating (denormalized), rating_count, user_id, category_id
+The database consists of 8 tables:
+- **users**: User accounts with username, email, password hash, role, points, created_at
+- **categories**: Recipe categories (Rapide, Petit budget, Élaborée, Classique)
+- **recipes**: Recipe data with title, ingredients (JSON), steps (JSON), anecdote, prep_time, cost_per_portion, status, average_rating (denormalized), rating_count, views, user_id, category_id
 - **comments**: User comments linked to recipes — supports dual mode: authenticated (user_id) or guest (guest_name)
 - **ratings**: 1-5 star ratings for recipes — upsert via `INSERT ... ON DUPLICATE KEY UPDATE`
-- **categories**: Recipe categories (Rapide, Petit budget, Élaborée, etc.)
+- **favorites**: User recipe bookmarks — unique constraint on (user_id, recipe_id), cascading deletes
+- **admin_logs**: Immutable audit trail of admin actions (moderation, deletion, etc.)
+- **user_notifications**: Alerts sent to users on moderation actions (rejection, deletion reason)
 
-All main tables (users, recipes, comments, categories) implement **soft delete** via a `deleted_at DATETIME NULL` column. Every public query filters with `WHERE deleted_at IS NULL`.
+All user-facing tables implement **soft delete** via a `deleted_at DATETIME NULL` column. Every public query filters with `WHERE deleted_at IS NULL`.
 
 ---
 
@@ -167,6 +170,32 @@ Winston logger implementation with:
 **Resolution**:
 - Use `const [rows] = await pool.execute(...)` — array destructuring, position 0 is the row data
 
+### 3.8 Challenge: Self-Rating Block
+
+**Problem**: A user could rate their own recipe, creating biased scores.
+
+**Resolution**:
+- Check in `RatingController.rateRecipe`: if `recipe.user_id === req.user.id`, return 403
+- Prevents pointless self-rating while keeping the upsert logic clean
+
+### 3.9 Challenge: Points Awarded on Rating Update
+
+**Problem**: The initial gamification design awarded points every time a rating was submitted. A user could spam rate/unrate to farm points.
+
+**Resolution**:
+- Points are awarded only on INSERT (first rating), not on UPDATE
+- `Rating.rate()` returns `isNew` boolean; the controller only awards points when `isNew === true`
+- `score >= 4` threshold prevents point inflation for low ratings
+
+### 3.10 Challenge: Pagination with Dynamic Filters
+
+**Problem**: `findAllWithFilters()` builds a dynamic WHERE clause from optional query params. Adding pagination (LIMIT/OFFSET) required a second COUNT query for `total`.
+
+**Resolution**:
+- Two-query pattern: `SELECT COUNT(*) AS total ...` (same WHERE) to get total count, then the main `SELECT ... LIMIT ? OFFSET ?`
+- Return `{ recipes, total, limit }` so the frontend can build correct page links
+- Default limit 12, max 100
+
 ---
 
 ## 4. Testing Implementation
@@ -196,34 +225,33 @@ tests/
 
 ### 4.3 Test Results Summary
 
-| Category | Tests | Status |
-|----------|-------|--------|
-| Auth Controller | 15+ | Passing |
-| Recipe Controller | 20+ | Passing |
-| Comment Controller | 10+ | Passing (2 known failures — pre-existing) |
-| Rating Controller | 10+ | Passing |
-| Model Validation | 15+ | Passing |
-| User Dashboard | 4 | Passing (profile, recipes, auth, 401) |
+| File | Tests | Status |
+|------|-------|--------|
+| Auth Controller (integration) | 9 | Passing |
+| Admin API (integration) | 16 | Passing |
+| Ratings API (integration) | 8 | Passing |
+| Comment Model (model-level) | 7 | Passing |
+| Recipe Model (unit) | 27 | Passing |
+| User Model (unit) | 14 | Passing |
+| Rating Model (unit) | 14 | Passing |
+| Category Model (unit) | 15 | Passing |
+| Admin Utils (standalone) | 20 | Passing |
+| **Total (Jest)** | **110** | **All passing** |
+| **Total (standalone)** | **20** | **All passing** |
 
 ### 4.4 Key Test Scenarios
 
-- User registration and login
-- JWT token validation
-- Recipe CRUD operations
-- Comment creation and retrieval
-- Rating submission and calculation
-- Admin-only routes protection
-- Input validation enforcement
-- Error handling verification
-- **User dashboard** : profile with stats, my recipes listing, 401 without token
-
-### 4.5 Known Test Failures
-
-Two pre-existing failures in `comments.test.js` (not related to current features):
-1. `should create comment with pseudo (no auth required)` — test expects property `pseudo` but model returns `guest_name`
-2. `should reject empty pseudo` — test expects message `"Guest name is required"` but model now returns `"A name is required to comment as a guest"`
-
-These failures pre-date the user dashboard feature and need a separate cleanup session.
+- User registration and login (validation, duplicate email, JWT response)
+- Password never exposed in response (`password_hash` undefined)
+- Recipe CRUD with validation (empty fields, negative values, non-existent relations)
+- Filtered listing with pagination (limit, offset, combined filters)
+- Random recipe retrieval
+- Comment creation for both authenticated users and guests (guest_name required)
+- Rating upsert with self-rating blocked
+- Average rating recalculation and gamification points (score >= 4 awards 5 points)
+- Admin: authentication, authorization, moderation, stats, logs, CSV export
+- Category CRUD with auto-slug generation
+- Soft delete idempotency and data hiding
 
 ---
 
@@ -249,24 +277,33 @@ These failures pre-date the user dashboard feature and need a separate cleanup s
 | US-09 | Simplified signup | POST `/api/auth/register` - immediate activation |
 | US-10 | Recipe submission | POST `/api/recipes` with JWT auth |
 
-### 5.3 US-DASHBOARD: User Dashboard (Post-MVP Feature)
+### 5.3 US-16: Favorites (Bookmarks)
 
 | Feature | Implementation |
 |---------|----------------|
-| Profile view | `GET /api/v1/users/me/profile` — returns user info + aggregate recipe stats |
-| Recipe history | `GET /api/v1/users/me/recipes` — returns all user recipes with statuses |
-| Auth protection | Both endpoints require valid JWT; return 401 if missing/invalid |
-| Stats aggregation | Single SQL query with `SUM(CASE WHEN ...)` per status + separate comment count query |
+| Toggle favorite | `POST /api/v1/favorites/:recipeId` — add/remove in one call |
+| List favorites | `GET /api/v1/favorites` — all saved recipes for user |
+| Detail integration | `GET /api/v1/recipes/:id` returns `is_favorited` when token present (`attachUser` middleware) |
+| Profile stats | `GET /api/v1/users/me/profile` includes `favorite_count` |
 
-### 5.4 US-11 to US-15: Gamification & Admin (Pre-MVP, documented for reference)
+### 5.4 User Dashboard
+
+| Feature | Implementation |
+|---------|----------------|
+| Profile view | `GET /api/v1/users/me/profile` — returns user info + aggregate recipe stats (COALESCE to handle NULL) + favorites count |
+| Recipe history | `GET /api/v1/users/me/recipes` — returns all user recipes with statuses, ordered by most recent |
+| Auth protection | Both endpoints require valid JWT; return 401 if missing/invalid |
+| Stats aggregation | Single SQL query with `SUM(CASE WHEN ...)` per status + `COALESCE` guarantees zero instead of NULL |
+
+### 5.5 US-11 to US-15: Gamification & Admin
 
 | US | Feature | Implementation |
 |----|---------|----------------|
-| US-11 | Points system | Points field in User model, earned on recipe publish |
-| US-12 | Contributor rewards | Badge system in User model |
-| US-13 | Comments without account | Public POST `/api/comments` with pseudo required |
-| US-14 | Recipe moderation | Admin endpoints for delete/hide recipes |
-| US-15 | Admin dashboard | `/api/admin/stats` endpoint with analytics |
+| US-11 | Points system | +5 points awarded when a recipe receives a rating >= 4 (``Rating.rate()``) |
+| US-12 | Contributor rewards | Badge system designed but not implemented in MVP (tables `badges`/`user_badges` planned) |
+| US-13 | Comments without account | `POST /api/v1/recipes/:recipeId/comments` — guest_name required if no JWT; express-validator conditional validation via `.if()` |
+| US-14 | Recipe moderation | Admin endpoints: PATCH status (publish/reject), DELETE with reason + user notification |
+| US-15 | Admin dashboard | `GET /api/v1/admin/dashboard` — recipes stats, top viewed, top rated, categories. CSV export at `GET /api/v1/admin/export/recipes` |
 
 ---
 
@@ -288,20 +325,29 @@ All endpoints are prefixed with `/api/v1/`.
 
 ### 6.3 Comments (Public/Protected)
 - `GET /api/v1/recipes/:recipeId/comments` — Get comments for a recipe
-- `POST /api/v1/recipes/:recipeId/comments` — Add comment (dual mode: JWT optional; pseudo required for guests)
+- `POST /api/v1/recipes/:recipeId/comments` — Add comment (dual mode: JWT optional; guest_name required for guests)
+- `DELETE /api/v1/recipes/:recipeId/comments/:id` — Soft delete (author or admin only)
 
 ### 6.4 Ratings (Protected)
-- `GET /api/v1/recipes/:recipeId/ratings` — Get ratings for a recipe
-- `POST /api/v1/recipes/:recipeId/ratings` — Add/update rating (JWT required, upsert)
+- `POST /api/v1/recipes/:recipeId/ratings` — Add/update rating (JWT required, upsert, self-rating blocked)
 
-### 6.5 User Dashboard (JWT Required)
-- `GET /api/v1/users/me/profile` — User info + aggregate stats (total/published/pending/rejected recipes + comments received)
+### 6.5 Favorites (JWT Required)
+- `GET /api/v1/favorites` — List all saved recipes for the authenticated user
+- `POST /api/v1/favorites/:recipeId` — Toggle favorite (add/remove)
+
+### 6.6 User Dashboard (JWT Required)
+- `GET /api/v1/users/me/profile` — User info + aggregate stats (total/published/pending/rejected recipes + comments received + favorites count)
 - `GET /api/v1/users/me/recipes` — All user recipes with statuses, ordered by most recent
 
-### 6.6 Admin (JWT Required + Admin Role)
-- `GET /api/v1/admin/users` — List all users
-- `GET /api/v1/admin/recipes` — List all recipes
-- `GET /api/v1/admin/stats` — Dashboard statistics
+### 6.7 Admin (JWT Required + Admin Role)
+- `GET /api/v1/admin/dashboard` — Full dashboard metrics (recipes stats, top viewed, top rated, categories)
+- `GET /api/v1/admin/recipes` — List all recipes for moderation (filterable by status)
+- `PATCH /api/v1/admin/recipes/:id/status` — Publish or reject a recipe
+- `DELETE /api/v1/admin/recipes/:id` — Soft delete with reason + user notification
+- `GET /api/v1/admin/logs` — Admin action logs (filterable)
+- `GET /api/v1/admin/stats` — Quick platform statistics
+- `GET /api/v1/admin/recipes/top` — Top N recipes by rating
+- `GET /api/v1/admin/export/recipes` — CSV export of published recipes
 
 ---
 
@@ -335,17 +381,16 @@ All endpoints are prefixed with `/api/v1/`.
 
 ## 8. Conclusion
 
-The Ovni Culinaire backend is fully functional and covers all core features: authentication, recipe CRUD, comments (auth + guest), ratings, admin moderation, and user dashboard. The architecture provides a solid foundation for future enhancements including:
+The Ovni Culinaire backend is fully functional and covers all MVP features: authentication, recipe CRUD with pagination, comments (auth + guest with conditional validation), ratings with upsert and gamification points, favorites (bookmarks), user dashboard with aggregate stats, admin moderation panel with CSV export, and immutable audit logging. The architecture provides a solid foundation for future enhancements including:
 
-- Advanced gamification features (badges, points, levels — V2/V3)
+- Advanced gamification features (badges, levels — V2)
 - Image upload and storage
 - Enhanced search and filtering
-- Pagination for large datasets
+- Token refresh mechanism
 
-All critical security measures are in place (Helmet CSP, JWT, rate limiting, express-validator, parameterized queries), and the testing infrastructure supports ongoing development.
+All critical security measures are in place (Helmet CSP, JWT with 24h expiry, dual-tier rate limiting, express-validator, parameterized queries, least-privilege DB users), and the testing infrastructure supports ongoing development (110 Jest tests + 20 standalone tests, all passing).
 
 ---
 
-*Initial report: Day 12 of the Ovni Culinaire project.*
-*Last updated: Day 29 — Admin moderation panel (moderation-panel.html, moderation-panel.js, auth.js admin link injection, admin-utils unit tests)*
-*Project Status: All core features complete ✅ — Day 30: Final review*
+*MVP complete — all core features implemented and tested.*
+*Project status: MVP final review ✅*
